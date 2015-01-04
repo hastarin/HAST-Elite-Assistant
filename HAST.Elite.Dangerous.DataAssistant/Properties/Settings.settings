@@ -1,12 +1,18 @@
 ﻿<?xml version='1.0' encoding='utf-8'?>
-<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="HAST_Elite_Navigator.Properties" GeneratedClassName="Settings">
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="HAST.Elite.Dangerous.DataAssistant.Properties" GeneratedClassName="Settings">
   <Profiles />
   <Settings>
-    <Setting Name="EDDNUri" Type="System.String" Scope="Application">
+    <Setting Name="EDDNUri" Type="System.String" Scope="User">
       <Value Profile="(Default)">tcp://eddn-relay.elite-markets.net:9500</Value>
     </Setting>
     <Setting Name="DefaultLogsPath" Type="System.String" Scope="Application">
-      <Value Profile="(Default)">Frontier_Developments\Products\FORC-FDEV-D-1003\Logs</Value>
+      <Value Profile="(Default)">Frontier Developments\Products\FORC-FDEV-D-1003\Logs</Value>
+    </Setting>
+    <Setting Name="SystemsJsonUri" Type="System.String" Scope="User">
+      <Value Profile="(Default)">https://raw.githubusercontent.com/SteveHodge/ed-systems/master/systems.json</Value>
+    </Setting>
+    <Setting Name="LogsPath" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
     </Setting>
   </Settings>
 </SettingsFile>

@@ -1,10 +1,10 @@
 ﻿// ***********************************************************************
 // Assembly         : HAST.Elite.Dangerous.DataAssistant
 // Author           : Jon Benson
-// Created          : 03-01-2015
+// Created          : 04-01-2015
 // 
 // Last Modified By : Jon Benson
-// Last Modified On : 03-01-2015
+// Last Modified On : 05-01-2015
 // ***********************************************************************
 // <copyright file="LogWatcher.cs" company="Jon Benson">
 //     Copyright (c) Jon Benson. All rights reserved.
@@ -26,6 +26,7 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
     /// <summary>
     ///     Class LogWatcher.
     /// </summary>
+    [DesignerCategory("")]
     public class LogWatcher : FileSystemWatcher, INotifyPropertyChanged
     {
         #region Constants
@@ -35,14 +36,14 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
         /// </summary>
         private const string DefaultFilter = @"netLog.*.log";
 
-        /// <summary>
-        ///     The default path
-        /// </summary>
-        private string DefaultPath = Settings.Default.DefaultLogsPath;
-
         #endregion
 
         #region Fields
+
+        /// <summary>
+        ///     The default path
+        /// </summary>
+        private readonly string defaultPath = Settings.Default.DefaultLogsPath;
 
         /// <summary>
         ///     The system line regex
@@ -57,7 +58,7 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
         private string currentSystem;
 
         /// <summary>
-        ///     The last offset
+        ///     The last offset used when reading the netLog file.
         /// </summary>
         private long lastOffset;
 
@@ -77,31 +78,6 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
         #region Constructors and Destructors
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="T:System.IO.FileSystemWatcher" /> class, given the specified directory
-        ///     to monitor.
-        /// </summary>
-        /// <param name="path">The directory to monitor, in standard or Universal Naming Convention (UNC) notation.</param>
-        /// <exception cref="System.ArgumentException">path</exception>
-        /// <exception cref="T:System.ArgumentNullException">The <paramref name="path" /> parameter is null.</exception>
-        /// <exception cref="T:System.ArgumentException">
-        ///     The <paramref name="path" /> parameter is an empty string ("").-or- The
-        ///     path specified through the <paramref name="path" /> parameter does not exist.
-        /// </exception>
-        /// <exception cref="T:System.IO.PathTooLongException"><paramref name="path" /> is too long.</exception>
-        public LogWatcher(string path)
-            : base(path, DefaultFilter)
-        {
-            this.Path = path;
-            if (!Directory.GetFiles(this.Path, this.Filter).Any())
-            {
-                throw new ArgumentException(
-                    string.Format("Directory {0} does not contain netLog files?!", this.Path),
-                    "path");
-            }
-            this.NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.CreationTime;
-        }
-
-        /// <summary>
         ///     Initializes a new instance of the <see cref="T:System.Object" /> class.
         /// </summary>
         /// <exception cref="System.Exception"></exception>
@@ -112,13 +88,19 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
                 Environment.SpecialFolderOption.None);
             if (!string.IsNullOrWhiteSpace(this.Path))
             {
-                this.Path = System.IO.Path.Combine(this.Path, this.DefaultPath);
+                try
+                {
+                    this.Path = System.IO.Path.Combine(
+                        this.Path,
+                        !string.IsNullOrWhiteSpace(Settings.Default.LogsPath)
+                            ? Settings.Default.LogsPath
+                            : this.defaultPath);
+                }
+                catch (ArgumentException)
+                {
+                }
             }
             this.Filter = DefaultFilter;
-            if (!Directory.GetFiles(this.Path, this.Filter).Any())
-            {
-                throw new Exception(string.Format("Directory {0} does not contain netLog files?!", this.Path));
-            }
             this.NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.CreationTime;
         }
 
@@ -137,6 +119,7 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
             }
             remove
             {
+                // ReSharper disable once DelegateSubtraction
                 this.propertyChanged -= value;
             }
         }
@@ -180,6 +163,25 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
         #region Public Methods and Operators
 
         /// <summary>
+        ///     Determines whether the Path contains netLog files.
+        /// </summary>
+        /// <returns><c>true</c> if the Path contains netLog files; otherwise, <c>false</c>.</returns>
+        public bool IsValidPath()
+        {
+            return Directory.GetFiles(this.Path, this.Filter).Any();
+        }
+
+        /// <summary>
+        ///     Determines whether the specified path contains netLog files.
+        /// </summary>
+        /// <param name="path">The path.</param>
+        /// <returns><c>true</c> if the specified path contains netLog files; otherwise, <c>false</c>.</returns>
+        public bool IsValidPath(string path)
+        {
+            return Directory.GetFiles(path, this.Filter).Any();
+        }
+
+        /// <summary>
         ///     Starts the watching.
         /// </summary>
         public void StartWatching()
@@ -187,6 +189,10 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
             if (this.EnableRaisingEvents)
             {
                 return;
+            }
+            if (!Directory.GetFiles(this.Path, this.Filter).Any())
+            {
+                throw new Exception(string.Format("Directory {0} does not contain netLog files?!", this.Path));
             }
             this.UpdateLatestLogFile();
             this.Created += (sender, args) => this.UpdateLatestLogFile();
@@ -228,6 +234,7 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
                 return false;
             }
             storage = value;
+            // ReSharper disable once ExplicitCallerInfoArgument
             this.OnPropertyChanged(propertyName);
             return true;
         }
@@ -237,7 +244,8 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
         /// </summary>
         private void CheckForSystemChange()
         {
-            using (var logFileStream = new FileStream(
+            using (
+                var logFileStream = new FileStream(
                     System.IO.Path.Combine(this.Path, this.latestLogFile),
                     FileMode.Open,
                     FileAccess.Read,
@@ -263,7 +271,7 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
         }
 
         /// <summary>
-        ///     Updates the latest log file.
+        ///     Updates the <see cref="LatestLogFile" /> property.
         /// </summary>
         private void UpdateLatestLogFile()
         {

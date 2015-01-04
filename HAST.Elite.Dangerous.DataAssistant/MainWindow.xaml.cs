@@ -32,29 +32,25 @@ namespace HAST.Elite.Dangerous.DataAssistant
     using HAST.Elite.Dangerous.DataAssistant.ViewModels;
     using HAST.Elite.Dangerous.DataAssistant.Models;
 
+    using Microsoft.Win32;
+
     using NetMQ;
     using NetMQ.Sockets;
 
     /// <summary>Interaction logic for MainWindow.xaml</summary>
     public partial class MainWindow
     {
-        #region Static Fields
-
-        /// <summary>The URI used to retrieve the initial data for systems in JSON format</summary>
-        private const string SystemJsonUri = @"https://raw.githubusercontent.com/hastarin/ed-systems/master/systems.json";
-
-        #endregion
-
         #region Fields
 
-        /// <summary>The <see cref="MainWindow.speak" /></summary>
-        private readonly SpeechSynthesizer speak = new SpeechSynthesizer();
+        private readonly SpeechSynthesizer speech = new SpeechSynthesizer();
 
         private static readonly NetMQContext NetMqContext = NetMQContext.Create();
 
         private static readonly SubscriberSocket EddnSubscriberSocket = NetMqContext.CreateSubscriberSocket();
 
         private static readonly DispatcherTimer ReceiverTimer = new DispatcherTimer(DispatcherPriority.ApplicationIdle);
+
+        private static readonly LogWatcher LogWatcher = new LogWatcher();
 
         #endregion
 
@@ -81,7 +77,7 @@ namespace HAST.Elite.Dangerous.DataAssistant
                 }
                 using (var webClient = new WebClient())
                 {
-                    var stream = webClient.OpenRead(SystemJsonUri);
+                    var stream = webClient.OpenRead(Settings.Default.SystemsJsonUri);
                     var serializer = new DataContractJsonSerializer(typeof(System[]));
                     if (stream != null)
                     {
@@ -102,20 +98,7 @@ namespace HAST.Elite.Dangerous.DataAssistant
         {
             this.InitializeDatabase();
 
-            var logWatch = new LogWatcher();
-            logWatch.StartWatching();
-            logWatch.PropertyChanged += (o, args) =>
-                {
-                    if (args.PropertyName != "CurrentSystem")
-                    {
-                        return;
-                    }
-                    var system = this.GetSystem(logWatch.CurrentSystem);
-                    if (system == null)
-                    {
-                        this.speak.SpeakAsync("Warning " + logWatch.CurrentSystem + " is not found in the database!");
-                    }
-                };
+            this.InitializeLogWatcher();
 
             EddnSubscriberSocket.Connect(Settings.Default.EDDNUri);
             EddnSubscriberSocket.Subscribe(Encoding.Unicode.GetBytes(string.Empty));
@@ -125,6 +108,40 @@ namespace HAST.Elite.Dangerous.DataAssistant
             ReceiverTimer.Interval = TimeSpan.FromMilliseconds(100);
             ReceiverTimer.Start();
 
+        }
+
+        private void InitializeLogWatcher()
+        {
+            while (!LogWatcher.IsValidPath())
+            {
+                var dialog = new OpenFileDialog
+                                 {
+                                     CheckPathExists = true,
+                                     Filter = "netLog files|netLog*.log",
+                                     Title = "Please choose the folder containing your Logs",
+                                     InitialDirectory = LogWatcher.Path
+                                 };
+                var result = dialog.ShowDialog(this);
+                if (result.Value)
+                {
+                    LogWatcher.Path = Path.GetDirectoryName(dialog.FileName);
+                }
+            }
+            Settings.Default.LogsPath = LogWatcher.Path;
+            Settings.Default.Save();
+            LogWatcher.StartWatching();
+            LogWatcher.PropertyChanged += (o, args) =>
+                {
+                    if (args.PropertyName != "CurrentSystem")
+                    {
+                        return;
+                    }
+                    var system = this.GetSystem(LogWatcher.CurrentSystem);
+                    if (system == null)
+                    {
+                        this.speech.SpeakAsync("Warning " + LogWatcher.CurrentSystem + " is not found in the database!");
+                    }
+                };
         }
 
         private void ReceiverTimerOnTick(object sender, EventArgs eventArgs)

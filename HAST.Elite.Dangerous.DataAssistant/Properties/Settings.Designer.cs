@@ -23,21 +23,48 @@ namespace HAST.Elite.Dangerous.DataAssistant.Properties {
             }
         }
         
-        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("tcp://eddn-relay.elite-markets.net:9500")]
         public string EDDNUri {
             get {
                 return ((string)(this["EDDNUri"]));
             }
+            set {
+                this["EDDNUri"] = value;
+            }
         }
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("Frontier_Developments\\Products\\FORC-FDEV-D-1003\\Logs")]
+        [global::System.Configuration.DefaultSettingValueAttribute("Frontier Developments\\Products\\FORC-FDEV-D-1003\\Logs")]
         public string DefaultLogsPath {
             get {
                 return ((string)(this["DefaultLogsPath"]));
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("https://raw.githubusercontent.com/SteveHodge/ed-systems/master/systems.json")]
+        public string SystemsJsonUri {
+            get {
+                return ((string)(this["SystemsJsonUri"]));
+            }
+            set {
+                this["SystemsJsonUri"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string LogsPath {
+            get {
+                return ((string)(this["LogsPath"]));
+            }
+            set {
+                this["LogsPath"] = value;
             }
         }
     }
