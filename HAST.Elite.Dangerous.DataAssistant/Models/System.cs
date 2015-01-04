@@ -1,10 +1,10 @@
 ﻿// ***********************************************************************
-// Assembly         : HAST Elite Navigator
+// Assembly         : HAST.Elite.Dangerous.DataAssistant
 // Author           : Jon Benson
-// Created          : 03-01-2015
+// Created          : 04-01-2015
 // 
 // Last Modified By : Jon Benson
-// Last Modified On : 03-01-2015
+// Last Modified On : 04-01-2015
 // ***********************************************************************
 // <copyright file="System.cs" company="Jon Benson">
 //     Copyright (c) Jon Benson. All rights reserved.
@@ -12,11 +12,7 @@
 // ***********************************************************************
 // 
 
- /// <summary>
-/// The Models namespace.
-/// </summary>
-
-namespace HAST_Elite_Navigator.Models
+namespace HAST.Elite.Dangerous.DataAssistant.Models
 {
     using global::System.Collections.Generic;
     using global::System.ComponentModel.DataAnnotations;

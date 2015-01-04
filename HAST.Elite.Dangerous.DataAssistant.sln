@@ -3,7 +3,14 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
 VisualStudioVersion = 12.0.31101.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HAST.Elite.Dangerous.DataAssistant", "HAST Elite Navigator\HAST.Elite.Dangerous.DataAssistant.csproj", "{211C53EC-A2D1-4CB1-B593-31380F27EC0B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HAST.Elite.Dangerous.DataAssistant", "HAST.Elite.Dangerous.DataAssistant\HAST.Elite.Dangerous.DataAssistant.csproj", "{211C53EC-A2D1-4CB1-B593-31380F27EC0B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{41E1FEEE-75F0-420F-BD72-A443A81E2CB7}"
+	ProjectSection(SolutionItems) = preProject
+		.nuget\NuGet.Config = .nuget\NuGet.Config
+		.nuget\NuGet.exe = .nuget\NuGet.exe
+		.nuget\NuGet.targets = .nuget\NuGet.targets
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -6,7 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 
-namespace HAST_Elite_Navigator
+namespace HAST.Elite.Dangerous.DataAssistant
 {
     /// <summary>
     /// Interaction logic for App.xaml

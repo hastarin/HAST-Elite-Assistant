@@ -1,5 +1,5 @@
 ﻿// ***********************************************************************
-// Assembly         : HAST Elite Navigator
+// Assembly         : HAST.Elite.Dangerous.DataAssistant
 // Author           : Jon Benson
 // Created          : 03-01-2015
 // 
@@ -12,11 +12,11 @@
 // ***********************************************************************
 // 
 
-namespace HAST_Elite_Navigator.DataAccessLayer
+namespace HAST.Elite.Dangerous.DataAssistant.DataAccessLayer
 {
     using System.Data.Entity;
 
-    using HAST_Elite_Navigator.Models;
+    using HAST.Elite.Dangerous.DataAssistant.Models;
 
     /// <summary>Class EliteDangerousDbContext.</summary>
     public class EliteDangerousDbContext : DbContext

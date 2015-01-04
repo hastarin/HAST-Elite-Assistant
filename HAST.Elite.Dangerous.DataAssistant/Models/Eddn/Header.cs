@@ -1,5 +1,5 @@
 ﻿// ***********************************************************************
-// Assembly         : HAST Elite Navigator
+// Assembly         : HAST.Elite.Dangerous.DataAssistant
 // Author           : Jon Benson
 // Created          : 03-01-2015
 // 
@@ -12,7 +12,7 @@
 // ***********************************************************************
 // 
 
-namespace HAST_Elite_Navigator.Models.Eddn
+namespace HAST.Elite.Dangerous.DataAssistant.Models.Eddn
 {
     using global::System.Runtime.Serialization;
 

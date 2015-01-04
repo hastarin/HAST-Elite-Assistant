@@ -1,24 +1,24 @@
 // ***********************************************************************
-// Assembly         : HAST Elite Navigator
+// Assembly         : HAST.Elite.Dangerous.DataAssistant
 // Author           : Jon Benson
 // Created          : 03-01-2015
 // 
 // Last Modified By : Jon Benson
 // Last Modified On : 03-01-2015
 // ***********************************************************************
-// <copyright file="RootObject.cs" company="Jon Benson">
+// <copyright file="EddnRequest.cs" company="Jon Benson">
 //     Copyright (c) Jon Benson. All rights reserved.
 // </copyright>
 // ***********************************************************************
 // 
 
-namespace HAST_Elite_Navigator.Models.Eddn
+namespace HAST.Elite.Dangerous.DataAssistant.Models.Eddn
 {
     using global::System.Runtime.Serialization;
 
-    /// <summary>Class RootObject.</summary>
+    /// <summary>Class EddnRequest.</summary>
     [DataContract]
-    public class RootObject
+    public class EddnRequest
     {
         #region Public Properties
 

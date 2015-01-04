@@ -1,5 +1,5 @@
 ﻿// ***********************************************************************
-// Assembly         : HAST Elite Navigator
+// Assembly         : HAST.Elite.Dangerous.DataAssistant
 // Author           : Jon Benson
 // Created          : 03-01-2015
 // 
@@ -12,7 +12,7 @@
 // ***********************************************************************
 // 
 
-namespace HAST_Elite_Navigator
+namespace HAST.Elite.Dangerous.DataAssistant
 {
     using System;
     using System.Diagnostics;
@@ -26,10 +26,11 @@ namespace HAST_Elite_Navigator
     using System.Windows;
     using System.Windows.Threading;
 
-    using HAST_Elite_Navigator.DataAccessLayer;
-    using HAST_Elite_Navigator.Models;
-    using HAST_Elite_Navigator.Models.Eddn;
-    using HAST_Elite_Navigator.Properties;
+    using HAST.Elite.Dangerous.DataAssistant.DataAccessLayer;
+    using HAST.Elite.Dangerous.DataAssistant.Models.Eddn;
+    using HAST.Elite.Dangerous.DataAssistant.Properties;
+    using HAST.Elite.Dangerous.DataAssistant.ViewModels;
+    using HAST.Elite.Dangerous.DataAssistant.Models;
 
     using NetMQ;
     using NetMQ.Sockets;
@@ -46,7 +47,7 @@ namespace HAST_Elite_Navigator
 
         #region Fields
 
-        /// <summary>The <see cref="HAST_Elite_Navigator.MainWindow.speak" /></summary>
+        /// <summary>The <see cref="MainWindow.speak" /></summary>
         private readonly SpeechSynthesizer speak = new SpeechSynthesizer();
 
         private static readonly NetMQContext NetMqContext = NetMQContext.Create();
@@ -159,8 +160,8 @@ namespace HAST_Elite_Navigator
                     Debug.WriteLine(myStr);
 
                     decompressedFileStream.Position = 0;
-                    var serializer = new DataContractJsonSerializer(typeof(RootObject));
-                    var rootObject = (RootObject)serializer.ReadObject(decompressedFileStream);
+                    var serializer = new DataContractJsonSerializer(typeof(EddnRequest));
+                    var rootObject = (EddnRequest)serializer.ReadObject(decompressedFileStream);
                     var message = rootObject.Message;
                     Debug.WriteLine(rootObject.SchemaRef);
                     Debug.WriteLine("Station: {0}, Item: {1}, BuyPrice: {2}", message.StationName, message.ItemName, message.BuyPrice);

@@ -1,5 +1,5 @@
 ﻿// ***********************************************************************
-// Assembly         : HAST Elite Navigator
+// Assembly         : HAST.Elite.Dangerous.DataAssistant
 // Author           : Jon Benson
 // Created          : 03-01-2015
 // 
@@ -12,7 +12,7 @@
 // ***********************************************************************
 // 
 
-namespace HAST_Elite_Navigator
+namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
 {
     using System;
     using System.ComponentModel;
@@ -21,7 +21,7 @@ namespace HAST_Elite_Navigator
     using System.Runtime.CompilerServices;
     using System.Text.RegularExpressions;
 
-    using HAST_Elite_Navigator.Properties;
+    using HAST.Elite.Dangerous.DataAssistant.Properties;
 
     /// <summary>
     ///     Class LogWatcher.
@@ -112,7 +112,7 @@ namespace HAST_Elite_Navigator
                 Environment.SpecialFolderOption.None);
             if (!string.IsNullOrWhiteSpace(this.Path))
             {
-                this.Path = System.IO.Path.Combine(this.Path, DefaultPath);
+                this.Path = System.IO.Path.Combine(this.Path, this.DefaultPath);
             }
             this.Filter = DefaultFilter;
             if (!Directory.GetFiles(this.Path, this.Filter).Any())
