@@ -12,6 +12,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{41E1FE
 		.nuget\NuGet.targets = .nuget\NuGet.targets
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HAST.Elite.Dangerous.DataAssistant.UnitTests", "HAST.Elite.Dangerous.DataAssistant.UnitTests\HAST.Elite.Dangerous.DataAssistant.UnitTests.csproj", "{4F88DD36-ED8B-4082-A5AB-0B440C8418DA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -22,6 +24,10 @@ Global
 		{211C53EC-A2D1-4CB1-B593-31380F27EC0B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{211C53EC-A2D1-4CB1-B593-31380F27EC0B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{211C53EC-A2D1-4CB1-B593-31380F27EC0B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4F88DD36-ED8B-4082-A5AB-0B440C8418DA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4F88DD36-ED8B-4082-A5AB-0B440C8418DA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4F88DD36-ED8B-4082-A5AB-0B440C8418DA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4F88DD36-ED8B-4082-A5AB-0B440C8418DA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

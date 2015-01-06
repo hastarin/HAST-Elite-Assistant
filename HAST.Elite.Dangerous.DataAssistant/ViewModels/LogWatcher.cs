@@ -208,7 +208,7 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
         /// <summary>
         ///     Called when [property changed].
         /// </summary>
-        /// <param name="propertyName">Name of the property.</param>
+        /// <param name="propertyName">StationName of the property.</param>
         protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             var changedEventHandler = this.propertyChanged;
@@ -225,7 +225,7 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
         /// <typeparam name="T"></typeparam>
         /// <param name="storage">The storage.</param>
         /// <param name="value">The value.</param>
-        /// <param name="propertyName">Name of the property.</param>
+        /// <param name="propertyName">StationName of the property.</param>
         /// <returns><c>true</c> if XXXX, <c>false</c> otherwise.</returns>
         protected bool SetProperty<T>(ref T storage, T value, [CallerMemberName] string propertyName = null)
         {

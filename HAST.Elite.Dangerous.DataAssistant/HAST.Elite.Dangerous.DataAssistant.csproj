@@ -73,6 +73,12 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Migrations\Configuration.cs" />
+    <Compile Include="Routing\IRouteNode.cs" />
+    <Compile Include="Routing\IRoutePlanner.cs" />
+    <Compile Include="Routing\RouteNode.cs" />
+    <Compile Include="Routing\RoutePlanner.cs" />
+    <Compile Include="Routing\RoutePlannerTimeoutException.cs" />
     <Compile Include="ViewModels\LogWatcher.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -123,9 +129,7 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Migrations\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <Resource Include="LICENSE.txt" />
   </ItemGroup>

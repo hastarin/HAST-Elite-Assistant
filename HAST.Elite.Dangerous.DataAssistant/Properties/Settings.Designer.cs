@@ -67,5 +67,14 @@ namespace HAST.Elite.Dangerous.DataAssistant.Properties {
                 this["LogsPath"] = value;
             }
         }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("100")]
+        public double RoutePaddingMax {
+            get {
+                return ((double)(this["RoutePaddingMax"]));
+            }
+        }
     }
 }

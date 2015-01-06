@@ -4,7 +4,7 @@
 // Created          : 04-01-2015
 // 
 // Last Modified By : Jon Benson
-// Last Modified On : 04-01-2015
+// Last Modified On : 06-01-2015
 // ***********************************************************************
 // <copyright file="System.cs" company="Jon Benson">
 //     Copyright (c) Jon Benson. All rights reserved.
@@ -16,6 +16,7 @@ namespace HAST.Elite.Dangerous.DataAssistant.Models
 {
     using global::System.Collections.Generic;
     using global::System.ComponentModel.DataAnnotations;
+    using global::System.ComponentModel.DataAnnotations.Schema;
     using global::System.Runtime.Serialization;
 
     /// <summary>Class System.</summary>
@@ -46,7 +47,8 @@ namespace HAST.Elite.Dangerous.DataAssistant.Models
 
         /// <summary>Gets or sets the name.</summary>
         [DataMember(Name = "name")]
-        [Key]
+        [Index("IX_SystemName", IsUnique = true)]
+        [MaxLength(128)]
         public string Name { get; set; }
 
         /// <summary>Gets or sets the population.</summary>
@@ -65,17 +67,24 @@ namespace HAST.Elite.Dangerous.DataAssistant.Models
         [DataMember(Name = "stations")]
         public List<Station> Stations { get; set; }
 
+        /// <summary>Gets or sets the system identifier.</summary>
+        [Key]
+        public long SystemId { get; set; }
+
         /// <summary>Gets or sets the x.</summary>
         [DataMember(Name = "x")]
-        public double X { get; set; }
+        [Index("IX_Coordinates", Order = 1)]
+        public float X { get; set; }
 
         /// <summary>Gets or sets the y.</summary>
         [DataMember(Name = "y")]
-        public double Y { get; set; }
+        [Index("IX_Coordinates", Order = 2)]
+        public float Y { get; set; }
 
         /// <summary>Gets or sets the z.</summary>
         [DataMember(Name = "z")]
-        public double Z { get; set; }
+        [Index("IX_Coordinates", Order = 3)]
+        public float Z { get; set; }
 
         #endregion
     }

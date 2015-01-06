@@ -38,11 +38,11 @@ namespace HAST.Elite.Dangerous.DataAssistant.Models.Eddn
         [DataMember(Name = "sellPrice")]
         public int SellPrice { get; set; }
 
-        /// <summary>Gets or sets the name of the station.</summary>
+        /// <summary>Gets or sets the name of the StationName.</summary>
         [DataMember(Name = "stationName")]
         public string StationName { get; set; }
 
-        /// <summary>Gets or sets the station stock.</summary>
+        /// <summary>Gets or sets the StationName stock.</summary>
         [DataMember(Name = "stationStock ")]
         public int StationStock { get; set; }
 
