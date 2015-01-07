@@ -28,13 +28,13 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
     {
         #region Fields
 
-        private readonly IRoutePlanner routePlanner = new RoutePlannerGreedyDfs();
+        private readonly IRoutePlanner routePlanner = new RoutePlanner();
         private RelayCommand calculateRouteCommand;
         private TimeSpan calculationTime;
         private string destination;
         private bool disposed;
-        private double jumpRange;
-        private ObservableCollection<IRouteNode> route = new ObservableCollection<IRouteNode>();
+        private float jumpRange;
+        private readonly ObservableCollection<IRouteNode> route = new ObservableCollection<IRouteNode>();
         private string source;
         private TimeSpan timeout;
 
@@ -96,7 +96,7 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
         }
 
         /// <summary>Gets or sets the jump range.</summary>
-        public double JumpRange
+        public float JumpRange
         {
             get
             {

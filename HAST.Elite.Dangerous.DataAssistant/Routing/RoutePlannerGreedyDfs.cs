@@ -25,7 +25,8 @@ namespace HAST.Elite.Dangerous.DataAssistant.Routing
     using SharpDX;
 
     /// <summary>Class RoutePlannerGreedyDfs.</summary>
-    public class RoutePlannerGreedyDfs : IRoutePlanner, IDisposable
+    /// <remarks>My first attempt at a route planner.</remarks>
+    public class RoutePlannerGreedyDfs : IRoutePlanner
     {
         #region Static Fields
 
@@ -121,7 +122,7 @@ namespace HAST.Elite.Dangerous.DataAssistant.Routing
         }
 
         /// <summary>Gets or sets the jump range the ship is capable of.</summary>
-        public double JumpRange { get; set; }
+        public float JumpRange { get; set; }
 
         /// <summary>Gets the route.</summary>
         public IEnumerable<IRouteNode> Route { get; private set; }
@@ -173,11 +174,11 @@ namespace HAST.Elite.Dangerous.DataAssistant.Routing
             var distance = Vector3.Distance(sourcePoint, destinationPoint);
             var straightLineVector = destinationPoint - sourcePoint;
             straightLineVector.Normalize();
-            var padding = Settings.Default.RoutePadding * PaddingFactor.First(pf => pf.Key >= JumpRange).Value;
+            var padding = Settings.Default.RoutePadding * PaddingFactor.First(pf => pf.Key >= this.JumpRange).Value;
             var padDistance = distance / 150 * padding;
             Debug.WriteLine(
                 "Jump range = {0:F} gives a padding value of {1:F} for a pad distance of {2:F}",
-                JumpRange,
+                this.JumpRange,
                 padding,
                 padDistance);
             var paddedSource = sourcePoint - (straightLineVector * (float)padDistance);

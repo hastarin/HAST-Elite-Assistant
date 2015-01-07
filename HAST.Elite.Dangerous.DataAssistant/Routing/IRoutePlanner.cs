@@ -32,7 +32,7 @@ namespace HAST.Elite.Dangerous.DataAssistant.Routing
         string Destination { get; set; }
 
         /// <summary>Gets or sets the jump range the ship is capable of.</summary>
-        double JumpRange { get; set; }
+        float JumpRange { get; set; }
 
         /// <summary>Gets the route.</summary>
         IEnumerable<IRouteNode> Route { get; }

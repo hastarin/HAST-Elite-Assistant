@@ -25,7 +25,7 @@ namespace HAST.Elite.Dangerous.DataAssistant.Routing
     using SharpDX;
 
     /// <summary>Class RoutePlanner.</summary>
-    public class RoutePlanner : IRoutePlanner, IDisposable
+    public class RoutePlanner : IRoutePlanner
     {
         #region Static Fields
 
@@ -121,7 +121,7 @@ namespace HAST.Elite.Dangerous.DataAssistant.Routing
         }
 
         /// <summary>Gets or sets the jump range the ship is capable of.</summary>
-        public double JumpRange { get; set; }
+        public float JumpRange { get; set; }
 
         /// <summary>Gets the route.</summary>
         public IEnumerable<IRouteNode> Route { get; private set; }
@@ -173,11 +173,11 @@ namespace HAST.Elite.Dangerous.DataAssistant.Routing
             var distance = Vector3.Distance(sourcePoint, destinationPoint);
             var straightLineVector = destinationPoint - sourcePoint;
             straightLineVector.Normalize();
-            var padding = Settings.Default.RoutePadding * PaddingFactor.First(pf => pf.Key >= JumpRange).Value;
+            var padding = Settings.Default.RoutePadding * PaddingFactor.First(pf => pf.Key >= this.JumpRange).Value;
             var padDistance = distance / 150 * padding;
             Debug.WriteLine(
                 "Jump range = {0:F} gives a padding value of {1:F} for a pad distance of {2:F}",
-                JumpRange,
+                this.JumpRange,
                 padding,
                 padDistance);
             var paddedSource = sourcePoint - (straightLineVector * (float)padDistance);
@@ -213,6 +213,7 @@ namespace HAST.Elite.Dangerous.DataAssistant.Routing
                                 Vector3.DistanceSquared(v, this.destinationPoint),
                         });
             var sortedSystemDistances = systemDistances.OrderBy(s => s.SourceDistanceSquared).ToList();
+            var rangeSphere = new BoundingSphere(sourcePoint, this.JumpRange);
             // ReSharper disable once CompareOfFloatsByEqualityOperator
             if (sortedSystemDistances.TrueForAll(s => s.SourceDistanceSquared == 0.0 || s.SourceDistanceSquared > jumpRangeSquared))
             {
@@ -227,63 +228,64 @@ namespace HAST.Elite.Dangerous.DataAssistant.Routing
             var route = new List<RouteNodeDistance>();
             var workingSet = sortedSystemDistances;
             var upperDestination = this.Destination.ToUpperInvariant();
+            var destinationName = workingSet.First(r => r.System.ToUpperInvariant() == upperDestination).System;
             try
             {
-                var previousWorkingSets = new List<List<RouteNodeDistance>>();
                 while (true)
                 {
-                    var inRange = workingSet.Where(r => r.SourceDistanceSquared < jumpRangeSquared).ToList();
-                    if (inRange.Contains(workingSet.First(r => r.System.ToUpperInvariant() == upperDestination)))
+                    var inRange = workingSet.Where(r =>
+                        {
+                            var vertex1 = r.Point;
+                            return rangeSphere.Contains(ref vertex1) == ContainmentType.Contains;
+                        }).ToList();
+                    var nextNode = inRange.OrderBy(r => r.DestinationDistanceSquared).FirstOrDefault();
+                    if (nextNode != null && nextNode.System.ToUpperInvariant() == upperDestination)
                     {
-                        route.Add(workingSet.First(r => r.System.ToUpperInvariant() == upperDestination));
+                        nextNode = workingSet.First(r => r.System == destinationName);
+                        if (route.Any())
+                        {
+                            nextNode.SourceDistanceSquared = Vector3.DistanceSquared(route.Last().Point, nextNode.Point);
+                        }
+                        route.Add(nextNode);
                         break;
                     }
                     if (stopwatch.Elapsed > Timeout)
                     {
                         throw new RoutePlannerTimeoutException();
                     }
-                    var nextNode = inRange.OrderBy(r => r.DestinationDistanceSquared).FirstOrDefault();
-                    if (nextNode == null)
+                    if (nextNode == null || nextNode.Point == rangeSphere.Center || nextNode.Point == sourcePoint)
                     {
                         if (route.Any())
                         {
-                            workingSet = previousWorkingSets.Last();
                             var deadEnd = route.Last();
                             //Debug.WriteLine("Re-routing past dead end " + deadEnd.System);
                             workingSet.Remove(deadEnd);
                             route.RemoveAt(route.Count - 1);
-                            if (!route.Any())
-                            {
-                                sortedSystemDistances.Remove(deadEnd);
-                                workingSet = sortedSystemDistances;
-                            }
+                            rangeSphere = !route.Any()
+                                              ? new BoundingSphere(this.sourcePoint, this.JumpRange)
+                                              : new BoundingSphere(route.Last().Point, this.JumpRange);
+                            continue;
+                        }
+                        if (inRange.Count == 1)
+                        {
+                            return false;
                         }
                         else
                         {
-                            if (inRange.Count == 0)
-                            {
-                                return false;
-                            }
+                            // Try going back to get forward
+                            nextNode =
+                                inRange.OrderBy(r => r.DestinationDistanceSquared)
+                                    .FirstOrDefault(r => r.Point != this.sourcePoint);
                         }
-                        continue;
                     }
                     //Debug.WriteLine("Routing to: {0} out of {1} systems", nextNode.System, inRange.Count);
+                    // ReSharper disable once PossibleNullReferenceException
+                    rangeSphere = new BoundingSphere(nextNode.Point, this.JumpRange);
+                    if (route.Any())
+                    {
+                        nextNode.SourceDistanceSquared = Vector3.DistanceSquared(route.Last().Point, nextNode.Point);
+                    }
                     route.Add(nextNode);
-                    var workingSetNew = new List<RouteNodeDistance>();
-                    workingSetNew.AddRange(
-                        from n in workingSet.AsParallel().AsUnordered()
-                        where n.SourceDistanceSquared >= jumpRangeSquared
-                        select
-                            new RouteNodeDistance
-                                {
-                                    System = n.System,
-                                    Point = n.Point,
-                                    SourceDistanceSquared =
-                                        Vector3.DistanceSquared(nextNode.Point, n.Point),
-                                    DestinationDistanceSquared = n.DestinationDistanceSquared
-                                });
-                    previousWorkingSets.Add(workingSet);
-                    workingSet = workingSetNew.OrderBy(s => s.SourceDistanceSquared).ToList();
                 }
 
                 route.AsParallel().ForAll(r => r.Distance = Math.Sqrt(r.SourceDistanceSquared));

@@ -14,6 +14,7 @@
 
 namespace HAST.Elite.Dangerous.DataAssistant.UnitTests
 {
+    using System;
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.Linq;
@@ -43,42 +44,42 @@ namespace HAST.Elite.Dangerous.DataAssistant.UnitTests
             this.routePlanner.Destination = "Lave";
             this.routePlanner.JumpRange = 20;
             this.routePlanner.AvoidSystems = new List<string>(new[] { "Alioth", "Sol" });
-            this.TimeAndOutputRoute(this.routePlanner);
+            this.TimeAndOutputRoute();
             Assert.IsNotNull(this.routePlanner.Route);
 
             this.routePlanner.Source = "Er Tcher";
             this.routePlanner.Destination = "Kupoledari";
             this.routePlanner.JumpRange = 20;
             this.routePlanner.AvoidSystems = new List<string>(new[] { "Alioth", "Sol" });
-            this.TimeAndOutputRoute(this.routePlanner);
+            this.TimeAndOutputRoute();
             Assert.IsNotNull(this.routePlanner.Route);
 
             this.routePlanner.Source = "Er Tcher";
             this.routePlanner.Destination = "Lave";
             this.routePlanner.JumpRange = 16;
             this.routePlanner.AvoidSystems = new List<string>(new[] { "Alioth", "Sol" });
-            this.TimeAndOutputRoute(this.routePlanner);
+            this.TimeAndOutputRoute();
             Assert.IsNotNull(this.routePlanner.Route);
 
             this.routePlanner.Source = "Er Tcher";
             this.routePlanner.Destination = "Kupoledari";
             this.routePlanner.JumpRange = 16;
             this.routePlanner.AvoidSystems = new List<string>(new[] { "Alioth", "Sol" });
-            this.TimeAndOutputRoute(this.routePlanner);
+            this.TimeAndOutputRoute();
             Assert.IsNotNull(this.routePlanner.Route);
 
             this.routePlanner.Source = "Er Tcher";
             this.routePlanner.Destination = "Lave";
             this.routePlanner.JumpRange = 14;
             this.routePlanner.AvoidSystems = new List<string>(new[] { "Alioth", "Sol" });
-            this.TimeAndOutputRoute(this.routePlanner);
+            this.TimeAndOutputRoute();
             Assert.IsNull(this.routePlanner.Route);
 
             this.routePlanner.Source = "Er Tcher";
             this.routePlanner.Destination = "Kupoledari";
             this.routePlanner.JumpRange = 14;
             this.routePlanner.AvoidSystems = new List<string>(new[] { "Alioth", "Sol" });
-            this.TimeAndOutputRoute(this.routePlanner);
+            this.TimeAndOutputRoute();
             Assert.IsNull(this.routePlanner.Route);
         }
 
@@ -95,42 +96,43 @@ namespace HAST.Elite.Dangerous.DataAssistant.UnitTests
             this.routePlanner.Destination = "Leesti";
             this.routePlanner.JumpRange = 20;
             this.routePlanner.AvoidSystems = new List<string>(new[] { "Alioth", "Sol" });
-            this.TimeAndOutputRoute(this.routePlanner);
+            this.TimeAndOutputRoute();
             Assert.IsNotNull(this.routePlanner.Route);
 
             this.routePlanner.Source = "Ethgreze";
             this.routePlanner.Destination = "Leesti";
             this.routePlanner.JumpRange = 18;
             this.routePlanner.AvoidSystems = new List<string>(new[] { "Alioth", "Sol" });
-            this.TimeAndOutputRoute(this.routePlanner);
+            this.TimeAndOutputRoute();
             Assert.IsNotNull(this.routePlanner.Route);
 
             this.routePlanner.Source = "Ethgreze";
             this.routePlanner.Destination = "Leesti";
             this.routePlanner.JumpRange = 16;
             this.routePlanner.AvoidSystems = new List<string>(new[] { "Alioth", "Sol" });
-            this.TimeAndOutputRoute(this.routePlanner);
+            this.TimeAndOutputRoute();
             Assert.IsNotNull(this.routePlanner.Route);
 
             this.routePlanner.Source = "Ethgreze";
             this.routePlanner.Destination = "Leesti";
             this.routePlanner.JumpRange = 12;
             this.routePlanner.AvoidSystems = new List<string>(new[] { "Alioth", "Sol" });
-            this.TimeAndOutputRoute(this.routePlanner);
+            this.TimeAndOutputRoute();
             Assert.IsNotNull(this.routePlanner.Route);
 
             this.routePlanner.Source = "Ethgreze";
             this.routePlanner.Destination = "Leesti";
             this.routePlanner.JumpRange = 11;
             this.routePlanner.AvoidSystems = new List<string>(new[] { "Alioth", "Sol" });
-            this.TimeAndOutputRoute(this.routePlanner);
+            this.TimeAndOutputRoute();
             Assert.IsNotNull(this.routePlanner.Route);
 
+            this.routePlanner.Timeout = TimeSpan.FromSeconds(5);
             this.routePlanner.Source = "Ethgreze";
             this.routePlanner.Destination = "Leesti";
             this.routePlanner.JumpRange = 10;
             this.routePlanner.AvoidSystems = new List<string>(new[] { "Alioth", "Sol" });
-            this.TimeAndOutputRoute(this.routePlanner);
+            this.TimeAndOutputRoute();
             Assert.IsNull(this.routePlanner.Route);
         }
 
@@ -142,21 +144,21 @@ namespace HAST.Elite.Dangerous.DataAssistant.UnitTests
             this.routePlanner.Destination = "He Bo";
             this.routePlanner.JumpRange = 20;
             this.routePlanner.AvoidSystems = new List<string>(new[] { "Alioth", "Sol" });
-            this.TimeAndOutputRoute(this.routePlanner);
+            this.TimeAndOutputRoute();
             Assert.IsNotNull(this.routePlanner.Route);
 
             this.routePlanner.Source = "Ethgreze";
             this.routePlanner.Destination = "He Bo";
             this.routePlanner.JumpRange = 5;
             this.routePlanner.AvoidSystems = new List<string>(new[] { "Alioth", "Sol" });
-            this.TimeAndOutputRoute(this.routePlanner);
+            this.TimeAndOutputRoute();
             Assert.IsNotNull(this.routePlanner.Route);
 
             this.routePlanner.Source = "Ethgreze";
             this.routePlanner.Destination = "He Bo";
             this.routePlanner.JumpRange = 4;
             this.routePlanner.AvoidSystems = new List<string>(new[] { "Alioth", "Sol" });
-            this.TimeAndOutputRoute(this.routePlanner);
+            this.TimeAndOutputRoute();
             Assert.IsNull(this.routePlanner.Route);
         }
 
@@ -165,8 +167,7 @@ namespace HAST.Elite.Dangerous.DataAssistant.UnitTests
         #region Methods
 
         /// <summary>Times the and output route.</summary>
-        /// <param name="routePlanner">The route planner.</param>
-        private void TimeAndOutputRoute(IRoutePlanner routePlanner)
+        private void TimeAndOutputRoute()
         {
             var routeFound = routePlanner.Calculate();
             Debug.WriteLine("");
