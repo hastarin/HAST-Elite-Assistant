@@ -70,10 +70,10 @@ namespace HAST.Elite.Dangerous.DataAssistant.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("100")]
-        public double RoutePaddingMax {
+        [global::System.Configuration.DefaultSettingValueAttribute("60")]
+        public double RoutePadding {
             get {
-                return ((double)(this["RoutePaddingMax"]));
+                return ((double)(this["RoutePadding"]));
             }
         }
     }

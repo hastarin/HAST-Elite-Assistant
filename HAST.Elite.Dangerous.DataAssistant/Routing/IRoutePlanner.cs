@@ -18,7 +18,7 @@ namespace HAST.Elite.Dangerous.DataAssistant.Routing
     using System.Collections.Generic;
 
     /// <summary>Interface <see cref="IRoutePlanner" /> is used for a route planner.</summary>
-    public interface IRoutePlanner
+    public interface IRoutePlanner : IDisposable
     {
         #region Public Properties
 

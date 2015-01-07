@@ -20,6 +20,7 @@ namespace HAST.Elite.Dangerous.DataAssistant.Routing
     using System.Linq;
 
     using HAST.Elite.Dangerous.DataAssistant.DataAccessLayer;
+    using HAST.Elite.Dangerous.DataAssistant.Properties;
 
     using SharpDX;
 
@@ -31,13 +32,19 @@ namespace HAST.Elite.Dangerous.DataAssistant.Routing
         /// <summary>The database</summary>
         private static readonly EliteDangerousDbContext Db = new EliteDangerousDbContext();
 
+        /// <summary>
+        /// Used to adjust the padding for the BoundingBox based on the jump range.
+        /// </summary>
+        /// <remarks>Shorter jump ranges may need more systems to find a path.</remarks>
+        private static readonly Dictionary<int,double> PaddingFactor = new Dictionary<int, double>(10);
+
         #endregion
 
         //private static readonly Dictionary<uint,double> Cache
 
         #region Fields
 
-        /// <summary>The <see cref="HAST.Elite.Dangerous.DataAssistant.Routing.RoutePlanner.stopwatch" /></summary>
+        /// <summary>The <see cref="RoutePlanner.stopwatch" /></summary>
         private readonly Stopwatch stopwatch = new Stopwatch();
 
         /// <summary>The <see cref="destination" /></summary>
@@ -46,7 +53,7 @@ namespace HAST.Elite.Dangerous.DataAssistant.Routing
         /// <summary>The <see cref="destination" /> point</summary>
         private Vector3 destinationPoint;
 
-        /// <summary>The <see cref="HAST.Elite.Dangerous.DataAssistant.Routing.RoutePlanner.disposed" /></summary>
+        /// <summary>The <see cref="RoutePlanner.disposed" /></summary>
         private bool disposed;
 
         /// <summary>The <see cref="source" /></summary>
@@ -55,9 +62,32 @@ namespace HAST.Elite.Dangerous.DataAssistant.Routing
         /// <summary>The <see cref="source" /> point</summary>
         private Vector3 sourcePoint;
 
+        private TimeSpan timeout = TimeSpan.FromSeconds(3);
+
         #endregion
 
         #region Constructors and Destructors
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="T:System.Object"/> class.
+        /// </summary>
+        public RoutePlanner()
+        {
+            if (PaddingFactor.Count != 0)
+            {
+                return;
+            }
+            PaddingFactor.Add(6,3.0);
+            PaddingFactor.Add(7,2.8);
+            PaddingFactor.Add(8,2.6);
+            PaddingFactor.Add(9,2.4);
+            PaddingFactor.Add(10,2.2);
+            PaddingFactor.Add(12,2.0);
+            PaddingFactor.Add(14,1.8);
+            PaddingFactor.Add(16,1.6);
+            PaddingFactor.Add(18,1.4);
+            PaddingFactor.Add(20,1.0);
+        }
 
         /// <summary>Finalizes an instance of the <see cref="RoutePlanner" /> class.</summary>
         ~RoutePlanner()
@@ -112,7 +142,17 @@ namespace HAST.Elite.Dangerous.DataAssistant.Routing
         }
 
         /// <summary>Gets or sets the timeout for calculating a route.</summary>
-        public TimeSpan Timeout { get; set; }
+        public TimeSpan Timeout
+        {
+            get
+            {
+                return this.timeout;
+            }
+            set
+            {
+                this.timeout = value;
+            }
+        }
 
         #endregion
 
@@ -133,8 +173,8 @@ namespace HAST.Elite.Dangerous.DataAssistant.Routing
             var distance = Vector3.Distance(sourcePoint, destinationPoint);
             var straightLineVector = destinationPoint - sourcePoint;
             straightLineVector.Normalize();
-            var padding = 1/Math.Log(this.JumpRange, 11);
-            var padDistance = distance * padding;
+            var padding = Settings.Default.RoutePadding * PaddingFactor.First(pf => pf.Key >= JumpRange).Value;
+            var padDistance = distance / 150 * padding;
             Debug.WriteLine(
                 "Jump range = {0:F} gives a padding value of {1:F} for a pad distance of {2:F}",
                 JumpRange,
@@ -142,31 +182,13 @@ namespace HAST.Elite.Dangerous.DataAssistant.Routing
                 padDistance);
             var paddedSource = sourcePoint - (straightLineVector * (float)padDistance);
             var paddedDestination = destinationPoint + (straightLineVector * (float)padDistance);
-            var boundingBox = BoundingBox.FromPoints(new[] { sourcePoint, destinationPoint });
-
-            Debug.WriteLine(
-                "{0} - {1} = {2:F}ly",
-                boundingBox.Minimum,
-                boundingBox.Maximum,
-                distance);
-
-            // TODO: Handle excluded systems.
-            var systems =
-                Db.Systems.Where(
-                    s =>
-                    s.X >= boundingBox.Minimum.X && s.X <= boundingBox.Maximum.X && s.Y >= boundingBox.Minimum.Y && s.Y <= boundingBox.Maximum.Y 
-                    && s.Z >= boundingBox.Minimum.Z && s.Z <= boundingBox.Maximum.Z)
-                    .Select(s => new { s.Name, s.X, s.Y, s.Z })
-                    .ToList();
-
-            Debug.WriteLine("Systems found: {0}", systems.Count());
-            boundingBox = BoundingBox.FromPoints(new[] { paddedSource, paddedDestination });
+            var boundingBox = BoundingBox.FromPoints(new[] { paddedSource, paddedDestination });
             Debug.WriteLine(
                 "{0} - {1} = {2:F}ly",
                 boundingBox.Minimum,
                 boundingBox.Maximum,
                 Vector3.Distance(paddedSource, paddedDestination));
-            systems =
+            var systems =
                 Db.Systems.Where(
                     s =>
                     s.X >= boundingBox.Minimum.X && s.X <= boundingBox.Maximum.X && s.Y >= boundingBox.Minimum.Y && s.Y <= boundingBox.Maximum.Y 
@@ -178,7 +200,8 @@ namespace HAST.Elite.Dangerous.DataAssistant.Routing
 
             var systemDistances = new List<RouteNodeDistance>(systems.Count);
             systemDistances.AddRange(
-                from s in systems.AsParallel().AsUnordered()
+                from s in systems.AsParallel().AsUnordered() 
+                where !AvoidSystems.Contains(s.Name)
                 let v = new Vector3(s.X, s.Y, s.Z)
                 select
                     new RouteNodeDistance
@@ -190,6 +213,16 @@ namespace HAST.Elite.Dangerous.DataAssistant.Routing
                                 Vector3.DistanceSquared(v, this.destinationPoint),
                         });
             var sortedSystemDistances = systemDistances.OrderBy(s => s.SourceDistanceSquared).ToList();
+            // ReSharper disable once CompareOfFloatsByEqualityOperator
+            if (sortedSystemDistances.TrueForAll(s => s.SourceDistanceSquared == 0.0 || s.SourceDistanceSquared > jumpRangeSquared))
+            {
+                return false;
+            }
+            // ReSharper disable once CompareOfFloatsByEqualityOperator
+            if (sortedSystemDistances.TrueForAll(s => s.DestinationDistanceSquared == 0.0 || s.DestinationDistanceSquared > jumpRangeSquared))
+            {
+                return false;
+            }
 
             var route = new List<RouteNodeDistance>();
             var workingSet = sortedSystemDistances;
@@ -205,10 +238,13 @@ namespace HAST.Elite.Dangerous.DataAssistant.Routing
                         route.Add(workingSet.First(r => r.System.ToUpperInvariant() == upperDestination));
                         break;
                     }
+                    if (stopwatch.Elapsed > Timeout)
+                    {
+                        throw new RoutePlannerTimeoutException();
+                    }
                     var nextNode = inRange.OrderBy(r => r.DestinationDistanceSquared).FirstOrDefault();
                     if (nextNode == null)
                     {
-                        // TODO: Having to rewind more than one branch?
                         if (route.Any())
                         {
                             workingSet = previousWorkingSets.Last();
@@ -252,6 +288,10 @@ namespace HAST.Elite.Dangerous.DataAssistant.Routing
 
                 route.AsParallel().ForAll(r => r.Distance = Math.Sqrt(r.SourceDistanceSquared));
                 this.Route = route;
+            }
+            catch (RoutePlannerTimeoutException)
+            {
+                throw;
             }
             catch (Exception ex)
             {

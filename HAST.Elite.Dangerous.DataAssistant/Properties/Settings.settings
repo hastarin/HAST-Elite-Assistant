@@ -14,8 +14,8 @@
     <Setting Name="LogsPath" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
-    <Setting Name="RoutePaddingMax" Type="System.Double" Scope="Application">
-      <Value Profile="(Default)">100</Value>
+    <Setting Name="RoutePadding" Type="System.Double" Scope="Application">
+      <Value Profile="(Default)">60</Value>
     </Setting>
   </Settings>
 </SettingsFile>
