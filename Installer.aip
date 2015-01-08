@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<DOCUMENT Type="Advanced Installer" CreateVersion="11.7.1" version="11.7.1" Modules="simple" RootPath="." Language="en" Id="{ED1CD966-5A4B-43F0-A42B-E658625FBAB6}">
+  <COMPONENT cid="caphyon.advinst.msicomp.ProjectOptionsComponent">
+    <ROW Name="HiddenItems" Value="MsiThemeComponent;BackgroundImagesComponent;UpdaterComponent;SerValComponent;DigCertStoreComponent;MsiInstExSeqComponent;DictionaryComponent;MsiAppSearchComponent;MsiAssemblyComponent;MsiClassComponent;MsiOdbcDataSrcComponent;MsiServInstComponent;MsiOrgComponent;MsiExtComponent;CPLAppletComponent;ActSyncAppComponent;PreReqComponent;WebApplicationsComponent;MsiJavaComponent;MsiDriverPackagesComponent;UserAccountsComponent;ScheduledTasksComponent;SqlConnectionComponent;AutorunComponent;FirewallExceptionComponent;GameUxComponent;MsiDirectEditorComponent;SharePointSlnComponent;SilverlightSlnComponent;MultipleInstancesComponent;SccmComponent;ActSyncAppComponent"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.MsiPropsComponent">
+    <ROW Property="AI_BITMAP_DISPLAY_MODE" Value="0"/>
+    <ROW Property="ALLUSERS" Value="1"/>
+    <ROW Property="ARPCOMMENTS" Value="This installer database contains the logic and data required to install [|ProductName]." ValueLocId="*"/>
+    <ROW Property="CTRLS" Value="2"/>
+    <ROW Property="Manufacturer" Value="Jon Benson"/>
+    <ROW Property="ProductCode" Value="1033:{90346C1A-8437-439A-B7F3-13505077C49A} " Type="16"/>
+    <ROW Property="ProductLanguage" Value="1033"/>
+    <ROW Property="ProductName" Value="HAST Elite Assistant"/>
+    <ROW Property="ProductVersion" Value="1.0.0" Type="32"/>
+    <ROW Property="RUNAPPLICATION" Value="1" Type="4"/>
+    <ROW Property="SecureCustomProperties" Value="OLDPRODUCTS;AI_NEWERPRODUCTFOUND"/>
+    <ROW Property="UpgradeCode" Value="{DCDE54E8-C0D1-47B3-BD96-421C6C76451B}"/>
+    <ROW Property="WindowsType9X" MultiBuildValue="DefaultBuild:Windows 9x/ME#AnyCPU_Release:Windows 9x/ME" ValueLocId="-"/>
+    <ROW Property="WindowsType9XDisplay" MultiBuildValue="DefaultBuild:Windows 9x/ME#AnyCPU_Release:Windows 9x/ME" ValueLocId="-"/>
+    <ROW Property="WindowsTypeNT40" MultiBuildValue="DefaultBuild:Windows NT 4.0#AnyCPU_Release:Windows NT 4.0" ValueLocId="-"/>
+    <ROW Property="WindowsTypeNT40Display" MultiBuildValue="DefaultBuild:Windows NT 4.0#AnyCPU_Release:Windows NT 4.0" ValueLocId="-"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.MsiDirsComponent">
+    <ROW Directory="APPDIR" Directory_Parent="TARGETDIR" DefaultDir="APPDIR:." IsPseudoRoot="1"/>
+    <ROW Directory="DesktopFolder" Directory_Parent="TARGETDIR" DefaultDir="DESKTO~1|DesktopFolder" IsPseudoRoot="1"/>
+    <ROW Directory="SHORTCUTDIR" Directory_Parent="TARGETDIR" DefaultDir="SHORTC~1|SHORTCUTDIR" IsPseudoRoot="1"/>
+    <ROW Directory="TARGETDIR" DefaultDir="SourceDir"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.MsiCompsComponent">
+    <ROW Component="EntityFramework.SqlServer.dll" ComponentId="{A66D245A-5CB3-4943-957D-F6A6874C6F2E}" Directory_="APPDIR" Attributes="0" KeyPath="EntityFramework.SqlServer.dll"/>
+    <ROW Component="EntityFramework.dll" ComponentId="{CAA8512E-FB26-4FCA-9509-597F3D708515}" Directory_="APPDIR" Attributes="0" KeyPath="EntityFramework.dll"/>
+    <ROW Component="GalaSoft.MvvmLight.Extras.dll" ComponentId="{F93686DE-6DF3-4784-B77F-B961E13F8C11}" Directory_="APPDIR" Attributes="0" KeyPath="GalaSoft.MvvmLight.Extras.dll"/>
+    <ROW Component="GalaSoft.MvvmLight.Platform.dll" ComponentId="{6453C7E1-7AEA-4F96-904A-F3AB36E43B35}" Directory_="APPDIR" Attributes="0" KeyPath="GalaSoft.MvvmLight.Platform.dll"/>
+    <ROW Component="GalaSoft.MvvmLight.dll" ComponentId="{17B65F65-DC21-4CE1-849A-FB5F5489CAC3}" Directory_="APPDIR" Attributes="0" KeyPath="GalaSoft.MvvmLight.dll"/>
+    <ROW Component="HAST.Elite.Dangerous.DataAssistant.exe" ComponentId="{E7802592-3A47-41FF-A14A-687AD67D2735}" Directory_="APPDIR" Attributes="0" KeyPath="HAST.Elite.Dangerous.DataAssistant.exe"/>
+    <ROW Component="MahApps.Metro.dll" ComponentId="{F45E4151-298C-4F5C-B0AB-CAA8CBB82252}" Directory_="APPDIR" Attributes="0" KeyPath="MahApps.Metro.dll"/>
+    <ROW Component="Microsoft.Practices.ServiceLocation.dll" ComponentId="{D045FCD8-521C-40FD-9004-EE204D1C596A}" Directory_="APPDIR" Attributes="0" KeyPath="Microsoft.Practices.ServiceLocation.dll"/>
+    <ROW Component="NetMQ.dll" ComponentId="{E020E02E-C117-4EB2-B735-106EFC92CC68}" Directory_="APPDIR" Attributes="0" KeyPath="NetMQ.dll"/>
+    <ROW Component="ProductInformation" ComponentId="{8C21814E-A973-4FC1-BEF8-B018E71A9971}" Directory_="APPDIR" Attributes="4" KeyPath="Version"/>
+    <ROW Component="SHORTCUTDIR" ComponentId="{A4DE252D-33BE-453B-9EA5-E26F2FF18ED8}" Directory_="SHORTCUTDIR" Attributes="0"/>
+    <ROW Component="SharpDX.dll" ComponentId="{36D83F83-5894-4987-82F2-3875BF0C4E71}" Directory_="APPDIR" Attributes="0" KeyPath="SharpDX.dll"/>
+    <ROW Component="System.Windows.Interactivity.dll" ComponentId="{BFEEB2A0-CB7A-47B5-BFDE-F153B3DB9937}" Directory_="APPDIR" Attributes="0" KeyPath="System.Windows.Interactivity.dll"/>
+    <ROW Component="WPFTextBoxAutoComplete.dll" ComponentId="{0CECF659-D0D1-4D87-B520-1770D24C03A4}" Directory_="APPDIR" Attributes="0" KeyPath="WPFTextBoxAutoComplete.dll"/>
+    <ROW Component="Xceed.Wpf.AvalonDock.Themes.Aero.dll" ComponentId="{08CEDE37-95B0-4AA4-A701-37276794FE71}" Directory_="APPDIR" Attributes="0" KeyPath="Xceed.Wpf.AvalonDock.Themes.Aero.dll"/>
+    <ROW Component="Xceed.Wpf.AvalonDock.Themes.Metro.dll" ComponentId="{CA282485-EA3C-464A-B900-A972814D72C4}" Directory_="APPDIR" Attributes="0" KeyPath="Xceed.Wpf.AvalonDock.Themes.Metro.dll"/>
+    <ROW Component="Xceed.Wpf.AvalonDock.Themes.VS2010.dll" ComponentId="{CC174F53-6FF9-446B-99E3-3E66A5C2AC6F}" Directory_="APPDIR" Attributes="0" KeyPath="Xceed.Wpf.AvalonDock.Themes.VS2010.dll"/>
+    <ROW Component="Xceed.Wpf.AvalonDock.dll" ComponentId="{A68D2278-BD04-469A-828D-F6DCE682E62D}" Directory_="APPDIR" Attributes="0" KeyPath="Xceed.Wpf.AvalonDock.dll"/>
+    <ROW Component="Xceed.Wpf.DataGrid.dll" ComponentId="{9A5C5974-CD31-406F-9EA3-BDEAD1AB66A7}" Directory_="APPDIR" Attributes="0" KeyPath="Xceed.Wpf.DataGrid.dll"/>
+    <ROW Component="Xceed.Wpf.Toolkit.dll" ComponentId="{07153E3D-A640-4590-8D30-A10B65B10730}" Directory_="APPDIR" Attributes="0" KeyPath="Xceed.Wpf.Toolkit.dll"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.MsiFeatsComponent">
+    <ROW Feature="MainFeature" Title="MainFeature" Description="Description" Display="1" Level="1" Directory_="APPDIR" Attributes="0" Components="EntityFramework.SqlServer.dll EntityFramework.dll GalaSoft.MvvmLight.Extras.dll GalaSoft.MvvmLight.Platform.dll GalaSoft.MvvmLight.dll HAST.Elite.Dangerous.DataAssistant.exe MahApps.Metro.dll Microsoft.Practices.ServiceLocation.dll NetMQ.dll ProductInformation SHORTCUTDIR SharpDX.dll System.Windows.Interactivity.dll WPFTextBoxAutoComplete.dll Xceed.Wpf.AvalonDock.Themes.Aero.dll Xceed.Wpf.AvalonDock.Themes.Metro.dll Xceed.Wpf.AvalonDock.Themes.VS2010.dll Xceed.Wpf.AvalonDock.dll Xceed.Wpf.DataGrid.dll Xceed.Wpf.Toolkit.dll"/>
+    <ATTRIBUTE name="CurrentFeature" value="MainFeature"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.MsiFilesComponent">
+    <ROW File="EntityFramework.SqlServer.dll" Component_="EntityFramework.SqlServer.dll" FileName="ENTITY~2.DLL|EntityFramework.SqlServer.dll" Attributes="0" SourcePath="packages\EntityFramework.6.1.2\lib\net45\EntityFramework.SqlServer.dll" SelfReg="false" NextFile="Microsoft.Practices.ServiceLocation.dll"/>
+    <ROW File="EntityFramework.dll" Component_="EntityFramework.dll" FileName="ENTITY~1.DLL|EntityFramework.dll" Attributes="0" SourcePath="packages\EntityFramework.6.1.2\lib\net45\EntityFramework.dll" SelfReg="false" NextFile="HAST.Elite.Dangerous.DataAssistant.exe"/>
+    <ROW File="GalaSoft.MvvmLight.Extras.dll" Component_="GalaSoft.MvvmLight.Extras.dll" FileName="GALASO~2.DLL|GalaSoft.MvvmLight.Extras.dll" Attributes="0" SourcePath="packages\MvvmLightLibs.5.0.2.0\lib\net45\GalaSoft.MvvmLight.Extras.dll" SelfReg="false" NextFile="GalaSoft.MvvmLight.Platform.dll"/>
+    <ROW File="GalaSoft.MvvmLight.Platform.dll" Component_="GalaSoft.MvvmLight.Platform.dll" FileName="GALASO~3.DLL|GalaSoft.MvvmLight.Platform.dll" Attributes="0" SourcePath="packages\MvvmLightLibs.5.0.2.0\lib\net45\GalaSoft.MvvmLight.Platform.dll" SelfReg="false" NextFile="MahApps.Metro.dll"/>
+    <ROW File="GalaSoft.MvvmLight.dll" Component_="GalaSoft.MvvmLight.dll" FileName="GALASO~1.DLL|GalaSoft.MvvmLight.dll" Attributes="0" SourcePath="packages\MvvmLightLibs.5.0.2.0\lib\net45\GalaSoft.MvvmLight.dll" SelfReg="false" NextFile="Xceed.Wpf.AvalonDock.Themes.Aero.dll"/>
+    <ROW File="HAST.Elite.Dangerous.DataAssistant.exe" Component_="HAST.Elite.Dangerous.DataAssistant.exe" FileName="HASTEL~1.EXE|HAST.Elite.Dangerous.DataAssistant.exe" Attributes="0" SourcePath="HAST.Elite.Dangerous.DataAssistant\bin\Release\HAST.Elite.Dangerous.DataAssistant.exe" SelfReg="false" NextFile="EntityFramework.SqlServer.dll" DigSign="true"/>
+    <ROW File="MahApps.Metro.dll" Component_="MahApps.Metro.dll" FileName="MAHAPP~1.DLL|MahApps.Metro.dll" Attributes="0" SourcePath="packages\MahApps.Metro.1.0.0.0\lib\net45\MahApps.Metro.dll" SelfReg="false" NextFile="NetMQ.dll"/>
+    <ROW File="Microsoft.Practices.ServiceLocation.dll" Component_="Microsoft.Practices.ServiceLocation.dll" FileName="MICROS~1.DLL|Microsoft.Practices.ServiceLocation.dll" Attributes="0" SourcePath="packages\CommonServiceLocator.1.3\lib\portable-net4+sl5+netcore45+wpa81+wp8\Microsoft.Practices.ServiceLocation.dll" SelfReg="false" NextFile="GalaSoft.MvvmLight.dll"/>
+    <ROW File="NetMQ.dll" Component_="NetMQ.dll" FileName="NetMQ.dll" Attributes="0" SourcePath="packages\NetMQ.3.3.0.11\lib\net40\NetMQ.dll" SelfReg="false" NextFile="SharpDX.dll"/>
+    <ROW File="SharpDX.dll" Component_="SharpDX.dll" FileName="SharpDX.dll" Attributes="0" SourcePath="packages\SharpDX.2.6.3\build\..\Bin\DirectX11-Signed-net40\SharpDX.dll" SelfReg="false" NextFile="Xceed.Wpf.Toolkit.dll"/>
+    <ROW File="System.Windows.Interactivity.dll" Component_="System.Windows.Interactivity.dll" FileName="SYSTEM~1.DLL|System.Windows.Interactivity.dll" Attributes="0" SourcePath="packages\MahApps.Metro.1.0.0.0\lib\net45\System.Windows.Interactivity.dll" SelfReg="false" NextFile="WPFTextBoxAutoComplete.dll"/>
+    <ROW File="WPFTextBoxAutoComplete.dll" Component_="WPFTextBoxAutoComplete.dll" FileName="WPFTEX~1.DLL|WPFTextBoxAutoComplete.dll" Attributes="0" SourcePath="packages\WPFTextBoxAutoComplete.1.0.0\lib\net40\WPFTextBoxAutoComplete.dll" SelfReg="false" NextFile="Xceed.Wpf.AvalonDock.dll"/>
+    <ROW File="Xceed.Wpf.AvalonDock.Themes.Aero.dll" Component_="Xceed.Wpf.AvalonDock.Themes.Aero.dll" FileName="XCEEDW~1.DLL|Xceed.Wpf.AvalonDock.Themes.Aero.dll" Attributes="0" SourcePath="packages\Extended.Wpf.Toolkit.2.3\lib\net40\Xceed.Wpf.AvalonDock.Themes.Aero.dll" SelfReg="false" NextFile="GalaSoft.MvvmLight.Extras.dll"/>
+    <ROW File="Xceed.Wpf.AvalonDock.Themes.Metro.dll" Component_="Xceed.Wpf.AvalonDock.Themes.Metro.dll" FileName="XCEEDW~4.DLL|Xceed.Wpf.AvalonDock.Themes.Metro.dll" Attributes="0" SourcePath="packages\Extended.Wpf.Toolkit.2.3\lib\net40\Xceed.Wpf.AvalonDock.Themes.Metro.dll" SelfReg="false" NextFile="Xceed.Wpf.AvalonDock.Themes.VS2010.dll"/>
+    <ROW File="Xceed.Wpf.AvalonDock.Themes.VS2010.dll" Component_="Xceed.Wpf.AvalonDock.Themes.VS2010.dll" FileName="XCEEDW~5.DLL|Xceed.Wpf.AvalonDock.Themes.VS2010.dll" Attributes="0" SourcePath="packages\Extended.Wpf.Toolkit.2.3\lib\net40\Xceed.Wpf.AvalonDock.Themes.VS2010.dll" SelfReg="false" NextFile="Xceed.Wpf.DataGrid.dll"/>
+    <ROW File="Xceed.Wpf.AvalonDock.dll" Component_="Xceed.Wpf.AvalonDock.dll" FileName="XCEEDW~3.DLL|Xceed.Wpf.AvalonDock.dll" Attributes="0" SourcePath="packages\Extended.Wpf.Toolkit.2.3\lib\net40\Xceed.Wpf.AvalonDock.dll" SelfReg="false" NextFile="Xceed.Wpf.AvalonDock.Themes.Metro.dll"/>
+    <ROW File="Xceed.Wpf.DataGrid.dll" Component_="Xceed.Wpf.DataGrid.dll" FileName="XCEEDW~6.DLL|Xceed.Wpf.DataGrid.dll" Attributes="0" SourcePath="packages\Extended.Wpf.Toolkit.2.3\lib\net40\Xceed.Wpf.DataGrid.dll" SelfReg="false"/>
+    <ROW File="Xceed.Wpf.Toolkit.dll" Component_="Xceed.Wpf.Toolkit.dll" FileName="XCEEDW~2.DLL|Xceed.Wpf.Toolkit.dll" Attributes="0" SourcePath="packages\Extended.Wpf.Toolkit.2.3\lib\net40\Xceed.Wpf.Toolkit.dll" SelfReg="false" NextFile="System.Windows.Interactivity.dll"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.BuildComponent">
+    <ROW BuildKey="AnyCPU_Release" BuildName="AnyCPU_Release" BuildOrder="2" BuildType="0" PackageFolder="AnyCPU_ReleaseSetupFiles" PackageFileName="Installer" Languages="en" InstallationType="4" UseLargeSchema="true"/>
+    <ROW BuildKey="DefaultBuild" BuildName="DefaultBuild" BuildOrder="1" BuildType="0" PackageFolder="SetupFiles" PackageFileName="HAST_Elite_Assistant_Setup" Languages="en" InstallationType="4" UseLargeSchema="true"/>
+    <ATTRIBUTE name="CurrentBuild" value="DefaultBuild"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.DictionaryComponent">
+    <ROW Path="&lt;AI_DICTS&gt;ui.ail"/>
+    <ROW Path="&lt;AI_DICTS&gt;ui_en.ail"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.FragmentComponent">
+    <ROW Fragment="CommonUI.aip" Path="&lt;AI_FRAGS&gt;CommonUI.aip"/>
+    <ROW Fragment="MaintenanceTypeDlg.aip" Path="&lt;AI_THEMES&gt;classic\fragments\MaintenanceTypeDlg.aip"/>
+    <ROW Fragment="MaintenanceWelcomeDlg.aip" Path="&lt;AI_THEMES&gt;classic\fragments\MaintenanceWelcomeDlg.aip"/>
+    <ROW Fragment="SequenceDialogs.aip" Path="&lt;AI_THEMES&gt;classic\fragments\SequenceDialogs.aip"/>
+    <ROW Fragment="Sequences.aip" Path="&lt;AI_FRAGS&gt;Sequences.aip"/>
+    <ROW Fragment="SetupTypeDlg.aip" Path="&lt;AI_THEMES&gt;classic\fragments\SetupTypeDlg.aip"/>
+    <ROW Fragment="StaticUIStrings.aip" Path="&lt;AI_FRAGS&gt;StaticUIStrings.aip"/>
+    <ROW Fragment="UI.aip" Path="&lt;AI_THEMES&gt;classic\fragments\UI.aip"/>
+    <ROW Fragment="Validation.aip" Path="&lt;AI_FRAGS&gt;Validation.aip"/>
+    <ROW Fragment="VerifyRemoveDlg.aip" Path="&lt;AI_THEMES&gt;classic\fragments\VerifyRemoveDlg.aip"/>
+    <ROW Fragment="VerifyRepairDlg.aip" Path="&lt;AI_THEMES&gt;classic\fragments\VerifyRepairDlg.aip"/>
+    <ROW Fragment="WelcomeDlg.aip" Path="&lt;AI_THEMES&gt;classic\fragments\WelcomeDlg.aip"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.MsiBinaryComponent">
+    <ROW Name="aicustact.dll" SourcePath="&lt;AI_CUSTACTS&gt;aicustact.dll"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.MsiControlEventComponent">
+    <ROW Dialog_="WelcomeDlg" Control_="Next" Event="NewDialog" Argument="SetupTypeDlg" Condition="AI_INSTALL" Ordering="1"/>
+    <ROW Dialog_="MaintenanceWelcomeDlg" Control_="Next" Event="NewDialog" Argument="MaintenanceTypeDlg" Condition="AI_MAINT" Ordering="99"/>
+    <ROW Dialog_="VerifyReadyDlg" Control_="Install" Event="EndDialog" Argument="Return" Condition="AI_MAINT" Ordering="198"/>
+    <ROW Dialog_="VerifyReadyDlg" Control_="Back" Event="NewDialog" Argument="CustomizeDlg" Condition="AI_MAINT" Ordering="204"/>
+    <ROW Dialog_="VerifyReadyDlg" Control_="Install" Event="EndDialog" Argument="Return" Condition="AI_INSTALL" Ordering="197"/>
+    <ROW Dialog_="VerifyReadyDlg" Control_="Back" Event="NewDialog" Argument="SetupTypeDlg" Condition="AI_INSTALL" Ordering="201"/>
+    <ROW Dialog_="CustomizeDlg" Control_="Next" Event="NewDialog" Argument="VerifyReadyDlg" Condition="AI_MAINT" Ordering="101"/>
+    <ROW Dialog_="CustomizeDlg" Control_="Back" Event="NewDialog" Argument="MaintenanceTypeDlg" Condition="AI_MAINT" Ordering="1"/>
+    <ROW Dialog_="MaintenanceTypeDlg" Control_="ChangeButton" Event="NewDialog" Argument="CustomizeDlg" Condition="AI_MAINT" Ordering="501"/>
+    <ROW Dialog_="MaintenanceTypeDlg" Control_="Back" Event="NewDialog" Argument="MaintenanceWelcomeDlg" Condition="AI_MAINT" Ordering="1"/>
+    <ROW Dialog_="MaintenanceTypeDlg" Control_="RemoveButton" Event="NewDialog" Argument="VerifyRemoveDlg" Condition="AI_MAINT AND InstallMode=&quot;Remove&quot;" Ordering="601"/>
+    <ROW Dialog_="VerifyRemoveDlg" Control_="Back" Event="NewDialog" Argument="MaintenanceTypeDlg" Condition="AI_MAINT AND InstallMode=&quot;Remove&quot;" Ordering="1"/>
+    <ROW Dialog_="MaintenanceTypeDlg" Control_="RepairButton" Event="NewDialog" Argument="VerifyRepairDlg" Condition="AI_MAINT AND InstallMode=&quot;Repair&quot;" Ordering="601"/>
+    <ROW Dialog_="VerifyRepairDlg" Control_="Back" Event="NewDialog" Argument="MaintenanceTypeDlg" Condition="AI_MAINT AND InstallMode=&quot;Repair&quot;" Ordering="1"/>
+    <ROW Dialog_="VerifyRepairDlg" Control_="Repair" Event="EndDialog" Argument="Return" Condition="AI_MAINT AND InstallMode=&quot;Repair&quot;" Ordering="399" Options="1"/>
+    <ROW Dialog_="VerifyRemoveDlg" Control_="Remove" Event="EndDialog" Argument="Return" Condition="AI_MAINT AND InstallMode=&quot;Remove&quot;" Ordering="299" Options="1"/>
+    <ROW Dialog_="PatchWelcomeDlg" Control_="Next" Event="NewDialog" Argument="VerifyReadyDlg" Condition="AI_PATCH" Ordering="201"/>
+    <ROW Dialog_="ResumeDlg" Control_="Install" Event="EndDialog" Argument="Return" Condition="AI_RESUME" Ordering="299"/>
+    <ROW Dialog_="SetupTypeDlg" Control_="TypicalButton" Event="NewDialog" Argument="VerifyReadyDlg" Condition="AI_INSTALL" Ordering="201"/>
+    <ROW Dialog_="SetupTypeDlg" Control_="Back" Event="NewDialog" Argument="WelcomeDlg" Condition="AI_INSTALL" Ordering="1"/>
+    <ROW Dialog_="VerifyReadyDlg" Control_="Install" Event="EndDialog" Argument="Return" Condition="AI_PATCH" Ordering="199"/>
+    <ROW Dialog_="VerifyReadyDlg" Control_="Back" Event="NewDialog" Argument="PatchWelcomeDlg" Condition="AI_PATCH" Ordering="205"/>
+    <ROW Dialog_="SetupTypeDlg" Control_="CompleteButton" Event="NewDialog" Argument="VerifyReadyDlg" Condition="AI_INSTALL AND InstallMode=InstallModeComplete" Ordering="201"/>
+    <ROW Dialog_="VerifyReadyDlg" Control_="Back" Event="NewDialog" Argument="SetupTypeDlg" Condition="AI_INSTALL AND InstallMode=InstallModeComplete" Ordering="203"/>
+    <ROW Dialog_="CustomizeDlg" Control_="Next" Event="NewDialog" Argument="VerifyReadyDlg" Condition="AI_INSTALL AND InstallMode=InstallModeCustom" Ordering="102"/>
+    <ROW Dialog_="VerifyReadyDlg" Control_="Back" Event="NewDialog" Argument="CustomizeDlg" Condition="AI_INSTALL AND InstallMode=InstallModeCustom" Ordering="202"/>
+    <ROW Dialog_="SetupTypeDlg" Control_="CustomButton" Event="NewDialog" Argument="CustomizeDlg" Condition="AI_INSTALL AND InstallMode=InstallModeCustom" Ordering="101"/>
+    <ROW Dialog_="CustomizeDlg" Control_="Back" Event="NewDialog" Argument="SetupTypeDlg" Condition="AI_INSTALL AND InstallMode=InstallModeCustom" Ordering="2"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.MsiCreateFolderComponent">
+    <ROW Directory_="SHORTCUTDIR" Component_="SHORTCUTDIR" ManualDelete="false"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.MsiCustActComponent">
+    <ROW Action="AI_DOWNGRADE" Type="19" Target="4010"/>
+    <ROW Action="AI_DpiContentScale" Type="1" Source="aicustact.dll" Target="DpiContentScale"/>
+    <ROW Action="AI_InstallModeCheck" Type="1" Source="aicustact.dll" Target="UpdateInstallMode" WithoutSeq="true"/>
+    <ROW Action="AI_LaunchApp" Type="1" Source="aicustact.dll" Target="[#HAST.Elite.Dangerous.DataAssistant.exe]"/>
+    <ROW Action="AI_PREPARE_UPGRADE" Type="65" Source="aicustact.dll" Target="PrepareUpgrade"/>
+    <ROW Action="AI_RESTORE_LOCATION" Type="65" Source="aicustact.dll" Target="RestoreLocation"/>
+    <ROW Action="AI_ResolveKnownFolders" Type="1" Source="aicustact.dll" Target="AI_ResolveKnownFolders"/>
+    <ROW Action="AI_SHOW_LOG" Type="65" Source="aicustact.dll" Target="LaunchLogFile" WithoutSeq="true"/>
+    <ROW Action="AI_STORE_LOCATION" Type="51" Source="ARPINSTALLLOCATION" Target="[APPDIR]"/>
+    <ROW Action="SET_APPDIR" Type="307" Source="APPDIR" Target="[ProgramFilesFolder][Manufacturer]\[ProductName]"/>
+    <ROW Action="SET_SHORTCUTDIR" Type="307" Source="SHORTCUTDIR" Target="[ProgramMenuFolder][ProductName]"/>
+    <ROW Action="SET_TARGETDIR_TO_APPDIR" Type="51" Source="TARGETDIR" Target="[APPDIR]"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.MsiInstExSeqComponent">
+    <ROW Action="AI_DOWNGRADE" Condition="AI_NEWERPRODUCTFOUND AND (UILevel &lt;&gt; 5)" Sequence="210"/>
+    <ROW Action="AI_RESTORE_LOCATION" Condition="APPDIR=&quot;&quot;" Sequence="749"/>
+    <ROW Action="AI_STORE_LOCATION" Condition="(Not Installed) OR REINSTALL" Sequence="1501"/>
+    <ROW Action="AI_PREPARE_UPGRADE" Condition="AI_UPGRADE=&quot;No&quot; AND (Not Installed)" Sequence="1399"/>
+    <ROW Action="AI_ResolveKnownFolders" Sequence="51"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.MsiInstallUISequenceComponent">
+    <ROW Action="AI_RESTORE_LOCATION" Condition="APPDIR=&quot;&quot;" Sequence="749"/>
+    <ROW Action="AI_ResolveKnownFolders" Sequence="52"/>
+    <ROW Action="AI_DpiContentScale" Sequence="51"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.MsiLaunchConditionsComponent">
+    <ROW Condition="(VersionNT &lt;&gt; 400)" Description="[ProductName] cannot be installed on the following Windows versions: [WindowsTypeNT40Display]" DescriptionLocId="AI.LaunchCondition.NoNT40" IsPredefined="true" Builds="DefaultBuild;AnyCPU_Release"/>
+    <ROW Condition="VersionNT" Description="[ProductName] cannot be installed on [WindowsType9XDisplay]" DescriptionLocId="AI.LaunchCondition.No9X" IsPredefined="true" Builds="DefaultBuild;AnyCPU_Release"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.MsiRegsComponent">
+    <ROW Registry="Path" Root="-1" Key="Software\[Manufacturer]\[ProductName]" Name="Path" Value="[APPDIR]" Component_="ProductInformation"/>
+    <ROW Registry="Version" Root="-1" Key="Software\[Manufacturer]\[ProductName]" Name="Version" Value="[ProductVersion]" Component_="ProductInformation"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.MsiShortsComponent">
+    <ROW Shortcut="HASTEliteDangerousDataAssistant" Directory_="SHORTCUTDIR" Name="HASTEL~1|HAST Elite Dangerous Data Assistant" Component_="HAST.Elite.Dangerous.DataAssistant.exe" Target="[#HAST.Elite.Dangerous.DataAssistant.exe]" Description="HAST Elite Dangerous Data Assistant" Hotkey="0" IconIndex="0" ShowCmd="1" WkDir="APPDIR"/>
+    <ROW Shortcut="HASTEliteDangerousDataAssistant_1" Directory_="DesktopFolder" Name="HASTEL~1|HAST Elite Dangerous Data Assistant" Component_="HAST.Elite.Dangerous.DataAssistant.exe" Target="[#HAST.Elite.Dangerous.DataAssistant.exe]" Description="HAST Elite Dangerous Data Assistant" Hotkey="0" IconIndex="0" ShowCmd="1" WkDir="APPDIR"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.MsiThemeComponent">
+    <ATTRIBUTE name="UsedTheme" value="classic"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.MsiUpgradeComponent">
+    <ROW UpgradeCode="[|UpgradeCode]" VersionMin="0.0.1" VersionMax="[|ProductVersion]" Attributes="257" ActionProperty="OLDPRODUCTS"/>
+    <ROW UpgradeCode="[|UpgradeCode]" VersionMin="[|ProductVersion]" Attributes="2" ActionProperty="AI_NEWERPRODUCTFOUND"/>
+  </COMPONENT>
+</DOCUMENT>

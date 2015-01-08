@@ -216,3 +216,7 @@ pip-log.txt
 
 #Nuget packages
 packages/
+
+# Advanced Installer setup Files
+*.msi
+*-cache/
