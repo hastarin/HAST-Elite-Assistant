@@ -87,6 +87,8 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
         /// <summary>The log watcher</summary>
         private LogWatcher logWatcher;
 
+        private RelayCommand setSourceToCurrentCommand;
+
         private RelayCommand toggleTopmostCommand;
 
         #endregion
@@ -185,6 +187,18 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
             get
             {
                 return this.routePlanner;
+            }
+        }
+
+        /// <summary>Gets the set source to current command.</summary>
+        public ICommand SetSourceToCurrentCommand
+        {
+            get
+            {
+                return this.setSourceToCurrentCommand
+                       ?? (this.setSourceToCurrentCommand =
+                           new RelayCommand(() => { this.routePlanner.Source = this.CurrentSystem; }));
+
             }
         }
 
@@ -327,20 +341,29 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
             Settings.Default.LogsFullPath = this.logWatcher.Path;
             Settings.Default.Save();
             this.logWatcher.StartWatching();
+            this.UpdateCurrentSystem();
             this.logWatcher.PropertyChanged += (o, args) =>
                 {
                     if (args.PropertyName != "CurrentSystem")
                     {
                         return;
                     }
-                    var system = this.GetSystem(this.logWatcher.CurrentSystem);
-                    if (system == null)
-                    {
-                        this.speech.SpeakAsync(
-                            "Warning " + this.logWatcher.CurrentSystem + " is not found in the database!");
-                    }
-                    this.CurrentSystem = this.logWatcher.CurrentSystem;
+                    this.UpdateCurrentSystem();
                 };
+        }
+
+        private void UpdateCurrentSystem()
+        {
+            var system = this.GetSystem(this.logWatcher.CurrentSystem);
+            if (system == null)
+            {
+                this.speech.SpeakAsync("Warning " + this.logWatcher.CurrentSystem + " is not found in the database!");
+            }
+            this.CurrentSystem = this.logWatcher.CurrentSystem;
+            if (this.routePlanner.Route.Any(r => r.System == this.CurrentSystem))
+            {
+                this.routePlanner.SelectedRouteNode = this.RoutePlanner.Route.First(r => r.System == this.CurrentSystem);
+            }
         }
 
         /// <summary>Receivers the timer on tick.</summary>

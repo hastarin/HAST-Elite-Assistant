@@ -148,8 +148,11 @@ namespace HAST.Elite.Dangerous.DataAssistant.Routing
             }
             set
             {
-                var d = Db.Systems.First(s => s.Name == value);
-                this.sourcePoint = new Vector3(d.X, d.Y, d.Z);
+                var d = Db.Systems.FirstOrDefault(s => s.Name == value);
+                if (d != null)
+                {
+                    this.sourcePoint = new Vector3(d.X, d.Y, d.Z);
+                }
                 this.source = value;
             }
         }

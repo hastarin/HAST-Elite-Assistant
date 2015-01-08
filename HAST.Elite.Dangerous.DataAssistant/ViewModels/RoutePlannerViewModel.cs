@@ -4,7 +4,7 @@
 // Created          : 07-01-2015
 // 
 // Last Modified By : Jon Benson
-// Last Modified On : 07-01-2015
+// Last Modified On : 08-01-2015
 // ***********************************************************************
 // <copyright file="RoutePlannerViewModel.cs" company="Jon Benson">
 //     Copyright (c) Jon Benson. All rights reserved.
@@ -29,14 +29,36 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
     {
         #region Fields
 
-        private readonly IRoutePlanner routePlanner = new RoutePlanner();
-        private RelayCommand calculateRouteCommand;
-        private TimeSpan calculationTime;
-        private string destination;
-        private bool disposed;
-        private float jumpRange;
+        /// <summary>The <see cref="route" /></summary>
         private readonly ObservableCollection<IRouteNode> route = new ObservableCollection<IRouteNode>();
+
+        /// <summary>The <see cref="route" /> planner</summary>
+        private readonly IRoutePlanner routePlanner = new RoutePlanner();
+
+        /// <summary>The calculate <see cref="route" /> command</summary>
+        private RelayCommand calculateRouteCommand;
+
+        /// <summary>The calculation time</summary>
+        private TimeSpan calculationTime;
+
+        /// <summary>The <see cref="destination" /></summary>
+        private string destination;
+
+        /// <summary>The <see cref="disposed" /></summary>
+        private bool disposed;
+
+        /// <summary>The jump range</summary>
+        private float jumpRange;
+
+        private IRouteNode selectedRouteNode;
+
+        /// <summary>The <see cref="source" /></summary>
         private string source;
+
+        /// <summary>The swap systems command</summary>
+        private RelayCommand swapSystemsCommand;
+
+        /// <summary>The <see cref="timeout" /></summary>
         private TimeSpan timeout;
 
         #endregion
@@ -53,7 +75,10 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
 
         #region Public Properties
 
-        /// <summary>Gets the calculate <see cref="route" /> command.</summary>
+        /// <summary>
+        ///     Gets the calculate <see cref="HAST.Elite.Dangerous.DataAssistant.ViewModels.RoutePlannerViewModel.route" />
+        ///     command.
+        /// </summary>
         public ICommand CalculateRouteCommand
         {
             get
@@ -92,6 +117,7 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
                 if (this.Set(ref this.destination, value))
                 {
                     this.routePlanner.Destination = value;
+                    this.CalculateRoute();
                 }
             }
         }
@@ -108,6 +134,7 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
                 if (this.Set(ref this.jumpRange, value))
                 {
                     this.routePlanner.JumpRange = value;
+                    this.CalculateRoute();
                 }
             }
         }
@@ -118,6 +145,19 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
             get
             {
                 return this.route;
+            }
+        }
+
+        /// <summary>Gets or sets the selected <see cref="route" /> node.</summary>
+        public IRouteNode SelectedRouteNode
+        {
+            get
+            {
+                return this.selectedRouteNode;
+            }
+            set
+            {
+                this.Set(ref this.selectedRouteNode, value);
             }
         }
 
@@ -133,7 +173,23 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
                 if (this.Set(ref this.source, value))
                 {
                     this.routePlanner.Source = value;
+                    this.CalculateRoute();
                 }
+            }
+        }
+
+        /// <summary>Gets the swap systems command.</summary>
+        public ICommand SwapSystemsCommand
+        {
+            get
+            {
+                return this.swapSystemsCommand ?? (this.swapSystemsCommand = new RelayCommand(
+                                                                                 () =>
+                                                                                     {
+                                                                                         var temp = this.Source;
+                                                                                         this.Source = this.Destination;
+                                                                                         this.Destination = temp;
+                                                                                     }));
             }
         }
 
@@ -202,7 +258,10 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
             try
             {
                 var result = this.routePlanner.Calculate();
-                if (!result) return;
+                if (!result)
+                {
+                    return;
+                }
             }
             catch (Exception e)
             {

@@ -36,6 +36,7 @@ namespace HAST.Elite.Dangerous.DataAssistant
         {
             this.InitializeComponent();
             this.Title = string.Format("{0} ({1})", this.Title, this.version);
+            this.AllowsTransparency = true;
         }
 
         #endregion
