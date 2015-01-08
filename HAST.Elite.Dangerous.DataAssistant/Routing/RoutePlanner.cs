@@ -36,7 +36,7 @@ namespace HAST.Elite.Dangerous.DataAssistant.Routing
         /// Used to adjust the padding for the BoundingBox based on the jump range.
         /// </summary>
         /// <remarks>Shorter jump ranges may need more systems to find a path.</remarks>
-        private static readonly Dictionary<int,double> PaddingFactor = new Dictionary<int, double>(10);
+        private static readonly Dictionary<int,double> PaddingFactor = new Dictionary<int, double>(11);
 
         #endregion
 
@@ -64,6 +64,8 @@ namespace HAST.Elite.Dangerous.DataAssistant.Routing
 
         private TimeSpan timeout = TimeSpan.FromSeconds(3);
 
+        private List<string> avoidSystems = new List<string>();
+
         #endregion
 
         #region Constructors and Destructors
@@ -87,6 +89,7 @@ namespace HAST.Elite.Dangerous.DataAssistant.Routing
             PaddingFactor.Add(16,1.6);
             PaddingFactor.Add(18,1.4);
             PaddingFactor.Add(20,1.0);
+            PaddingFactor.Add(200,1.0);
         }
 
         /// <summary>Finalizes an instance of the <see cref="RoutePlanner" /> class.</summary>
@@ -100,7 +103,17 @@ namespace HAST.Elite.Dangerous.DataAssistant.Routing
         #region Public Properties
 
         /// <summary>Gets or sets the systems to be avoided when calculating the route.</summary>
-        public List<string> AvoidSystems { get; set; }
+        public List<string> AvoidSystems
+        {
+            get
+            {
+                return this.avoidSystems;
+            }
+            set
+            {
+                this.avoidSystems = value;
+            }
+        }
 
         /// <summary>Gets the calculation time taken for the last route.</summary>
         public TimeSpan CalculationTime { get; private set; }
@@ -165,7 +178,6 @@ namespace HAST.Elite.Dangerous.DataAssistant.Routing
         {
             this.stopwatch.Reset();
             this.stopwatch.Start();
-
             this.Route = null;
 
             var jumpRangeSquared = this.JumpRange * this.JumpRange;

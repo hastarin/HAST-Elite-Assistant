@@ -1,8 +1,74 @@
-﻿<Window x:Class="HAST.Elite.Dangerous.DataAssistant.MainWindow"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="MainWindow" Height="350" Width="525" Loaded="MainWindow_OnLoaded">
+﻿<controls:MetroWindow x:Class="HAST.Elite.Dangerous.DataAssistant.MainWindow"
+                      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                      xmlns:controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
+                      xmlns:behaviors="clr-namespace:WPFTextBoxAutoComplete;assembly=WPFTextBoxAutoComplete"
+                      xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+                      xmlns:routing="clr-namespace:HAST.Elite.Dangerous.DataAssistant.Routing"
+                      mc:Ignorable="d" ResizeMode="CanResizeWithGrip"
+                      DataContext="{Binding ViewModel, Mode=OneWay, RelativeSource={RelativeSource Self}}" 
+                      Title="HAST Elite Assistant" Height="350" Width="640" TextOptions.TextFormattingMode="Display"
+                      MinHeight="190" MinWidth="190">
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/Resources/Icons.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+            <DataTemplate x:Key="DataTemplateRouteNode" DataType="{x:Type routing:IRouteNode}">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="{Binding System}" Width="128"/>
+                    <TextBlock Text="{Binding Distance, StringFormat='{}{0:F2} LY'}" Margin="5,0,0,0" />
+                </StackPanel>
+            </DataTemplate>
+        </ResourceDictionary>
+    </Window.Resources>
+    <controls:MetroWindow.RightWindowCommands>
+        <controls:WindowCommands>
+            <ToggleButton Command="{Binding ToggleTopmostCommand}" Width="30"
+                Height="30"
+                Style="{DynamicResource MetroCircleToggleButtonStyle}">
+                <Rectangle Width="20"
+               Height="20"
+               Fill="{DynamicResource BlackBrush}">
+                    <Rectangle.OpacityMask>
+                        <VisualBrush Stretch="Fill"
+                         Visual="{DynamicResource appbar_pin}"/>
+                    </Rectangle.OpacityMask>
+                </Rectangle>
+            </ToggleButton>
+        </controls:WindowCommands>
+    </controls:MetroWindow.RightWindowCommands>
     <Grid>
-        
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition/>
+            <RowDefinition MaxHeight="50" Height="30"/>
+        </Grid.RowDefinitions>
+        <WrapPanel>
+            <Grid Height="25" Width="177">
+                <Label Target="{Binding ElementName=SourceAutoCompleteBox}" Content="From:" Margin="0,0,128,0"/>
+                <xctk:AutoSelectTextBox x:Name="SourceAutoCompleteBox" behaviors:AutoCompleteBehavior.AutoCompleteItemsSource="{Binding SystemNames}" 
+                                        Text="{Binding RoutePlanner.Source}" 
+        			AutoSelectBehavior="OnFocus" AutoMoveFocus="True" Margin="49,0,0,0" VerticalAlignment="Center" />
+            </Grid>
+            <Grid Height="25" Width="160">
+                <Label Target="{Binding ElementName=DestinationAutoCompleteBox}" Content="To:" Margin="0,0,128,0"/>
+                <xctk:AutoSelectTextBox x:Name="DestinationAutoCompleteBox" behaviors:AutoCompleteBehavior.AutoCompleteItemsSource="{Binding SystemNames}"
+            		Text="{Binding RoutePlanner.Destination}" AutoSelectBehavior="OnFocus" AutoMoveFocus="True" Margin="33,0,0,0" VerticalAlignment="Center" />
+            </Grid>
+            <Grid Height="25" Width="140">
+                <Label Target="{Binding ElementName=DecimalUpDown}" Content="Jump Range:" Margin="0,0,41,0"/>
+                <xctk:DecimalUpDown FormatString="F2" Value="{Binding RoutePlanner.JumpRange}" x:Name="DecimalUpDown" Foreground="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}" Margin="78,0,0,0" VerticalAlignment="Center" />
+            </Grid>
+            <Button Command="{Binding RoutePlanner.CalculateRouteCommand}" Margin="3" Content="Route" Width="90"/>
+        </WrapPanel>
+        <ListBox DataContext="{Binding RoutePlanner}" ItemsSource="{Binding Route}" ItemTemplate="{StaticResource DataTemplateRouteNode}" Grid.Row="1" />
+        <StatusBar Grid.Row="2">
+            <StatusBarItem>
+                <TextBlock Text="{Binding LogWatcher.CurrentSystem}"/>
+            </StatusBarItem>
+        </StatusBar>
     </Grid>
-</Window>
+</controls:MetroWindow>

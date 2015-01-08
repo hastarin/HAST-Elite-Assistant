@@ -16,6 +16,7 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
 {
     using System;
     using System.ComponentModel;
+    using System.Diagnostics;
     using System.IO;
     using System.Linq;
     using System.Runtime.CompilerServices;
@@ -80,28 +81,29 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
         /// <summary>
         ///     Initializes a new instance of the <see cref="T:System.Object" /> class.
         /// </summary>
-        /// <exception cref="System.Exception"></exception>
         public LogWatcher()
         {
-            this.Path = Environment.GetFolderPath(
-                Environment.SpecialFolder.LocalApplicationData,
-                Environment.SpecialFolderOption.None);
-            if (!string.IsNullOrWhiteSpace(this.Path))
-            {
-                try
-                {
-                    this.Path = System.IO.Path.Combine(
-                        this.Path,
-                        !string.IsNullOrWhiteSpace(Settings.Default.LogsPath)
-                            ? Settings.Default.LogsPath
-                            : this.defaultPath);
-                }
-                catch (ArgumentException)
-                {
-                }
-            }
             this.Filter = DefaultFilter;
             this.NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.CreationTime;
+            if (Settings.Default.LogsFullPath != null && Directory.Exists(Settings.Default.LogsFullPath))
+            {
+                this.Path = Settings.Default.LogsFullPath;
+            }
+            else
+            {
+                var localAppDataPath = Environment.GetFolderPath(
+                    Environment.SpecialFolder.LocalApplicationData,
+                    Environment.SpecialFolderOption.None);
+                try
+                {
+                    var path = System.IO.Path.Combine(localAppDataPath, this.defaultPath);
+                    this.Path = path;
+                }
+                catch (ArgumentException ae)
+                {
+                    Debug.WriteLine(ae);
+                }
+            }
         }
 
         #endregion
@@ -168,7 +170,7 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
         /// <returns><c>true</c> if the Path contains netLog files; otherwise, <c>false</c>.</returns>
         public bool IsValidPath()
         {
-            return Directory.GetFiles(this.Path, this.Filter).Any();
+            return this.IsValidPath(this.Path);
         }
 
         /// <summary>
@@ -178,21 +180,45 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
         /// <returns><c>true</c> if the specified path contains netLog files; otherwise, <c>false</c>.</returns>
         public bool IsValidPath(string path)
         {
-            return Directory.GetFiles(path, this.Filter).Any();
+            var filesFound = false;
+            try
+            {
+                filesFound = Directory.GetFiles(path, this.Filter).Any();
+            }
+            catch (UnauthorizedAccessException)
+            {
+            }
+            catch (ArgumentNullException)
+            {
+            }
+            catch (DirectoryNotFoundException)
+            {
+            }
+            catch (PathTooLongException)
+            {
+            }
+            catch (ArgumentException)
+            {
+            }
+            catch (IOException)
+            {
+            }
+            return filesFound;
         }
 
         /// <summary>
         ///     Starts the watching.
         /// </summary>
+        /// <exception cref="InvalidOperationException">Throws an exception if the <see cref="Path"/> does not contain netLogs files.</exception>
         public void StartWatching()
         {
             if (this.EnableRaisingEvents)
             {
                 return;
             }
-            if (!Directory.GetFiles(this.Path, this.Filter).Any())
+            if (!this.IsValidPath())
             {
-                throw new Exception(string.Format("Directory {0} does not contain netLog files?!", this.Path));
+                throw new InvalidOperationException(string.Format("Directory {0} does not contain netLog files?!", this.Path));
             }
             this.UpdateLatestLogFile();
             this.Created += (sender, args) => this.UpdateLatestLogFile();

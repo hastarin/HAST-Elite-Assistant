@@ -37,7 +37,7 @@ namespace HAST.Elite.Dangerous.DataAssistant.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("Frontier Developments\\Products\\FORC-FDEV-D-1003\\Logs")]
+        [global::System.Configuration.DefaultSettingValueAttribute("Frontier_Developments\\Products\\FORC-FDEV-D-1003\\Logs")]
         public string DefaultLogsPath {
             get {
                 return ((string)(this["DefaultLogsPath"]));
@@ -59,12 +59,12 @@ namespace HAST.Elite.Dangerous.DataAssistant.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string LogsPath {
+        public string LogsFullPath {
             get {
-                return ((string)(this["LogsPath"]));
+                return ((string)(this["LogsFullPath"]));
             }
             set {
-                this["LogsPath"] = value;
+                this["LogsFullPath"] = value;
             }
         }
         

@@ -16,6 +16,7 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
 {
     using System;
     using System.Collections.ObjectModel;
+    using System.Diagnostics;
     using System.Windows.Input;
 
     using GalaSoft.MvvmLight;
@@ -131,7 +132,7 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
             {
                 if (this.Set(ref this.source, value))
                 {
-                    this.routePlanner.Destination = value;
+                    this.routePlanner.Source = value;
                 }
             }
         }
@@ -198,9 +199,14 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
         private void CalculateRoute()
         {
             this.Route.Clear();
-            if (!this.routePlanner.Calculate())
+            try
             {
-                return;
+                var result = this.routePlanner.Calculate();
+                if (!result) return;
+            }
+            catch (Exception e)
+            {
+                Debug.WriteLine(e);
             }
             foreach (var node in this.routePlanner.Route)
             {

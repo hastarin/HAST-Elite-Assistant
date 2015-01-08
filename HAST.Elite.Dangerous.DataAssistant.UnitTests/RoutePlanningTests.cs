@@ -35,6 +35,33 @@ namespace HAST.Elite.Dangerous.DataAssistant.UnitTests
         #endregion
 
         #region Public Methods and Operators
+        [TestMethod]
+        public void CustomRoute()
+        {
+            Debug.WriteLine("Popular route test");
+
+            this.routePlanner.Source = "Ethgreze";
+            this.routePlanner.Destination = "Eranin";
+            this.routePlanner.JumpRange = 22.73f;
+            this.routePlanner.AvoidSystems = new List<string>(new[] { "Alioth", "Sol" });
+            this.TimeAndOutputRoute();
+            Assert.IsNotNull(this.routePlanner.Route);
+
+            this.routePlanner.Source = "Eranin";
+            this.routePlanner.Destination = "Leesti";
+            this.routePlanner.JumpRange = 22.12f;
+            this.routePlanner.AvoidSystems = new List<string>(new[] { "Alioth", "Sol" });
+            this.TimeAndOutputRoute();
+            Assert.IsNotNull(this.routePlanner.Route);
+
+            this.routePlanner.Source = "Orrere";
+            this.routePlanner.Destination = "Ethgreze";
+            this.routePlanner.JumpRange = 20.33f;
+            this.routePlanner.AvoidSystems = new List<string>(new[] { "Alioth", "Sol" });
+            this.TimeAndOutputRoute();
+            Assert.IsNotNull(this.routePlanner.Route);
+        }
+
 
         /// <summary>Longs the route.</summary>
         [TestMethod]
