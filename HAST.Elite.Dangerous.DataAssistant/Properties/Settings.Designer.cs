@@ -76,5 +76,17 @@ namespace HAST.Elite.Dangerous.DataAssistant.Properties {
                 return ((double)(this["RoutePadding"]));
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool AutoCopyNextSystem {
+            get {
+                return ((bool)(this["AutoCopyNextSystem"]));
+            }
+            set {
+                this["AutoCopyNextSystem"] = value;
+            }
+        }
     }
 }

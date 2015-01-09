@@ -17,5 +17,8 @@
     <Setting Name="RoutePadding" Type="System.Double" Scope="Application">
       <Value Profile="(Default)">60</Value>
     </Setting>
+    <Setting Name="AutoCopyNextSystem" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

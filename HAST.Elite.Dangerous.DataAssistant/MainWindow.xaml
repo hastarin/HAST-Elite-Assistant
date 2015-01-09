@@ -10,7 +10,7 @@
                       xmlns:local="clr-namespace:HAST.Elite.Dangerous.DataAssistant" x:Class="HAST.Elite.Dangerous.DataAssistant.MainWindow"
                       mc:Ignorable="d" ResizeMode="CanResizeWithGrip"
                       DataContext="{Binding ViewModel, Mode=OneWay, RelativeSource={RelativeSource Self}}" 
-                      SaveWindowPosition="True"
+                      SaveWindowPosition="True" Topmost="True" Background="{DynamicResource WindowBackgroundBrush}"
                       Title="HAST Elite Assistant" Height="420" Width="220" TextOptions.TextFormattingMode="Display"
                       MinHeight="220" MinWidth="220">
     <controls:MetroWindow.Resources>
@@ -18,11 +18,16 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="/Resources/Icons.xaml" />
             </ResourceDictionary.MergedDictionaries>
+            <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
             <DataTemplate x:Key="DataTemplateRouteNode" DataType="{x:Type routing:IRouteNode}">
-                <StackPanel Orientation="Horizontal">
-                    <TextBlock Text="{Binding System}" Width="150" ToolTip="{Binding System}"/>
-                    <TextBlock Text="{Binding Distance, StringFormat=\{0:F2\} LY}" Margin="5,0,0,0" />
-                </StackPanel>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="{Binding System}" ToolTip="{Binding System}" Grid.Column="0" />
+                    <TextBlock Text="{Binding Distance, StringFormat=\{0:F2\} LY}" Margin="5,0" Grid.Column="1" />
+                </Grid>
             </DataTemplate>
         </ResourceDictionary>
     </controls:MetroWindow.Resources>
@@ -30,7 +35,7 @@
         <controls:WindowCommands>
             <ToggleButton Command="{Binding ToggleTopmostCommand}" Width="30"
                 Height="30" ToolTip="Pin Window Topmost"
-                Style="{DynamicResource MetroCircleToggleButtonStyle}">
+                Style="{DynamicResource MetroCircleToggleButtonStyle}" IsChecked="True">
                 <Rectangle Width="20"
                Height="20"
                Fill="{DynamicResource BlackBrush}">
@@ -49,35 +54,45 @@
             <RowDefinition/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-            <Grid Height="25" Width="180">
-                <Label Target="{Binding ElementName=DecimalUpDown}" Content="_Jump Range:" Margin="0,0,41,0"/>
-                <xctk:DecimalUpDown FormatString="F2" Value="{Binding RoutePlanner.JumpRange}" x:Name="DecimalUpDown" Foreground="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}" Margin="78,0,0,0" VerticalAlignment="Center" />
-            </Grid>
-        <WrapPanel Grid.Row="1">
-            <Grid Height="25" Width="180">
-                <Label Target="{Binding ElementName=SourceAutoCompleteBox}" Content="_From:" Margin="0,0,133,0"/>
-                <xctk:AutoSelectTextBox x:Name="SourceAutoCompleteBox" behaviors:AutoCompleteBehavior.AutoCompleteItemsSource="{Binding SystemNames}" 
-					Text="{Binding RoutePlanner.Source}" controls:TextBoxHelper.ClearTextButton="True"
-					AutoSelectBehavior="OnFocus" AutoMoveFocus="True" Margin="49,0,0,0" VerticalAlignment="Center" />
-            </Grid>
-            <Button Command="{Binding RoutePlanner.SwapSystemsCommand}" ToolTip="Pin Window Topmost" Margin="3">
+        <WrapPanel Grid.Row="0">
+            <Button Command="{Binding RoutePlanner.SwapSystemsCommand}" ToolTip="Swap Source/Destination" 
+                    VerticalAlignment="Center" Padding="3" Margin="3,3,3,0" Style="{DynamicResource SquareButtonStyle}">
                 <Rectangle Width="20" Height="20"
-					Fill="{DynamicResource BlackBrush}">
+            		Fill="{DynamicResource BlackBrush}">
                     <Rectangle.OpacityMask>
                         <VisualBrush Stretch="UniformToFill"
-							Visual="{DynamicResource appbar_swap}"/>
+            				Visual="{DynamicResource appbar_arrow_up_down}"/>
                     </Rectangle.OpacityMask>
                 </Rectangle>
             </Button>
-            <Grid Height="25" Width="160">
-                <Label Target="{Binding ElementName=DestinationAutoCompleteBox}" Content="_To:" Margin="0,0,128,0"/>
+            <Grid Height="25" Width="130">
+                <Label Target="{Binding ElementName=DecimalUpDown}" Content="_Jump Range" VerticalContentAlignment="Center" VerticalAlignment="Center"/>
+                <xctk:DecimalUpDown FormatString="F2" Value="{Binding RoutePlanner.JumpRange}" x:Name="DecimalUpDown" Foreground="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}" VerticalAlignment="Center" HorizontalAlignment="Right" Padding="0" />
+            </Grid>
+            <Grid Width="210">
+                <Label Target="{Binding ElementName=SourceAutoCompleteBox}" Content="_S" ToolTip="Source" VerticalContentAlignment="Center"/>
+                <xctk:AutoSelectTextBox x:Name="SourceAutoCompleteBox" behaviors:AutoCompleteBehavior.AutoCompleteItemsSource="{Binding SystemNames}" 
+					Text="{Binding RoutePlanner.Source}" Margin="18,0,3,0"
+					AutoSelectBehavior="OnFocus" AutoMoveFocus="True" VerticalAlignment="Center" />
+            </Grid>
+            <Grid Width="210">
+                <Label Target="{Binding ElementName=DestinationAutoCompleteBox}" Content="_D" ToolTip="Destination" VerticalContentAlignment="Center"/>
                 <xctk:AutoSelectTextBox x:Name="DestinationAutoCompleteBox" behaviors:AutoCompleteBehavior.AutoCompleteItemsSource="{Binding SystemNames}"
-					Text="{Binding RoutePlanner.Destination}" AutoSelectBehavior="OnFocus" AutoMoveFocus="True" Margin="33,0,0,0" VerticalAlignment="Center" />
+                                        Margin="18,0,3,0" 
+					Text="{Binding RoutePlanner.Destination}" AutoSelectBehavior="OnFocus" AutoMoveFocus="True" VerticalAlignment="Center" />
             </Grid>
         </WrapPanel>
-                <!--<Button Command="{Binding RoutePlanner.CalculateRouteCommand}" Margin="3" Content="_Route" Width="90" IsDefault="True"/>-->
+        <StackPanel Orientation="Horizontal" Visibility="{Binding RoutePlanner.WasRouteFound, Converter={StaticResource BooleanToVisibilityConverter}}" Background="{DynamicResource AccentColorBrush4}" Grid.Row="1">
+            <TextBlock Text="{Binding RoutePlanner.NumberOfJumps, StringFormat='Found {0} jumps'}" Margin="3,0,0,0"/>
+            <TextBlock Text="{Binding RoutePlanner.Distance, StringFormat='over {0:F2} LY'}" Margin="3,0">
+                <TextBlock.ToolTip>
+                    <TextBlock Text="{Binding RoutePlanner.CalculationTime.TotalMilliseconds, StringFormat='{}{0:F2}ms taken'}"/>
+                </TextBlock.ToolTip> 
+            </TextBlock> 
+        </StackPanel>
+        <!--<Button Command="{Binding RoutePlanner.CalculateRouteCommand}" Margin="3" Content="_Route" Width="90" IsDefault="True"/>-->
         <ListBox DataContext="{Binding RoutePlanner}" ItemsSource="{Binding Route}" ItemTemplate="{StaticResource DataTemplateRouteNode}" Grid.Row="2" SelectedItem="{Binding SelectedRouteNode}" Background="Transparent" />
-        <StatusBar Grid.Row="3">
+        <StatusBar Grid.Row="3" x:Name="StatusBar">
             <StatusBarItem>
                 <Grid>
                     <TextBlock Text="{Binding LogWatcher.CurrentSystem}" x:Name="CurrentSytstemTextBlock" ToolTip="Click to set as Source System." />
@@ -85,7 +100,16 @@
                 </Grid>
             </StatusBarItem>
             <StatusBarItem>
-                <Slider Minimum="0.2" Maximum="1" Value="{Binding Opacity, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:MainWindow}}}" LargeChange="0.1" SmallChange="0.01" Width="120" Style="{DynamicResource FlatSlider}" ToolTip="Adjusts window transparency."/>
+                <StackPanel Orientation="Vertical">
+                    <Slider Minimum="0.0" Maximum="1"
+                            Value="{Binding BackgroundOpacity}"
+                            LargeChange="0.1" SmallChange="0.01" Width="120" Style="{DynamicResource FlatSlider}"
+                            ToolTip="Adjusts background transparency." />
+                    <Slider Minimum="0.2" Maximum="1"
+                            Value="{Binding Opacity, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:MainWindow}}}"
+                            LargeChange="0.1" SmallChange="0.01" Width="120" Style="{DynamicResource FlatSlider}"
+                            ToolTip="Adjusts overall window transparency." />
+                </StackPanel>
             </StatusBarItem>
         </StatusBar>
     </Grid>

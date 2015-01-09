@@ -4,7 +4,7 @@
 // Created          : 07-01-2015
 // 
 // Last Modified By : Jon Benson
-// Last Modified On : 08-01-2015
+// Last Modified On : 09-01-2015
 // ***********************************************************************
 // <copyright file="RoutePlannerViewModel.cs" company="Jon Benson">
 //     Copyright (c) Jon Benson. All rights reserved.
@@ -17,6 +17,7 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
     using System;
     using System.Collections.ObjectModel;
     using System.Diagnostics;
+    using System.Linq;
     using System.Windows.Input;
 
     using GalaSoft.MvvmLight;
@@ -29,37 +30,60 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
     {
         #region Fields
 
-        /// <summary>The <see cref="route" /></summary>
+        /// <summary>
+        ///     The <see cref="HAST.Elite.Dangerous.DataAssistant.ViewModels.RoutePlannerViewModel.route" />
+        /// </summary>
         private readonly ObservableCollection<IRouteNode> route = new ObservableCollection<IRouteNode>();
 
-        /// <summary>The <see cref="route" /> planner</summary>
+        /// <summary>
+        ///     The <see cref="HAST.Elite.Dangerous.DataAssistant.ViewModels.RoutePlannerViewModel.route" /> planner
+        /// </summary>
         private readonly IRoutePlanner routePlanner = new RoutePlanner();
 
-        /// <summary>The calculate <see cref="route" /> command</summary>
+        /// <summary>
+        ///     <para>
+        ///         The calculate <see cref="HAST.Elite.Dangerous.DataAssistant.ViewModels.RoutePlannerViewModel.route" />
+        ///     </para>
+        ///     <para>command</para>
+        /// </summary>
         private RelayCommand calculateRouteCommand;
 
         /// <summary>The calculation time</summary>
         private TimeSpan calculationTime;
 
-        /// <summary>The <see cref="destination" /></summary>
+        /// <summary>
+        ///     The <see cref="HAST.Elite.Dangerous.DataAssistant.ViewModels.RoutePlannerViewModel.destination" />
+        /// </summary>
         private string destination;
 
-        /// <summary>The <see cref="disposed" /></summary>
+        /// <summary>
+        ///     The <see cref="HAST.Elite.Dangerous.DataAssistant.ViewModels.RoutePlannerViewModel.disposed" />
+        /// </summary>
         private bool disposed;
+
+        private double distance;
 
         /// <summary>The jump range</summary>
         private float jumpRange;
 
+        private int numberOfJumps;
+
         private IRouteNode selectedRouteNode;
 
-        /// <summary>The <see cref="source" /></summary>
+        /// <summary>
+        ///     The <see cref="HAST.Elite.Dangerous.DataAssistant.ViewModels.RoutePlannerViewModel.source" />
+        /// </summary>
         private string source;
 
         /// <summary>The swap systems command</summary>
         private RelayCommand swapSystemsCommand;
 
-        /// <summary>The <see cref="timeout" /></summary>
+        /// <summary>
+        ///     The <see cref="HAST.Elite.Dangerous.DataAssistant.ViewModels.RoutePlannerViewModel.timeout" />
+        /// </summary>
         private TimeSpan timeout;
+
+        private bool wasRouteFound;
 
         #endregion
 
@@ -76,8 +100,10 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
         #region Public Properties
 
         /// <summary>
-        ///     Gets the calculate <see cref="HAST.Elite.Dangerous.DataAssistant.ViewModels.RoutePlannerViewModel.route" />
-        ///     command.
+        ///     <para>
+        ///         Gets the calculate <see cref="HAST.Elite.Dangerous.DataAssistant.ViewModels.RoutePlannerViewModel.route" />
+        ///     </para>
+        ///     <para>command.</para>
         /// </summary>
         public ICommand CalculateRouteCommand
         {
@@ -122,6 +148,19 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
             }
         }
 
+        /// <summary>Gets or sets the distance.</summary>
+        public double Distance
+        {
+            get
+            {
+                return this.distance;
+            }
+            set
+            {
+                this.Set(ref this.distance, value);
+            }
+        }
+
         /// <summary>Gets or sets the jump range.</summary>
         public float JumpRange
         {
@@ -139,6 +178,19 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
             }
         }
 
+        /// <summary>Gets or sets the number of jumps.</summary>
+        public int NumberOfJumps
+        {
+            get
+            {
+                return this.numberOfJumps;
+            }
+            set
+            {
+                this.Set(ref this.numberOfJumps, value);
+            }
+        }
+
         /// <summary>Gets or sets the route.</summary>
         public ObservableCollection<IRouteNode> Route
         {
@@ -148,7 +200,10 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
             }
         }
 
-        /// <summary>Gets or sets the selected <see cref="route" /> node.</summary>
+        /// <summary>
+        ///     Gets or sets the selected
+        ///     <see cref="HAST.Elite.Dangerous.DataAssistant.ViewModels.RoutePlannerViewModel.route" /> node.
+        /// </summary>
         public IRouteNode SelectedRouteNode
         {
             get
@@ -209,6 +264,27 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
             }
         }
 
+        /// <summary>
+        ///     Gets or sets a value indicating whether a <see cref="route" /> was found on the last calculation.
+        /// </summary>
+        public bool WasRouteFound
+        {
+            get
+            {
+                return this.wasRouteFound;
+            }
+            set
+            {
+                this.Set(ref this.wasRouteFound, value);
+                if (!value)
+                {
+                    this.CalculationTime = TimeSpan.MinValue;
+                    this.NumberOfJumps = 0;
+                    this.Distance = 0;
+                }
+            }
+        }
+
         #endregion
 
         #region Public Methods and Operators
@@ -257,8 +333,8 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
             this.Route.Clear();
             try
             {
-                var result = this.routePlanner.Calculate();
-                if (!result)
+                this.WasRouteFound = this.routePlanner.Calculate();
+                if (!this.WasRouteFound)
                 {
                     return;
                 }
@@ -266,12 +342,15 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
             catch (Exception e)
             {
                 Debug.WriteLine(e);
+                this.WasRouteFound = false;
             }
             foreach (var node in this.routePlanner.Route)
             {
                 this.Route.Add(node);
             }
             this.CalculationTime = this.routePlanner.CalculationTime;
+            this.NumberOfJumps = this.Route.Count;
+            this.Distance = this.Route.Sum(r => r.Distance);
         }
 
         #endregion

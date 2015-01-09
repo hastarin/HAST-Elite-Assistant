@@ -4,7 +4,7 @@
 // Created          : 08-01-2015
 // 
 // Last Modified By : Jon Benson
-// Last Modified On : 08-01-2015
+// Last Modified On : 09-01-2015
 // ***********************************************************************
 // <copyright file="MainWindowViewModel.cs" company="Jon Benson">
 //     Copyright (c) Jon Benson. All rights reserved.
@@ -76,6 +76,8 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
         private readonly SpeechSynthesizer speech = new SpeechSynthesizer();
 
         private readonly ObservableCollection<string> systemNames = new ObservableCollection<string>();
+
+        private float backgroundOpacity = 1.0f;
 
         private string currentSystem;
 
@@ -150,6 +152,24 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
             }
         }
 
+        /// <summary>Gets or sets the background opacity.</summary>
+        public float BackgroundOpacity
+        {
+            get
+            {
+                return this.backgroundOpacity;
+            }
+            set
+            {
+                if (this.Set(ref this.backgroundOpacity, value))
+                {
+                    var brush = this.MainWindow.Background.Clone();
+                    brush.Opacity = value;
+                    this.MainWindow.Background = brush;
+                }
+            }
+        }
+
         /// <summary>Gets or sets the current system.</summary>
         public string CurrentSystem
         {
@@ -198,7 +218,6 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
                 return this.setSourceToCurrentCommand
                        ?? (this.setSourceToCurrentCommand =
                            new RelayCommand(() => { this.routePlanner.Source = this.CurrentSystem; }));
-
             }
         }
 
@@ -352,20 +371,6 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
                 };
         }
 
-        private void UpdateCurrentSystem()
-        {
-            var system = this.GetSystem(this.logWatcher.CurrentSystem);
-            if (system == null)
-            {
-                this.speech.SpeakAsync("Warning " + this.logWatcher.CurrentSystem + " is not found in the database!");
-            }
-            this.CurrentSystem = this.logWatcher.CurrentSystem;
-            if (this.routePlanner.Route.Any(r => r.System == this.CurrentSystem))
-            {
-                this.routePlanner.SelectedRouteNode = this.RoutePlanner.Route.First(r => r.System == this.CurrentSystem);
-            }
-        }
-
         /// <summary>Receivers the timer on tick.</summary>
         /// <param name="sender">The sender.</param>
         /// <param name="eventArgs">The <see cref="System.EventArgs" /> instance containing the event data.</param>
@@ -427,6 +432,31 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
             ReceiverTimer.Tick += this.ReceiverTimerOnTick;
             ReceiverTimer.Interval = TimeSpan.FromMilliseconds(100);
             ReceiverTimer.Start();
+        }
+
+        private void UpdateCurrentSystem()
+        {
+            var system = this.GetSystem(this.logWatcher.CurrentSystem);
+            if (system == null)
+            {
+                this.speech.SpeakAsync("Warning " + this.logWatcher.CurrentSystem + " is not found in the database!");
+            }
+            this.CurrentSystem = this.logWatcher.CurrentSystem;
+            if (!this.routePlanner.Route.Any(r => r.System == this.CurrentSystem))
+            {
+                return;
+            }
+            var match = this.RoutePlanner.Route.First(r => r.System == this.CurrentSystem);
+            var nextItemIndex = this.RoutePlanner.Route.IndexOf(match) + 1;
+            if (nextItemIndex >= this.RoutePlanner.Route.Count)
+            {
+                return;
+            }
+            this.RoutePlanner.SelectedRouteNode = this.RoutePlanner.Route[nextItemIndex];
+            if (Settings.Default.AutoCopyNextSystem)
+            {
+                Clipboard.SetText(this.RoutePlanner.SelectedRouteNode.System);
+            }
         }
 
         #endregion
