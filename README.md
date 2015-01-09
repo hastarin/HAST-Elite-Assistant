@@ -1,7 +1,7 @@
 HAST Elite Assistant
 ==================================
 
-This will hopefully come to be a windows application to assist commanders in Elite Dangerous with managing navigation and trade data.
+For the short term this app will focus on providing a navigation aid for Commanders and data entry aid for explorers.
 
 The current version should be considered Alpha software and I won't be offering any support.  Use it at your own risk!
 
@@ -13,13 +13,6 @@ It also speaks a warning via Windows TTS when you enter a system that isn't know
 
 There is code in there to read data from [EDDN](https://github.com/jamesremuscat/EDDN/wiki) but it's not currently in use.
 
+The current [list of enhancements](https://github.com/hastarin/HAST.Elite.Dangerous.DataAssistant/issues?q=is%3Aopen+is%3Aissue+label%3Aenhancement) is a long one.
 
-My TODO list is long, and ever changing.  Some of the many ideas are below:
-* Improve the route planner functionality, UI first, then the algorithm behind it.
-* Store the EDDN data in the database.
-* Provide a report of any systems in the EDDN data that aren't in the navigation data.
-* Integrate with the EDStarCoordinator website via its API to find new systems
-* Provide a way to add systems/stations/etc
-* Provide a way to generate a systems.json file
-* Provide a way to sync with another systems.json file
-* Provide a way to search the EDDN data for handy trade routes, etc similar to [Slopey's BPC Market Tool](https://forums.frontier.co.uk/showthread.php?t=76081)
+If you do choose to try the app, please feel free to [log any issues](https://github.com/hastarin/HAST.Elite.Dangerous.DataAssistant/issues) you encounter.  If you're lucky I might fix them eventually.
