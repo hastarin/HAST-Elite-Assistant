@@ -5,7 +5,7 @@ For the short term this app will focus on providing a navigation aid for Command
 
 The current version should be considered Alpha software and I won't be offering any support.  Use it at your own risk!
 
-![Image of application in use](http://i.imgur.com/603983r.png)
+![Image of application in use](http://i.imgur.com/lt6uSUh.png)
 
 The current version can be used to rapidly find a route between systems.  The route may not be an optimal one, something I hope to improve upon in the future, but for now it's basically instantaneous.  The application window can be pinned on top and it's transparency can be adjusted.  If you play [Elite Dangerous](https://www.elitedangerous.com/) in a full screen window this can be quite handy.
 
