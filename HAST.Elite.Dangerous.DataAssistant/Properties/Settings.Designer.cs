@@ -112,5 +112,77 @@ namespace HAST.Elite.Dangerous.DataAssistant.Properties {
                 this["RepeatNextSystemAfter"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Sol, Alioth")]
+        public string AvoidSystems {
+            get {
+                return ((string)(this["AvoidSystems"]));
+            }
+            set {
+                this["AvoidSystems"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool SettingsUpgraded {
+            get {
+                return ((bool)(this["SettingsUpgraded"]));
+            }
+            set {
+                this["SettingsUpgraded"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Ethgreze")]
+        public string Source {
+            get {
+                return ((string)(this["Source"]));
+            }
+            set {
+                this["Source"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Leesti")]
+        public string Destination {
+            get {
+                return ((string)(this["Destination"]));
+            }
+            set {
+                this["Destination"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("20")]
+        public float JumpRange {
+            get {
+                return ((float)(this["JumpRange"]));
+            }
+            set {
+                this["JumpRange"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool RememberLastUsed {
+            get {
+                return ((bool)(this["RememberLastUsed"]));
+            }
+            set {
+                this["RememberLastUsed"] = value;
+            }
+        }
     }
 }

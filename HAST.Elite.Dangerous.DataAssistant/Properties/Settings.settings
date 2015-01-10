@@ -26,5 +26,23 @@
     <Setting Name="RepeatNextSystemAfter" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">10</Value>
     </Setting>
+    <Setting Name="AvoidSystems" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Sol, Alioth</Value>
+    </Setting>
+    <Setting Name="SettingsUpgraded" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="Source" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Ethgreze</Value>
+    </Setting>
+    <Setting Name="Destination" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Leesti</Value>
+    </Setting>
+    <Setting Name="JumpRange" Type="System.Single" Scope="User">
+      <Value Profile="(Default)">20</Value>
+    </Setting>
+    <Setting Name="RememberLastUsed" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

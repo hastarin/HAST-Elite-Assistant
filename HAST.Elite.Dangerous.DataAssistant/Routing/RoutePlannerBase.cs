@@ -20,6 +20,7 @@ namespace HAST.Elite.Dangerous.DataAssistant.Routing
     using System.Linq;
 
     using HAST.Elite.Dangerous.DataAssistant.DataAccessLayer;
+    using HAST.Elite.Dangerous.DataAssistant.Properties;
 
     using SharpDX;
 
@@ -142,6 +143,22 @@ namespace HAST.Elite.Dangerous.DataAssistant.Routing
         }
 
         #endregion
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="T:System.Object"/> class.
+        /// </summary>
+        public RoutePlannerBase()
+        {
+            if (string.IsNullOrWhiteSpace(Settings.Default.AvoidSystems))
+            {
+                return;
+            }
+            var avoid = Settings.Default.AvoidSystems.Split(new[]{','}, StringSplitOptions.RemoveEmptyEntries);
+            foreach (var s in avoid)
+            {
+                this.AvoidSystems.Add(s);
+            }
+        }
 
         #region Public Methods and Operators
 

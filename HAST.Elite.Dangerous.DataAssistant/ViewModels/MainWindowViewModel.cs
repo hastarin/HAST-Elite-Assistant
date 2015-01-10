@@ -38,7 +38,6 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
     using HAST.Elite.Dangerous.DataAssistant.Models.Eddn;
     using HAST.Elite.Dangerous.DataAssistant.Properties;
 
-    using MahApps.Metro;
     using MahApps.Metro.Controls;
 
     using Microsoft.Win32;
@@ -47,8 +46,6 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
     using NetMQ.Sockets;
 
     using SharpDX.Collections;
-
-    using Xceed.Wpf.AvalonDock.Themes;
 
     /// <summary>Class MainWindowViewModel.</summary>
     public class MainWindowViewModel : ObservableObject, IDisposable
@@ -86,6 +83,8 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
 
         private bool disposed;
 
+        private RelayCommand saveSettingsCommand;
+
         private RelayCommand setSourceToCurrentCommand;
 
         private RelayCommand speakNextSystemCommand;
@@ -110,9 +109,9 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
                 DispatcherPriority.Loaded,
                 new Action(this.InitializeLogWatcher));
 
-            this.routePlanner.Source = "Ethgreze";
-            this.routePlanner.Destination = "Leesti";
-            this.routePlanner.JumpRange = 20;
+            this.routePlanner.Source = Settings.Default.Source;
+            this.routePlanner.Destination = Settings.Default.Destination;
+            this.routePlanner.JumpRange = Settings.Default.JumpRange;
 
             var repeatNextSystemAfter = Settings.Default.RepeatNextSystemAfter;
             if (repeatNextSystemAfter > 0)
@@ -130,6 +129,13 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
                 Debug.WriteLine(e);
             }
             //this.StartListeningToEddn();
+
+            this.MainWindow.Closed += MainWindowOnClosed;
+        }
+
+        private void MainWindowOnClosed(object sender, EventArgs eventArgs)
+        {
+            this.Dispose();
         }
 
         /// <summary>Finalizes an instance of the <see cref="MainWindowViewModel" /> class.</summary>
@@ -230,6 +236,16 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
             }
         }
 
+        /// <summary>Gets the save settings command.</summary>
+        public ICommand SaveSettingsCommand
+        {
+            get
+            {
+                return this.saveSettingsCommand
+                       ?? (this.saveSettingsCommand = new RelayCommand(() => Settings.Default.Save()));
+            }
+        }
+
         /// <summary>Gets the set source to current command.</summary>
         public ICommand SetSourceToCurrentCommand
         {
@@ -314,6 +330,15 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
             {
                 // free other managed objects that implement
                 // IDisposable only
+                if (Settings.Default.RememberLastUsed)
+                {
+                    Settings.Default.JumpRange = this.RoutePlanner.JumpRange;
+                    Settings.Default.Source = this.RoutePlanner.Source;
+                    Settings.Default.Destination = this.RoutePlanner.Destination;
+                    Settings.Default.Save();
+                }
+                this.RoutePlanner.Dispose();
+                this.speech.Dispose();
             }
 
             // release any unmanaged objects
@@ -571,15 +596,10 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
 
             flyout.IsOpen = !flyout.IsOpen;
 
-            //var appTheme = ThemeManager.DetectAppStyle(Application.Current);
-            //var windowTheme = ThemeManager.DetectAppStyle(this.MainWindow);
-            //var accent = ThemeManager.Accents.First(a => a.Name == "Orange");
-            //var theme = ThemeManager.AppThemes.First(t => t.Name == "BaseDark");
-            //if (flyout.IsOpen)
-            //{
-            //    theme = ThemeManager.AppThemes.First(t => t.Name == "BaseLight");
-            //}
-            //ThemeManager.ChangeAppStyle(Application.Current, accent, theme);
+            if (!flyout.IsOpen)
+            {
+                Settings.Default.Save();
+            }
         }
 
         /// <summary>Updates the current system.</summary>

@@ -43,7 +43,16 @@
     </controls:MetroWindow.InputBindings>
     <controls:MetroWindow.RightWindowCommands>
         <controls:WindowCommands>
-            <Button Content="Settings" Command="{Binding ToggleSettingsFlyoutCommand}"/>
+            <Button Command="{Binding ToggleSettingsFlyoutCommand}">
+                <Rectangle Width="10"
+               Height="10"
+               Fill="{DynamicResource BlackBrush}">
+                    <Rectangle.OpacityMask>
+                        <VisualBrush Stretch="Fill"
+                         Visual="{DynamicResource appbar_settings}"/>
+                    </Rectangle.OpacityMask>
+                </Rectangle>
+            </Button>
             <ToggleButton Command="{Binding ToggleTopmostCommand}" Width="30"
                 Height="30" ToolTip="Pin Window Topmost"
                 Style="{DynamicResource MetroCircleToggleButtonStyle}" IsChecked="True">
@@ -60,7 +69,7 @@
     </controls:MetroWindow.RightWindowCommands>
     <controls:MetroWindow.Flyouts>
         <controls:FlyoutsControl>
-            <controls:Flyout x:Name="SettingsFlyout"
+            <controls:Flyout x:Name="SettingsFlyout" CloseCommand="{Binding SaveSettingsCommand}"
                              Margin="0 0 0 0"
                              Width="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=controls:MetroWindow}, Path=ActualWidth}"
                              Header="Settings"

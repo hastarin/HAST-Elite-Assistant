@@ -14,9 +14,13 @@
 
 namespace HAST.Elite.Dangerous.DataAssistant
 {
+    using System.Configuration;
+    using System.Diagnostics;
     using System.Windows;
     using System.Windows.Controls;
     using System.Windows.Input;
+
+    using HAST.Elite.Dangerous.DataAssistant.Properties;
 
     /// <summary>Interaction logic for App.xaml</summary>
     public partial class App : Application
@@ -32,6 +36,20 @@ namespace HAST.Elite.Dangerous.DataAssistant
                 typeof(TextBox),
                 UIElement.KeyDownEvent,
                 new KeyEventHandler(this.TextBox_KeyDown));
+
+            if (!Settings.Default.SettingsUpgraded)
+            {
+                try
+                {
+                    Settings.Default.Upgrade();
+                }
+                catch (ConfigurationErrorsException configurationErrorsException)
+                {
+                    Debug.WriteLine(configurationErrorsException);
+                }
+                Settings.Default.SettingsUpgraded = true;
+                Settings.Default.Save();
+            }
         }
 
         private void MoveToNextUIElement(KeyEventArgs e)
