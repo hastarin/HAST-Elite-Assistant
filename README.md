@@ -15,7 +15,7 @@ Requirements
 ------------
 The app requires you run it on the same machine as [Elite Dangerous](https://www.elitedangerous.com/).
 
-You'll also need to make sure your App.xaml found in your *Frontier_Developments\Products\FORC-FDEV-D-1003* folder has VerboseLogging=1 set for the Network section similar to the following:
+You'll also need to make sure your AppConfig.xaml found in your *Frontier_Developments\Products\FORC-FDEV-D-1003* folder has VerboseLogging=1 set for the Network section similar to the following:
 ```
 	<Network
 	  Port="0"
