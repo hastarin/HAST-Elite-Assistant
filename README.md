@@ -3,13 +3,30 @@ HAST Elite Assistant
 
 ![Image of application in use](http://i.imgur.com/lt6uSUh.png)
 
-My [gamer personality](http://en.wikipedia.org/wiki/Bartle_Test) is firmly in the Explorer category so naturally Elite Dangerous offers some appeal, but I've felt hampered by the in game systems for navigation and exploration.  There are other 3rd party applications out there, but none did quite what I wanted, and so *HAST Elite Assistant* was born.
+My [gamer personality](http://en.wikipedia.org/wiki/Bartle_Test) is firmly in the Explorer category so naturally [Elite Dangerous](https://www.elitedangerous.com/) offers some appeal, but I've felt hampered by the in game systems for navigation and exploration.  There are other 3rd party applications out there, but none did quite what I wanted, and so *HAST Elite Assistant* was born.
 
 My day job involves writing applications in WPF and C# so it was a natural choice for this application.  
 
 Latest Release
 --------------
 The latest release will always be made available [here on Github](https://github.com/hastarin/HAST-Elite-Assistant/releases).
+
+Requirements
+------------
+The app requires you run it on the same machine as [Elite Dangerous](https://www.elitedangerous.com/).
+
+You'll also need to make sure your App.xaml found in your *Frontier_Developments\Products\FORC-FDEV-D-1003* folder has VerboseLogging=1 set for the Network section similar to the following:
+```
+	<Network
+	  Port="0"
+      upnpenabled="1"
+	  LogFile="netLog"
+	  DatestampLog="1"
+	  VerboseLogging="1"
+	  >
+
+	</Network>
+```
 
 Current Features
 ----------------
