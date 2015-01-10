@@ -1,0 +1,117 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit">
+    <!--NOTE: This is a quick and dirty hack to hopefully have the PropertyGrid work with a Dark theme.-->
+
+        <!-- PropertyGrid numeric Editors -->
+        <Style TargetType="{x:Type xctk:PropertyGridEditorByteUpDown}" >
+            <Setter Property="Foreground" Value="{DynamicResource TextBrush}"/>
+            <Setter Property="Background" Value="{DynamicResource ControlBackgroundBrush}"/>
+        </Style>
+
+        <Style TargetType="{x:Type xctk:PropertyGridEditorDecimalUpDown}" >
+            <Setter Property="Foreground" Value="{DynamicResource TextBrush}"/>
+            <Setter Property="Background" Value="{DynamicResource ControlBackgroundBrush}"/>
+        </Style>
+
+        <Style TargetType="{x:Type xctk:PropertyGridEditorDoubleUpDown}" >
+            <Setter Property="Foreground" Value="{DynamicResource TextBrush}"/>
+            <Setter Property="Background" Value="{DynamicResource ControlBackgroundBrush}"/>
+        </Style>
+
+        <Style TargetType="{x:Type xctk:PropertyGridEditorIntegerUpDown}" >
+            <Setter Property="Foreground" Value="{DynamicResource TextBrush}"/>
+            <Setter Property="Background" Value="{DynamicResource ControlBackgroundBrush}"/>
+        </Style>
+
+        <Style TargetType="{x:Type xctk:PropertyGridEditorLongUpDown}" >
+            <Setter Property="Foreground" Value="{DynamicResource TextBrush}"/>
+            <Setter Property="Background" Value="{DynamicResource ControlBackgroundBrush}"/>
+        </Style>
+
+        <Style TargetType="{x:Type xctk:PropertyGridEditorShortUpDown}" >
+            <Setter Property="Foreground" Value="{DynamicResource TextBrush}"/>
+            <Setter Property="Background" Value="{DynamicResource ControlBackgroundBrush}"/>
+        </Style>
+
+        <Style TargetType="{x:Type xctk:PropertyGridEditorSingleUpDown}" >
+            <Setter Property="Foreground" Value="{DynamicResource TextBrush}"/>
+            <Setter Property="Background" Value="{DynamicResource ControlBackgroundBrush}"/>
+        </Style>
+
+        <!-- PropertyGrid DateTime Editors -->
+        <Style TargetType="{x:Type xctk:PropertyGridEditorDateTimeUpDown}" >
+            <Setter Property="Foreground" Value="{DynamicResource TextBrush}"/>
+            <Setter Property="Background" Value="{DynamicResource ControlBackgroundBrush}"/>
+        </Style>
+
+        <!-- PropertyGrid TimeSpan Editors -->
+        <Style TargetType="{x:Type xctk:PropertyGridEditorTimeSpanUpDown}" >
+            <Setter Property="Foreground" Value="{DynamicResource TextBrush}"/>
+            <Setter Property="Background" Value="{DynamicResource ControlBackgroundBrush}"/>
+        </Style>
+
+        <!-- PropertyGrid ComboBox Editors -->
+        <Style TargetType="{x:Type xctk:PropertyGridEditorComboBox}" >
+            <Setter Property="Foreground" Value="{DynamicResource TextBrush}"/>
+            <Setter Property="Background" Value="{DynamicResource ControlBackgroundBrush}"/>
+        </Style>
+
+        <!-- PropertyGrid CheckBox Editors -->
+        <Style TargetType="{x:Type xctk:PropertyGridEditorCheckBox}" >
+            <Setter Property="Foreground" Value="{DynamicResource TextBrush}"/>
+            <Setter Property="Background" Value="{DynamicResource ControlBackgroundBrush}"/>
+        </Style>
+
+        <!-- PropertyGrid TextBox Editors -->
+        <Style TargetType="{x:Type xctk:PropertyGridEditorTextBox}" >
+            <Setter Property="Foreground" Value="{DynamicResource TextBrush}"/>
+            <Setter Property="Background" Value="{DynamicResource ControlBackgroundBrush}"/>
+        </Style>
+
+        <!-- PropertyGrid TextBlock Editors -->
+        <Style TargetType="{x:Type xctk:PropertyGridEditorTextBlock}" >
+            <Setter Property="Foreground" Value="{DynamicResource TextBrush}"/>
+            <Setter Property="Background" Value="{DynamicResource ControlBackgroundBrush}"/>
+        </Style>
+
+        <!-- PropertyGrid ColorPicker Editors -->
+        <Style TargetType="{x:Type xctk:PropertyGridEditorColorPicker}" >
+            <Setter Property="Foreground" Value="{DynamicResource TextBrush}"/>
+            <Setter Property="Background" Value="{DynamicResource ControlBackgroundBrush}"/>
+        </Style>
+
+        <!-- PropertyGrid PrimitiveTypeCollectionControl Editors -->
+        <Style TargetType="{x:Type xctk:PropertyGridEditorPrimitiveTypeCollectionControl}" >
+            <Setter Property="Foreground" Value="{DynamicResource TextBrush}"/>
+            <Setter Property="Background" Value="{DynamicResource ControlBackgroundBrush}"/>
+        </Style>
+
+        <!-- PropertyGrid CollectionControl Editors -->
+        <Style TargetType="{x:Type xctk:PropertyGridEditorCollectionControl}" >
+            <Setter Property="Foreground" Value="{DynamicResource TextBrush}"/>
+            <Setter Property="Background" Value="{DynamicResource ControlBackgroundBrush}"/>
+        </Style>
+
+
+    <Style TargetType="{x:Type xctk:PropertyGrid}">
+        <Style.Resources>
+            <Style TargetType="TextBlock">
+                <Setter Property="Foreground" Value="{DynamicResource LabelTextBrush}"/>
+            </Style>
+            <Style TargetType="TextBox">
+                <Setter Property="Foreground" Value="{DynamicResource TextBrush}"/>
+                <Setter Property="Background" Value="{DynamicResource ControlBackgroundBrush}"/>
+            </Style>
+            <Style TargetType="Grid">
+                <Setter Property="Background" Value="{DynamicResource ControlBackgroundBrush}"/>
+            </Style>
+            <Style TargetType="ScrollViewer">
+                <Setter Property="Background" Value="{DynamicResource ControlBackgroundBrush}"/>
+            </Style>
+        </Style.Resources>
+    </Style>
+    <Style TargetType="{x:Type xctk:PropertyItem}">
+        <Setter Property="Background" Value="{DynamicResource ControlBackgroundBrush}"/>
+    </Style>
+</ResourceDictionary>

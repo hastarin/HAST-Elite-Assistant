@@ -4,7 +4,7 @@
 // Created          : 08-01-2015
 // 
 // Last Modified By : Jon Benson
-// Last Modified On : 09-01-2015
+// Last Modified On : 10-01-2015
 // ***********************************************************************
 // <copyright file="MainWindowViewModel.cs" company="Jon Benson">
 //     Copyright (c) Jon Benson. All rights reserved.
@@ -38,6 +38,9 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
     using HAST.Elite.Dangerous.DataAssistant.Models.Eddn;
     using HAST.Elite.Dangerous.DataAssistant.Properties;
 
+    using MahApps.Metro;
+    using MahApps.Metro.Controls;
+
     using Microsoft.Win32;
 
     using NetMQ;
@@ -45,18 +48,17 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
 
     using SharpDX.Collections;
 
+    using Xceed.Wpf.AvalonDock.Themes;
+
     /// <summary>Class MainWindowViewModel.</summary>
     public class MainWindowViewModel : ObservableObject, IDisposable
     {
         #region Static Fields
 
-        /// <summary>The net mq context</summary>
         private static readonly NetMQContext NetMqContext = NetMQContext.Create();
 
-        /// <summary>The receiver timer</summary>
         private static readonly DispatcherTimer ReceiverTimer = new DispatcherTimer(DispatcherPriority.ApplicationIdle);
 
-        /// <summary>The singleton instance</summary>
         private static readonly Lazy<MainWindowViewModel> SingletonInstance =
             new Lazy<MainWindowViewModel>(() => new MainWindowViewModel());
 
@@ -64,34 +66,31 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
 
         #region Fields
 
-        /// <summary>The eddn subscriber socket</summary>
         private readonly SubscriberSocket eddnSubscriberSocket;
 
-        /// <summary>The route planner</summary>
+        private readonly LogWatcher logWatcher;
+
         private readonly RoutePlannerViewModel routePlanner = new RoutePlannerViewModel();
 
-        /// <summary>
-        ///     The <see cref="HAST.Elite.Dangerous.DataAssistant.ViewModels.MainWindowViewModel.speech" />
-        /// </summary>
         private readonly SpeechSynthesizer speech = new SpeechSynthesizer();
 
+        private readonly DispatcherTimer speechDelayTimer = new DispatcherTimer(DispatcherPriority.ApplicationIdle);
+
         private readonly ObservableCollection<string> systemNames = new ObservableCollection<string>();
+
+        private RelayCommand avoidNextSystemCommand;
 
         private float backgroundOpacity = 1.0f;
 
         private string currentSystem = string.Empty;
 
-        private DispatcherTimer speechDelayTimer = new DispatcherTimer(DispatcherPriority.ApplicationIdle);
-
-        /// <summary>
-        ///     The <see cref="HAST.Elite.Dangerous.DataAssistant.ViewModels.MainWindowViewModel.disposed" />
-        /// </summary>
         private bool disposed;
 
-        /// <summary>The log watcher</summary>
-        private readonly LogWatcher logWatcher;
-
         private RelayCommand setSourceToCurrentCommand;
+
+        private RelayCommand speakNextSystemCommand;
+
+        private RelayCommand toggleSettingsFlyoutCommand;
 
         private RelayCommand toggleTopmostCommand;
 
@@ -129,13 +128,8 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
             catch (Exception e)
             {
                 Debug.WriteLine(e);
-            }            
+            }
             //this.StartListeningToEddn();
-        }
-
-        private void SpeakNextSystem(object sender, EventArgs e)
-        {
-            this.SpeakNextSystem();
         }
 
         /// <summary>Finalizes an instance of the <see cref="MainWindowViewModel" /> class.</summary>
@@ -165,6 +159,16 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
             get
             {
                 return SingletonInstance.Value;
+            }
+        }
+
+        /// <summary>Gets the avoid next system command.</summary>
+        public ICommand AvoidNextSystemCommand
+        {
+            get
+            {
+                return this.avoidNextSystemCommand
+                       ?? (this.avoidNextSystemCommand = new RelayCommand(this.AvoidNextSystem));
             }
         }
 
@@ -209,11 +213,11 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
         }
 
         /// <summary>Gets the main window.</summary>
-        public Window MainWindow
+        public MetroWindow MainWindow
         {
             get
             {
-                return Application.Current.MainWindow;
+                return Application.Current.MainWindow as MetroWindow;
             }
         }
 
@@ -223,34 +227,6 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
             get
             {
                 return this.routePlanner;
-            }
-        }
-
-        private RelayCommand avoidNextSystemCommand;
-
-        /// <summary>
-        /// Gets the avoid next system command.
-        /// </summary>
-        public ICommand AvoidNextSystemCommand
-        {
-            get
-            {
-                return this.avoidNextSystemCommand
-                       ?? (this.avoidNextSystemCommand = new RelayCommand(this.AvoidNextSystem));
-            }
-        }
-
-        private RelayCommand speakNextSystemCommand;
-
-        /// <summary>
-        /// Gets the speak next system command.
-        /// </summary>
-        public ICommand SpeakNextSystemCommand
-        {
-            get
-            {
-                return this.speakNextSystemCommand
-                       ?? (this.speakNextSystemCommand = new RelayCommand(this.SpeakNextSystem));
             }
         }
 
@@ -265,12 +241,32 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
             }
         }
 
+        /// <summary>Gets the speak next system command.</summary>
+        public ICommand SpeakNextSystemCommand
+        {
+            get
+            {
+                return this.speakNextSystemCommand
+                       ?? (this.speakNextSystemCommand = new RelayCommand(this.SpeakNextSystem));
+            }
+        }
+
         /// <summary>Gets or sets the system names.</summary>
         public ObservableCollection<string> SystemNames
         {
             get
             {
                 return this.systemNames;
+            }
+        }
+
+        /// <summary>Gets the toggle settings flyout command.</summary>
+        public ICommand ToggleSettingsFlyoutCommand
+        {
+            get
+            {
+                return this.toggleSettingsFlyoutCommand
+                       ?? (this.toggleSettingsFlyoutCommand = new RelayCommand(this.ToggleSettingsFlyout));
             }
         }
 
@@ -326,6 +322,25 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
             this.disposed = true;
         }
 
+        /// <summary>Avoids the next system.</summary>
+        private void AvoidNextSystem()
+        {
+            if (!this.routePlanner.Route.Any(r => r.System == this.CurrentSystem))
+            {
+                return;
+            }
+            var match = this.RoutePlanner.Route.First(r => r.System == this.CurrentSystem);
+            var nextItemIndex = this.RoutePlanner.Route.IndexOf(match) + 1;
+            if (nextItemIndex >= this.RoutePlanner.Route.Count)
+            {
+                return;
+            }
+            var routeNode = this.RoutePlanner.Route[nextItemIndex];
+            this.speech.Speak(string.Format("Avoiding {0} and re-calculating route.", routeNode.System));
+            this.RoutePlanner.Avoid(routeNode);
+            this.HandleNextSystem();
+        }
+
         /// <summary>Gets the system.</summary>
         /// <param name="name">The name.</param>
         /// <returns>System.</returns>
@@ -334,6 +349,39 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
             using (var db = new EliteDangerousDbContext())
             {
                 return db.Systems.FirstOrDefault(s => s.Name == name);
+            }
+        }
+
+        /// <summary>Handles the next system.</summary>
+        private void HandleNextSystem()
+        {
+            if (!this.routePlanner.Route.Any(r => r.System == this.CurrentSystem))
+            {
+                return;
+            }
+            var match = this.RoutePlanner.Route.First(r => r.System == this.CurrentSystem);
+            var nextItemIndex = this.RoutePlanner.Route.IndexOf(match) + 1;
+            if (nextItemIndex >= this.RoutePlanner.Route.Count)
+            {
+                if (Settings.Default.SpeakNextSystemDuringJump)
+                {
+                    this.speech.Speak(string.Format("Entering {0}.  You have reached your destination.", match.System));
+                }
+                return;
+            }
+            this.RoutePlanner.SelectedRouteNode = this.RoutePlanner.Route[nextItemIndex];
+            if (Settings.Default.AutoCopyNextSystem)
+            {
+                Clipboard.SetText(this.RoutePlanner.SelectedRouteNode.System);
+            }
+            if (Settings.Default.SpeakNextSystemDuringJump)
+            {
+                this.speech.Speak(
+                    string.Format(
+                        "Entering {0}.  You're next jump will be to {1}.",
+                        match.System,
+                        this.RoutePlanner.SelectedRouteNode.System));
+                this.speechDelayTimer.Start();
             }
         }
 
@@ -465,6 +513,41 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
             }
         }
 
+        /// <summary>Speaks the next system.</summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
+        private void SpeakNextSystem(object sender, EventArgs e)
+        {
+            this.SpeakNextSystem();
+        }
+
+        /// <summary>Speaks the next system.</summary>
+        private void SpeakNextSystem()
+        {
+            this.speechDelayTimer.Stop();
+            if (!this.routePlanner.Route.Any(r => r.System == this.CurrentSystem))
+            {
+                if (this.RoutePlanner.Source == this.CurrentSystem)
+                {
+                    this.speech.Speak("The next system is " + this.RoutePlanner.Route[0].System);
+                }
+                else
+                {
+                    this.speech.Speak(
+                        "I'm sorry Commander, I'm afraid I can't do that.  Please re-calculate your route.");
+                }
+                return;
+            }
+            var match = this.RoutePlanner.Route.First(r => r.System == this.CurrentSystem);
+            var nextItemIndex = this.RoutePlanner.Route.IndexOf(match) + 1;
+            if (nextItemIndex >= this.RoutePlanner.Route.Count)
+            {
+                this.speech.Speak("You are already at your destination.");
+                return;
+            }
+            this.speech.Speak("The next system is " + this.RoutePlanner.Route[nextItemIndex].System);
+        }
+
         /// <summary>Starts the listening to eddn.</summary>
         private void StartListeningToEddn()
         {
@@ -477,6 +560,29 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
             ReceiverTimer.Start();
         }
 
+        /// <summary>Toggles the settings flyout.</summary>
+        private void ToggleSettingsFlyout()
+        {
+            var flyout = this.MainWindow.Flyouts.Items[0] as Flyout;
+            if (flyout == null)
+            {
+                return;
+            }
+
+            flyout.IsOpen = !flyout.IsOpen;
+
+            //var appTheme = ThemeManager.DetectAppStyle(Application.Current);
+            //var windowTheme = ThemeManager.DetectAppStyle(this.MainWindow);
+            //var accent = ThemeManager.Accents.First(a => a.Name == "Orange");
+            //var theme = ThemeManager.AppThemes.First(t => t.Name == "BaseDark");
+            //if (flyout.IsOpen)
+            //{
+            //    theme = ThemeManager.AppThemes.First(t => t.Name == "BaseLight");
+            //}
+            //ThemeManager.ChangeAppStyle(Application.Current, accent, theme);
+        }
+
+        /// <summary>Updates the current system.</summary>
         private void UpdateCurrentSystem()
         {
             var system = this.GetSystem(this.logWatcher.CurrentSystem);
@@ -486,82 +592,6 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
             }
             this.CurrentSystem = this.logWatcher.CurrentSystem;
             this.HandleNextSystem();
-        }
-
-        private void HandleNextSystem()
-        {
-            if (!this.routePlanner.Route.Any(r => r.System == this.CurrentSystem))
-            {
-                return;
-            }
-            var match = this.RoutePlanner.Route.First(r => r.System == this.CurrentSystem);
-            var nextItemIndex = this.RoutePlanner.Route.IndexOf(match) + 1;
-            if (nextItemIndex >= this.RoutePlanner.Route.Count)
-            {
-                if (Settings.Default.SpeakNextSystemDuringJump)
-                {
-                    this.speech.Speak(string.Format("Entering {0}.  You have reached your destination.", match.System));
-                }
-                return;
-            }
-            this.RoutePlanner.SelectedRouteNode = this.RoutePlanner.Route[nextItemIndex];
-            if (Settings.Default.AutoCopyNextSystem)
-            {
-                Clipboard.SetText(this.RoutePlanner.SelectedRouteNode.System);
-            }
-            if (Settings.Default.SpeakNextSystemDuringJump)
-            {
-                this.speech.Speak(
-                    string.Format(
-                        "Entering {0}.  You're next jump will be to {1}.",
-                        match.System,
-                        this.RoutePlanner.SelectedRouteNode.System));
-                this.speechDelayTimer.Start();
-            }
-        }
-
-        private void AvoidNextSystem()
-        {
-            if (!this.routePlanner.Route.Any(r => r.System == this.CurrentSystem))
-            {
-                return;
-            }
-            var match = this.RoutePlanner.Route.First(r => r.System == this.CurrentSystem);
-            var nextItemIndex = this.RoutePlanner.Route.IndexOf(match) + 1;
-            if (nextItemIndex >= this.RoutePlanner.Route.Count)
-            {
-                return;
-            }
-            var routeNode = this.RoutePlanner.Route[nextItemIndex];
-            this.speech.Speak(
-                string.Format("Avoiding {0} and re-calculating route.", routeNode.System));
-            this.RoutePlanner.Avoid(routeNode);
-            this.HandleNextSystem();
-        }
-
-        private void SpeakNextSystem()
-        {
-            this.speechDelayTimer.Stop();
-            if (!this.routePlanner.Route.Any(r => r.System == this.CurrentSystem))
-            {
-                if (this.RoutePlanner.Source == this.CurrentSystem)
-                {
-                    this.speech.Speak("The next system is " + this.RoutePlanner.Route[0].System);
-                }
-                else
-                {
-                    this.speech.Speak("I'm sorry Commander, I'm afraid I can't do that.  Please re-calculate your route.");
-                }
-                return;
-            }
-            var match = this.RoutePlanner.Route.First(r => r.System == this.CurrentSystem);
-            var nextItemIndex = this.RoutePlanner.Route.IndexOf(match) + 1;
-            if (nextItemIndex >= this.RoutePlanner.Route.Count)
-            {
-                this.speech.Speak("You are already at your destination.");
-                return;
-            }
-            this.speech.Speak("The next system is " + this.RoutePlanner.Route[nextItemIndex].System);
         }
 
         #endregion

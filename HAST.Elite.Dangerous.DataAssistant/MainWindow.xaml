@@ -7,7 +7,9 @@
                       xmlns:behaviors="clr-namespace:WPFTextBoxAutoComplete;assembly=WPFTextBoxAutoComplete"
                       xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
                       xmlns:routing="clr-namespace:HAST.Elite.Dangerous.DataAssistant.Routing"
-                      xmlns:local="clr-namespace:HAST.Elite.Dangerous.DataAssistant" x:Class="HAST.Elite.Dangerous.DataAssistant.MainWindow"
+                      xmlns:local="clr-namespace:HAST.Elite.Dangerous.DataAssistant"
+                      xmlns:prop="clr-namespace:HAST.Elite.Dangerous.DataAssistant.Properties"
+                      x:Class="HAST.Elite.Dangerous.DataAssistant.MainWindow"
                       mc:Ignorable="d" ResizeMode="CanResizeWithGrip"
                       DataContext="{Binding ViewModel, Mode=OneWay, RelativeSource={RelativeSource Self}}" 
                       SaveWindowPosition="True" Topmost="True" Background="{DynamicResource WindowBackgroundBrush}"
@@ -41,6 +43,7 @@
     </controls:MetroWindow.InputBindings>
     <controls:MetroWindow.RightWindowCommands>
         <controls:WindowCommands>
+            <Button Content="Settings" Command="{Binding ToggleSettingsFlyoutCommand}"/>
             <ToggleButton Command="{Binding ToggleTopmostCommand}" Width="30"
                 Height="30" ToolTip="Pin Window Topmost"
                 Style="{DynamicResource MetroCircleToggleButtonStyle}" IsChecked="True">
@@ -55,7 +58,23 @@
             </ToggleButton>
         </controls:WindowCommands>
     </controls:MetroWindow.RightWindowCommands>
-    <Grid>
+    <controls:MetroWindow.Flyouts>
+        <controls:FlyoutsControl>
+            <controls:Flyout x:Name="SettingsFlyout"
+                             Margin="0 0 0 0"
+                             Width="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=controls:MetroWindow}, Path=ActualWidth}"
+                             Header="Settings"
+                             Position="Right"
+                             AnimateOpacity="True">
+                <xctk:PropertyGrid x:Name="PropertyGrid" SelectedObjectName="" SelectedObject="{Binding Source={x:Static prop:Settings.Default}}" 
+                                   Foreground="{DynamicResource TextBrush}"
+                                   Background="{DynamicResource ControlBackgroundBrush}" 
+                                   ShowAdvancedOptions="False" ShowSummary="False" ShowTitle="False" ShowSearchBox="False" 
+                                   ShowPreview="False" ShowSortOptions="False" IsCategorized="False" />
+            </controls:Flyout>
+        </controls:FlyoutsControl>
+    </controls:MetroWindow.Flyouts>
+        <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
