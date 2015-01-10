@@ -34,8 +34,16 @@ Current Features
 * Nearly instantaneous *(though currently non optimal)* route planning
 * Topmost and Transparency support to display over the game
 * Highlights the next system in the route when you enter a new system
-* Copies the next system to the clipboard
+* Copies the next system to the clipboard (can be disabled in settings)
 * Speaks a warning when you enter a system that's not in the system data.  Add it to [EDStarCoordinator](http://edstarcoordinator.com/) and future versions will import it.
+* A settings flyout so users can edit various settings
+* Speech options (enabled by default)
+* Hotkey support (handy for use with Voice Attack)
+
+The hotkeys I support are based on those of [Elite Copilot](https://github.com/w0nk0/Elite-Copilot):
+* F20 - Will speak the next system
+* F22 - Will avoid the next system *(NOTE: You'll need to edit your preferences to remove it)*
+* F23 - Will swap source/destination
 
 Future plans
 ------------
