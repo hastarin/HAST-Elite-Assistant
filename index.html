@@ -1,42 +1,49 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
-
   <head>
-    <meta charset='utf-8'>
+    <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <meta name="description" content="Hast Elite Assistant : This will hopefully come to be a windows application to assist commanders in Elite Dangerous with managing navigation and trade data.">
+    <title>Hast Elite Assistant by hastarin</title>
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script src="javascripts/respond.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <!--[if lt IE 8]>
+    <link rel="stylesheet" href="stylesheets/ie.css">
+    <![endif]-->
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
 
-    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
-
-    <title>Hast Elite Assistant</title>
   </head>
-
   <body>
+      <div id="header">
+        <nav>
+          <li class="fork"><a href="https://github.com/hastarin/HAST-Elite-Assistant">View On GitHub</a></li>
+          <li class="downloads"><a href="https://github.com/hastarin/HAST-Elite-Assistant/zipball/master">ZIP</a></li>
+          <li class="downloads"><a href="https://github.com/hastarin/HAST-Elite-Assistant/tarball/master">TAR</a></li>
+          <li class="title">DOWNLOADS</li>
+        </nav>
+      </div><!-- end header -->
 
-    <!-- HEADER -->
-    <div id="header_wrap" class="outer">
-        <header class="inner">
-          <a id="forkme_banner" href="https://github.com/hastarin/HAST-Elite-Assistant">View on GitHub</a>
+    <div class="wrapper">
 
-          <h1 id="project_title">Hast Elite Assistant</h1>
-          <h2 id="project_tagline">This will hopefully come to be a windows application to assist commanders in Elite Dangerous with managing navigation and trade data.</h2>
+      <section>
+        <div id="title">
+          <h1>Hast Elite Assistant</h1>
+          <p>This will hopefully come to be a windows application to assist commanders in Elite Dangerous with managing navigation and trade data.</p>
+          <hr>
+          <span class="credits left">Project maintained by <a href="https://github.com/hastarin">hastarin</a></span>
+          <span class="credits right">Hosted on GitHub Pages &mdash; Theme by <a href="https://twitter.com/michigangraham">mattgraham</a></span>
+        </div>
 
-            <section id="downloads">
-              <a class="zip_download_link" href="https://github.com/hastarin/HAST-Elite-Assistant/zipball/master">Download this project as a .zip file</a>
-              <a class="tar_download_link" href="https://github.com/hastarin/HAST-Elite-Assistant/tarball/master">Download this project as a tar.gz file</a>
-            </section>
-        </header>
-    </div>
-
-    <!-- MAIN CONTENT -->
-    <div id="main_content_wrap" class="outer">
-      <section id="main_content" class="inner">
         <h1>
 <a id="hast-elite-assistant" class="anchor" href="#hast-elite-assistant" aria-hidden="true"><span class="octicon octicon-link"></span></a>HAST Elite Assistant</h1>
 
 <p><img src="http://i.imgur.com/lt6uSUh.png" alt="Image of application in use"></p>
 
-<p>My <a href="http://en.wikipedia.org/wiki/Bartle_Test">gamer personality</a> is firmly in the Explorer category so naturally Elite Dangerous offers some appeal, but I've felt hampered by the in game systems for navigation and exploration.  There are other 3rd party applications out there, but none did quite what I wanted, and so <em>HAST Elite Assistant</em> was born.</p>
+<p>My <a href="http://en.wikipedia.org/wiki/Bartle_Test">gamer personality</a> is firmly in the Explorer category so naturally <a href="https://www.elitedangerous.com/">Elite Dangerous</a> offers some appeal, but I've felt hampered by the in game systems for navigation and exploration.  There are other 3rd party applications out there, but none did quite what I wanted, and so <em>HAST Elite Assistant</em> was born.</p>
 
 <p>My day job involves writing applications in WPF and C# so it was a natural choice for this application.  </p>
 
@@ -44,6 +51,24 @@
 <a id="latest-release" class="anchor" href="#latest-release" aria-hidden="true"><span class="octicon octicon-link"></span></a>Latest Release</h2>
 
 <p>The latest release will always be made available <a href="https://github.com/hastarin/HAST-Elite-Assistant/releases">here on Github</a>.</p>
+
+<h2>
+<a id="requirements" class="anchor" href="#requirements" aria-hidden="true"><span class="octicon octicon-link"></span></a>Requirements</h2>
+
+<p>The app requires you run it on the same machine as <a href="https://www.elitedangerous.com/">Elite Dangerous</a>.</p>
+
+<p>You'll also need to make sure your App.xaml found in your <em>Frontier_Developments\Products\FORC-FDEV-D-1003</em> folder has VerboseLogging=1 set for the Network section similar to the following:</p>
+
+<pre><code>    &lt;Network
+      Port="0"
+      upnpenabled="1"
+      LogFile="netLog"
+      DatestampLog="1"
+      VerboseLogging="1"
+      &gt;
+
+    &lt;/Network&gt;
+</code></pre>
 
 <h2>
 <a id="current-features" class="anchor" href="#current-features" aria-hidden="true"><span class="octicon octicon-link"></span></a>Current Features</h2>
@@ -105,17 +130,9 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.</p>
       </section>
-    </div>
 
-    <!-- FOOTER  -->
-    <div id="footer_wrap" class="outer">
-      <footer class="inner">
-        <p class="copyright">Hast Elite Assistant maintained by <a href="https://github.com/hastarin">hastarin</a></p>
-        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
-      </footer>
     </div>
-
+    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
     
-
   </body>
 </html>
