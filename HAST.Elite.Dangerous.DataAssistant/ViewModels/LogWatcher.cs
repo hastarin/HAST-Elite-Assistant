@@ -56,7 +56,7 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
         /// <summary>
         ///     The current system.
         /// </summary>
-        private string currentSystem;
+        private string currentSystem = string.Empty;
 
         /// <summary>
         ///     The last offset used when reading the netLog file.

@@ -14,11 +14,17 @@
     <Setting Name="LogsFullPath" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
-    <Setting Name="RoutePadding" Type="System.Double" Scope="Application">
+    <Setting Name="RoutePadding" Type="System.Int32" Scope="Application">
       <Value Profile="(Default)">60</Value>
     </Setting>
     <Setting Name="AutoCopyNextSystem" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="SpeakNextSystemDuringJump" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="RepeatNextSystemAfter" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">10</Value>
     </Setting>
   </Settings>
 </SettingsFile>

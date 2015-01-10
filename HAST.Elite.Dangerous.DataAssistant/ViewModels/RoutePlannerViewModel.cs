@@ -4,7 +4,7 @@
 // Created          : 07-01-2015
 // 
 // Last Modified By : Jon Benson
-// Last Modified On : 09-01-2015
+// Last Modified On : 10-01-2015
 // ***********************************************************************
 // <copyright file="RoutePlannerViewModel.cs" company="Jon Benson">
 //     Copyright (c) Jon Benson. All rights reserved.
@@ -65,6 +65,8 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
 
         /// <summary>The jump range</summary>
         private float jumpRange;
+
+        private string nextSystem;
 
         private int numberOfJumps;
 
@@ -178,6 +180,19 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
             }
         }
 
+        /// <summary>Gets or sets the next system.</summary>
+        public string NextSystem
+        {
+            get
+            {
+                return this.nextSystem;
+            }
+            private set
+            {
+                this.Set(ref this.nextSystem, value);
+            }
+        }
+
         /// <summary>Gets or sets the number of jumps.</summary>
         public int NumberOfJumps
         {
@@ -265,7 +280,9 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
         }
 
         /// <summary>
-        ///     Gets or sets a value indicating whether a <see cref="route" /> was found on the last calculation.
+        ///     Gets or sets a value indicating whether a
+        ///     <see cref="HAST.Elite.Dangerous.DataAssistant.ViewModels.RoutePlannerViewModel.route" /> was found on the
+        ///     last calculation.
         /// </summary>
         public bool WasRouteFound
         {
@@ -288,6 +305,14 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
         #endregion
 
         #region Public Methods and Operators
+
+        /// <summary>Avoids the specified <see cref="route" /> node.</summary>
+        /// <param name="routeNode">The <see cref="route" /> node.</param>
+        public void Avoid(IRouteNode routeNode)
+        {
+            this.routePlanner.AvoidSystems.Add(routeNode.System);
+            this.CalculateRoute();
+        }
 
         /// <summary>
         ///     Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.

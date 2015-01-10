@@ -19,18 +19,14 @@ namespace HAST.Elite.Dangerous.DataAssistant.Routing
     using System.Diagnostics;
     using System.Linq;
 
-    using HAST.Elite.Dangerous.DataAssistant.DataAccessLayer;
     using HAST.Elite.Dangerous.DataAssistant.Properties;
 
     using SharpDX;
 
     /// <summary>Class RoutePlanner.</summary>
-    public class RoutePlanner : IRoutePlanner
+    public class RoutePlanner : RoutePlannerBase
     {
         #region Static Fields
-
-        /// <summary>The database</summary>
-        private static readonly EliteDangerousDbContext Db = new EliteDangerousDbContext();
 
         /// <summary>
         /// Used to adjust the padding for the BoundingBox based on the jump range.
@@ -43,28 +39,6 @@ namespace HAST.Elite.Dangerous.DataAssistant.Routing
         //private static readonly Dictionary<uint,double> Cache
 
         #region Fields
-
-        /// <summary>The <see cref="RoutePlanner.stopwatch" /></summary>
-        private readonly Stopwatch stopwatch = new Stopwatch();
-
-        /// <summary>The <see cref="destination" /></summary>
-        private string destination;
-
-        /// <summary>The <see cref="destination" /> point</summary>
-        private Vector3 destinationPoint;
-
-        /// <summary>The <see cref="RoutePlanner.disposed" /></summary>
-        private bool disposed;
-
-        /// <summary>The <see cref="source" /></summary>
-        private string source;
-
-        /// <summary>The <see cref="source" /> point</summary>
-        private Vector3 sourcePoint;
-
-        private TimeSpan timeout = TimeSpan.FromSeconds(3);
-
-        private List<string> avoidSystems = new List<string>();
 
         #endregion
 
@@ -102,74 +76,6 @@ namespace HAST.Elite.Dangerous.DataAssistant.Routing
 
         #region Public Properties
 
-        /// <summary>Gets or sets the systems to be avoided when calculating the route.</summary>
-        public List<string> AvoidSystems
-        {
-            get
-            {
-                return this.avoidSystems;
-            }
-            set
-            {
-                this.avoidSystems = value;
-            }
-        }
-
-        /// <summary>Gets the calculation time taken for the last route.</summary>
-        public TimeSpan CalculationTime { get; private set; }
-
-        /// <summary>Gets or sets the <see cref="destination" /> system name.</summary>
-        public string Destination
-        {
-            get
-            {
-                return this.destination;
-            }
-            set
-            {
-                var d = Db.Systems.First(s => s.Name == value);
-                this.destinationPoint = new Vector3(d.X, d.Y, d.Z);
-                this.destination = value;
-            }
-        }
-
-        /// <summary>Gets or sets the jump range the ship is capable of.</summary>
-        public float JumpRange { get; set; }
-
-        /// <summary>Gets the route.</summary>
-        public IEnumerable<IRouteNode> Route { get; private set; }
-
-        /// <summary>Gets or sets the <see cref="source" /> system name.</summary>
-        public string Source
-        {
-            get
-            {
-                return this.source;
-            }
-            set
-            {
-                var d = Db.Systems.FirstOrDefault(s => s.Name == value);
-                if (d != null)
-                {
-                    this.sourcePoint = new Vector3(d.X, d.Y, d.Z);
-                }
-                this.source = value;
-            }
-        }
-
-        /// <summary>Gets or sets the timeout for calculating a route.</summary>
-        public TimeSpan Timeout
-        {
-            get
-            {
-                return this.timeout;
-            }
-            set
-            {
-                this.timeout = value;
-            }
-        }
-
         #endregion
 
         #region Public Methods and Operators
@@ -177,16 +83,16 @@ namespace HAST.Elite.Dangerous.DataAssistant.Routing
         /// <summary>Calculates the configured route.</summary>
         /// <exception cref="RoutePlannerTimeoutException" />
         /// <returns><c>true</c> if a route was found, <c>false</c> otherwise.</returns>
-        public bool Calculate()
+        public override bool Calculate()
         {
-            this.stopwatch.Reset();
-            this.stopwatch.Start();
+            this.Stopwatch.Reset();
+            this.Stopwatch.Start();
             this.Route = null;
 
             var jumpRangeSquared = this.JumpRange * this.JumpRange;
 
-            var distance = Vector3.Distance(sourcePoint, destinationPoint);
-            var straightLineVector = destinationPoint - sourcePoint;
+            var distance = Vector3.Distance(this.sourcePoint, this.destinationPoint);
+            var straightLineVector = this.destinationPoint - this.sourcePoint;
             straightLineVector.Normalize();
             var padding = Settings.Default.RoutePadding * PaddingFactor.First(pf => pf.Key >= this.JumpRange).Value;
             var padDistance = distance / 150 * padding;
@@ -195,8 +101,8 @@ namespace HAST.Elite.Dangerous.DataAssistant.Routing
                 this.JumpRange,
                 padding,
                 padDistance);
-            var paddedSource = sourcePoint - (straightLineVector * (float)padDistance);
-            var paddedDestination = destinationPoint + (straightLineVector * (float)padDistance);
+            var paddedSource = this.sourcePoint - (straightLineVector * (float)padDistance);
+            var paddedDestination = this.destinationPoint + (straightLineVector * (float)padDistance);
             var boundingBox = BoundingBox.FromPoints(new[] { paddedSource, paddedDestination });
             Debug.WriteLine(
                 "{0} - {1} = {2:F}ly",
@@ -211,12 +117,12 @@ namespace HAST.Elite.Dangerous.DataAssistant.Routing
                     .Select(s => new { s.Name, s.X, s.Y, s.Z })
                     .ToList();
 
-            Debug.WriteLine("Systems found: {0}", systems.Count());
+            Debug.WriteLine("Systems found: {0}", systems.Count);
 
             var systemDistances = new List<RouteNodeDistance>(systems.Count);
             systemDistances.AddRange(
                 from s in systems.AsParallel().AsUnordered() 
-                where !AvoidSystems.Contains(s.Name)
+                where !this.AvoidSystems.Contains(s.Name)
                 let v = new Vector3(s.X, s.Y, s.Z)
                 select
                     new RouteNodeDistance
@@ -228,7 +134,7 @@ namespace HAST.Elite.Dangerous.DataAssistant.Routing
                                 Vector3.DistanceSquared(v, this.destinationPoint),
                         });
             var sortedSystemDistances = systemDistances.OrderBy(s => s.SourceDistanceSquared).ToList();
-            var rangeSphere = new BoundingSphere(sourcePoint, this.JumpRange);
+            var rangeSphere = new BoundingSphere(this.sourcePoint, this.JumpRange);
             // ReSharper disable once CompareOfFloatsByEqualityOperator
             if (sortedSystemDistances.TrueForAll(s => s.SourceDistanceSquared == 0.0 || s.SourceDistanceSquared > jumpRangeSquared))
             {
@@ -264,11 +170,11 @@ namespace HAST.Elite.Dangerous.DataAssistant.Routing
                         route.Add(nextNode);
                         break;
                     }
-                    if (stopwatch.Elapsed > Timeout)
+                    if (this.Stopwatch.Elapsed > this.Timeout)
                     {
                         throw new RoutePlannerTimeoutException();
                     }
-                    if (nextNode == null || nextNode.Point == rangeSphere.Center || nextNode.Point == sourcePoint)
+                    if (nextNode == null || nextNode.Point == rangeSphere.Center || nextNode.Point == this.sourcePoint)
                     {
                         if (route.Any())
                         {
@@ -317,8 +223,8 @@ namespace HAST.Elite.Dangerous.DataAssistant.Routing
             }
             finally
             {
-                this.stopwatch.Stop();
-                this.CalculationTime = this.stopwatch.Elapsed;
+                this.Stopwatch.Stop();
+                this.CalculationTime = this.Stopwatch.Elapsed;
             }
 
 
@@ -327,67 +233,10 @@ namespace HAST.Elite.Dangerous.DataAssistant.Routing
             return true;
         }
 
-        /// <summary>
-        ///     Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        public void Dispose()
-        {
-            this.Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
         #endregion
 
         #region Methods
 
-        /// <summary>Releases unmanaged and - optionally - managed resources.</summary>
-        /// <param name="disposing">
-        ///     <c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged
-        ///     resources.
-        /// </param>
-        protected virtual void Dispose(bool disposing)
-        {
-            if (this.disposed)
-            {
-                return;
-            }
-
-            if (disposing)
-            {
-                // free other managed objects that implement
-                // IDisposable only
-                Db.Dispose();
-            }
-
-            // release any unmanaged objects
-            // set the object references to null
-
-            this.disposed = true;
-        }
-
         #endregion
-
-        /// <summary>Class RouteNodeDistance.</summary>
-        public class RouteNodeDistance : IRouteNode
-        {
-            #region Public Properties
-
-            /// <summary>Gets or sets the destination distance squared.</summary>
-            public float DestinationDistanceSquared { get; set; }
-
-            /// <summary>Gets or sets the distance of the node from the previous node.</summary>
-            public double Distance { get; set; }
-
-            /// <summary>Gets or sets the point.</summary>
-            public Vector3 Point { get; set; }
-
-            /// <summary>Gets or sets the source distance squared.</summary>
-            public float SourceDistanceSquared { get; set; }
-
-            /// <summary>Gets or sets the system name.</summary>
-            public string System { get; set; }
-
-            #endregion
-        }
     }
 }

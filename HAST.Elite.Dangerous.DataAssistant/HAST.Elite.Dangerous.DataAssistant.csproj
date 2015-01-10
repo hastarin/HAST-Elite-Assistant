@@ -65,6 +65,12 @@
     <Reference Include="NetMQ">
       <HintPath>..\packages\NetMQ.3.3.0.11\lib\net40\NetMQ.dll</HintPath>
     </Reference>
+    <Reference Include="NHotkey">
+      <HintPath>..\packages\NHotkey.1.2.1\lib\net20\NHotkey.dll</HintPath>
+    </Reference>
+    <Reference Include="NHotkey.Wpf">
+      <HintPath>..\packages\NHotkey.Wpf.1.2.1\lib\net35\NHotkey.Wpf.dll</HintPath>
+    </Reference>
     <Reference Include="SharpDX">
       <HintPath>$(SharpDXPackageBinDir)\SharpDX.dll</HintPath>
     </Reference>
@@ -120,8 +126,9 @@
     <Compile Include="Routing\IRouteNode.cs" />
     <Compile Include="Routing\IRoutePlanner.cs" />
     <Compile Include="Routing\RouteNode.cs" />
+    <Compile Include="Routing\RouteNodeDistance.cs" />
     <Compile Include="Routing\RoutePlanner.cs" />
-    <Compile Include="Routing\RoutePlannerGreedyDfs.cs" />
+    <Compile Include="Routing\RoutePlannerBase.cs" />
     <Compile Include="Routing\RoutePlannerTimeoutException.cs" />
     <Compile Include="ViewModels\LogWatcher.cs">
       <SubType>Component</SubType>

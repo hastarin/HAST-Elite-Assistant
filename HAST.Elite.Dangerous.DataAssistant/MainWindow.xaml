@@ -31,6 +31,14 @@
             </DataTemplate>
         </ResourceDictionary>
     </controls:MetroWindow.Resources>
+    <controls:MetroWindow.InputBindings>
+        <KeyBinding Gesture="F20" Command="{Binding SpeakNextSystemCommand}"
+                    HotkeyManager.RegisterGlobalHotkey="True" />
+        <KeyBinding Gesture="F22" Command="{Binding AvoidNextSystemCommand}"
+                    HotkeyManager.RegisterGlobalHotkey="True" />
+        <KeyBinding Gesture="F23" Command="{Binding RoutePlanner.SwapSystemsCommand}"
+                    HotkeyManager.RegisterGlobalHotkey="True" />
+    </controls:MetroWindow.InputBindings>
     <controls:MetroWindow.RightWindowCommands>
         <controls:WindowCommands>
             <ToggleButton Command="{Binding ToggleTopmostCommand}" Width="30"

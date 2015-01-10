@@ -71,9 +71,9 @@ namespace HAST.Elite.Dangerous.DataAssistant.Properties {
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("60")]
-        public double RoutePadding {
+        public int RoutePadding {
             get {
-                return ((double)(this["RoutePadding"]));
+                return ((int)(this["RoutePadding"]));
             }
         }
         
@@ -86,6 +86,30 @@ namespace HAST.Elite.Dangerous.DataAssistant.Properties {
             }
             set {
                 this["AutoCopyNextSystem"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool SpeakNextSystemDuringJump {
+            get {
+                return ((bool)(this["SpeakNextSystemDuringJump"]));
+            }
+            set {
+                this["SpeakNextSystemDuringJump"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("10")]
+        public int RepeatNextSystemAfter {
+            get {
+                return ((int)(this["RepeatNextSystemAfter"]));
+            }
+            set {
+                this["RepeatNextSystemAfter"] = value;
             }
         }
     }

@@ -79,7 +79,9 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
 
         private float backgroundOpacity = 1.0f;
 
-        private string currentSystem;
+        private string currentSystem = string.Empty;
+
+        private DispatcherTimer speechDelayTimer = new DispatcherTimer(DispatcherPriority.ApplicationIdle);
 
         /// <summary>
         ///     The <see cref="HAST.Elite.Dangerous.DataAssistant.ViewModels.MainWindowViewModel.disposed" />
@@ -87,7 +89,7 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
         private bool disposed;
 
         /// <summary>The log watcher</summary>
-        private LogWatcher logWatcher;
+        private readonly LogWatcher logWatcher;
 
         private RelayCommand setSourceToCurrentCommand;
 
@@ -102,24 +104,38 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
         /// </summary>
         private MainWindowViewModel()
         {
+            this.InitializeDatabase();
+
+            this.logWatcher = new LogWatcher();
+            Application.Current.MainWindow.Dispatcher.BeginInvoke(
+                DispatcherPriority.Loaded,
+                new Action(this.InitializeLogWatcher));
+
+            this.routePlanner.Source = "Ethgreze";
+            this.routePlanner.Destination = "Leesti";
+            this.routePlanner.JumpRange = 20;
+
+            var repeatNextSystemAfter = Settings.Default.RepeatNextSystemAfter;
+            if (repeatNextSystemAfter > 0)
+            {
+                this.speechDelayTimer.Interval = TimeSpan.FromSeconds(repeatNextSystemAfter);
+                this.speechDelayTimer.Tick += this.SpeakNextSystem;
+            }
+
             try
             {
-                this.InitializeDatabase();
-
-                this.InitializeLogWatcher();
-
-                this.routePlanner.Source = "Ethgreze";
-                this.routePlanner.Destination = "Leesti";
-                this.routePlanner.JumpRange = 20;
-
                 this.eddnSubscriberSocket = NetMqContext.CreateSubscriberSocket();
-                //this.StartListeningToEddn();
             }
             catch (Exception e)
             {
                 Debug.WriteLine(e);
-            }
+            }            
             //this.StartListeningToEddn();
+        }
+
+        private void SpeakNextSystem(object sender, EventArgs e)
+        {
+            this.SpeakNextSystem();
         }
 
         /// <summary>Finalizes an instance of the <see cref="MainWindowViewModel" /> class.</summary>
@@ -133,16 +149,16 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
         #region Public Properties
 
         /// <summary>Gets the Singleton Instance.</summary>
-        /// <exception cref="System.MissingMemberException">
-        ///     The <see cref="System.Lazy`1" /> instance is initialized to use the default constructor of the type that is
+        /// <exception cref="MissingMemberException">
+        ///     The <see cref="Lazy{T}" /> instance is initialized to use the default constructor of the type that is
         ///     being lazily initialized, and that type does not have a public, parameterless constructor.
         /// </exception>
-        /// <exception cref="System.MemberAccessException">
-        ///     The <see cref="System.Lazy`1" /> instance is initialized to use the default constructor of the type that is
+        /// <exception cref="MemberAccessException">
+        ///     The <see cref="Lazy{T}" /> instance is initialized to use the default constructor of the type that is
         ///     being lazily initialized, and permissions to access the constructor are missing.
         /// </exception>
-        /// <exception cref="System.InvalidOperationException">
-        ///     The initialization function tries to access <see cref="System.Lazy`1.Value" /> on this instance.
+        /// <exception cref="InvalidOperationException">
+        ///     The initialization function tries to access <see cref="Lazy{T}.Value" /> on this instance.
         /// </exception>
         public static MainWindowViewModel Instance
         {
@@ -207,6 +223,34 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
             get
             {
                 return this.routePlanner;
+            }
+        }
+
+        private RelayCommand avoidNextSystemCommand;
+
+        /// <summary>
+        /// Gets the avoid next system command.
+        /// </summary>
+        public ICommand AvoidNextSystemCommand
+        {
+            get
+            {
+                return this.avoidNextSystemCommand
+                       ?? (this.avoidNextSystemCommand = new RelayCommand(this.AvoidNextSystem));
+            }
+        }
+
+        private RelayCommand speakNextSystemCommand;
+
+        /// <summary>
+        /// Gets the speak next system command.
+        /// </summary>
+        public ICommand SpeakNextSystemCommand
+        {
+            get
+            {
+                return this.speakNextSystemCommand
+                       ?? (this.speakNextSystemCommand = new RelayCommand(this.SpeakNextSystem));
             }
         }
 
@@ -336,7 +380,6 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
         /// <summary>Initializes the log watcher.</summary>
         private void InitializeLogWatcher()
         {
-            this.logWatcher = new LogWatcher();
             while (!this.logWatcher.IsValidPath())
             {
                 var dialog = new OpenFileDialog
@@ -373,7 +416,7 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
 
         /// <summary>Receivers the timer on tick.</summary>
         /// <param name="sender">The sender.</param>
-        /// <param name="eventArgs">The <see cref="System.EventArgs" /> instance containing the event data.</param>
+        /// <param name="eventArgs">The <see cref="EventArgs" /> instance containing the event data.</param>
         private void ReceiverTimerOnTick(object sender, EventArgs eventArgs)
         {
             while (this.eddnSubscriberSocket.HasIn)
@@ -439,9 +482,46 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
             var system = this.GetSystem(this.logWatcher.CurrentSystem);
             if (system == null)
             {
-                this.speech.SpeakAsync("Warning " + this.logWatcher.CurrentSystem + " is not found in the database!");
+                this.speech.SpeakAsync("Warning!  The system you are entering is not found in the database!");
             }
             this.CurrentSystem = this.logWatcher.CurrentSystem;
+            this.HandleNextSystem();
+        }
+
+        private void HandleNextSystem()
+        {
+            if (!this.routePlanner.Route.Any(r => r.System == this.CurrentSystem))
+            {
+                return;
+            }
+            var match = this.RoutePlanner.Route.First(r => r.System == this.CurrentSystem);
+            var nextItemIndex = this.RoutePlanner.Route.IndexOf(match) + 1;
+            if (nextItemIndex >= this.RoutePlanner.Route.Count)
+            {
+                if (Settings.Default.SpeakNextSystemDuringJump)
+                {
+                    this.speech.Speak(string.Format("Entering {0}.  You have reached your destination.", match.System));
+                }
+                return;
+            }
+            this.RoutePlanner.SelectedRouteNode = this.RoutePlanner.Route[nextItemIndex];
+            if (Settings.Default.AutoCopyNextSystem)
+            {
+                Clipboard.SetText(this.RoutePlanner.SelectedRouteNode.System);
+            }
+            if (Settings.Default.SpeakNextSystemDuringJump)
+            {
+                this.speech.Speak(
+                    string.Format(
+                        "Entering {0}.  You're next jump will be to {1}.",
+                        match.System,
+                        this.RoutePlanner.SelectedRouteNode.System));
+                this.speechDelayTimer.Start();
+            }
+        }
+
+        private void AvoidNextSystem()
+        {
             if (!this.routePlanner.Route.Any(r => r.System == this.CurrentSystem))
             {
                 return;
@@ -452,11 +532,36 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
             {
                 return;
             }
-            this.RoutePlanner.SelectedRouteNode = this.RoutePlanner.Route[nextItemIndex];
-            if (Settings.Default.AutoCopyNextSystem)
+            var routeNode = this.RoutePlanner.Route[nextItemIndex];
+            this.speech.Speak(
+                string.Format("Avoiding {0} and re-calculating route.", routeNode.System));
+            this.RoutePlanner.Avoid(routeNode);
+            this.HandleNextSystem();
+        }
+
+        private void SpeakNextSystem()
+        {
+            this.speechDelayTimer.Stop();
+            if (!this.routePlanner.Route.Any(r => r.System == this.CurrentSystem))
             {
-                Clipboard.SetText(this.RoutePlanner.SelectedRouteNode.System);
+                if (this.RoutePlanner.Source == this.CurrentSystem)
+                {
+                    this.speech.Speak("The next system is " + this.RoutePlanner.Route[0].System);
+                }
+                else
+                {
+                    this.speech.Speak("I'm sorry Commander, I'm afraid I can't do that.  Please re-calculate your route.");
+                }
+                return;
             }
+            var match = this.RoutePlanner.Route.First(r => r.System == this.CurrentSystem);
+            var nextItemIndex = this.RoutePlanner.Route.IndexOf(match) + 1;
+            if (nextItemIndex >= this.RoutePlanner.Route.Count)
+            {
+                this.speech.Speak("You are already at your destination.");
+                return;
+            }
+            this.speech.Speak("The next system is " + this.RoutePlanner.Route[nextItemIndex].System);
         }
 
         #endregion
