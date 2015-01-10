@@ -73,6 +73,8 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
 
         private readonly DispatcherTimer speechDelayTimer = new DispatcherTimer(DispatcherPriority.ApplicationIdle);
 
+        private readonly DispatcherTimer logRefreshTimer = new DispatcherTimer(DispatcherPriority.ApplicationIdle);
+
         private readonly ObservableCollection<string> systemNames = new ObservableCollection<string>();
 
         private RelayCommand avoidNextSystemCommand;
@@ -93,6 +95,10 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
 
         private RelayCommand toggleTopmostCommand;
 
+        private readonly MetroWindow mainWindow;
+
+        private Dispatcher dispatcher;
+
         #endregion
 
         #region Constructors and Destructors
@@ -105,7 +111,9 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
             this.InitializeDatabase();
 
             this.logWatcher = new LogWatcher();
-            Application.Current.MainWindow.Dispatcher.BeginInvoke(
+            this.mainWindow = Application.Current.MainWindow as MetroWindow;
+            this.dispatcher = this.MainWindow.Dispatcher;
+            this.dispatcher.BeginInvoke(
                 DispatcherPriority.Loaded,
                 new Action(this.InitializeLogWatcher));
 
@@ -223,7 +231,7 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
         {
             get
             {
-                return Application.Current.MainWindow as MetroWindow;
+                return mainWindow;
             }
         }
 
@@ -477,13 +485,17 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
             Settings.Default.Save();
             this.logWatcher.StartWatching();
             this.UpdateCurrentSystem();
+
+            this.logRefreshTimer.Interval = TimeSpan.FromSeconds(1);
+            this.logRefreshTimer.Tick += (sender, args) => this.logWatcher.Refresh();
+            this.logRefreshTimer.Start();
             this.logWatcher.PropertyChanged += (o, args) =>
                 {
                     if (args.PropertyName != "CurrentSystem")
                     {
                         return;
                     }
-                    this.UpdateCurrentSystem();
+                    this.dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(this.UpdateCurrentSystem));
                 };
         }
 

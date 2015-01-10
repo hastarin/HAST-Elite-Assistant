@@ -4,7 +4,7 @@
 // Created          : 04-01-2015
 // 
 // Last Modified By : Jon Benson
-// Last Modified On : 05-01-2015
+// Last Modified On : 10-01-2015
 // ***********************************************************************
 // <copyright file="LogWatcher.cs" company="Jon Benson">
 //     Copyright (c) Jon Benson. All rights reserved.
@@ -84,7 +84,7 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
         public LogWatcher()
         {
             this.Filter = DefaultFilter;
-            this.NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.CreationTime;
+            this.NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.CreationTime | NotifyFilters.Size;
             if (Settings.Default.LogsFullPath != null && Directory.Exists(Settings.Default.LogsFullPath))
             {
                 this.Path = Settings.Default.LogsFullPath;
@@ -156,7 +156,9 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
             }
             set
             {
-                this.SetProperty(ref this.latestLogFile, value);
+                if (this.SetProperty(ref this.latestLogFile, value))
+                {
+                }
             }
         }
 
@@ -207,9 +209,20 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
         }
 
         /// <summary>
+        ///     Forces a read of the log file to check for a system change.
+        /// </summary>
+        public void Refresh()
+        {
+            this.CheckForSystemChange();
+        }
+
+        /// <summary>
         ///     Starts the watching.
         /// </summary>
-        /// <exception cref="InvalidOperationException">Throws an exception if the <see cref="Path"/> does not contain netLogs files.</exception>
+        /// <exception cref="InvalidOperationException">
+        ///     Throws an exception if the <see cref="Path" /> does not contain netLogs
+        ///     files.
+        /// </exception>
         public void StartWatching()
         {
             if (this.EnableRaisingEvents)
@@ -218,7 +231,8 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
             }
             if (!this.IsValidPath())
             {
-                throw new InvalidOperationException(string.Format("Directory {0} does not contain netLog files?!", this.Path));
+                throw new InvalidOperationException(
+                    string.Format("Directory {0} does not contain netLog files?!", this.Path));
             }
             this.UpdateLatestLogFile();
             this.Created += (sender, args) => this.UpdateLatestLogFile();
@@ -303,10 +317,10 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
         {
             var di = new DirectoryInfo(this.Path);
             var files = di.GetFileSystemInfos();
-            var lastFile = files.ToList().Where(fi => fi.Name.StartsWith("netLog")).OrderBy(f => f.Name).Last().Name;
-            if (this.latestLogFile != lastFile)
+            var lastFile = files.ToList().Where(fi => fi.Name.StartsWith("netLog")).OrderBy(f => f.Name).Last();
+            if (this.latestLogFile != lastFile.Name)
             {
-                this.latestLogFile = lastFile;
+                this.LatestLogFile = lastFile.Name;
                 this.lastOffset = 0;
             }
         }

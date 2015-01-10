@@ -12,10 +12,10 @@
     <ROW Property="ARPURLUPDATEINFO" Value="https://github.com/hastarin/HAST-Elite-Assistant/releases"/>
     <ROW Property="CTRLS" Value="2"/>
     <ROW Property="Manufacturer" Value="Jon Benson"/>
-    <ROW Property="ProductCode" Value="1033:{F78DEAC8-3E64-40CE-8DA0-4546B548D3F0} " Type="16"/>
+    <ROW Property="ProductCode" Value="1033:{862D472C-ADE6-41AC-8987-1370C4D1F773} " Type="16"/>
     <ROW Property="ProductLanguage" Value="1033"/>
     <ROW Property="ProductName" Value="HAST Elite Assistant"/>
-    <ROW Property="ProductVersion" Value="0.9.0.0" Type="32" TargetFile="HASTEliteAssistant.exe"/>
+    <ROW Property="ProductVersion" Value="0.9.1.1" Type="32" TargetFile="HASTEliteAssistant.exe"/>
     <ROW Property="RUNAPPLICATION" Value="1" Type="4"/>
     <ROW Property="SecureCustomProperties" Value="OLDPRODUCTS;AI_NEWERPRODUCTFOUND"/>
     <ROW Property="UpgradeCode" Value="{DCDE54E8-C0D1-47B3-BD96-421C6C76451B}"/>

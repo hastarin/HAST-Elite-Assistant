@@ -18,11 +18,13 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
     using System.Collections.ObjectModel;
     using System.Diagnostics;
     using System.Linq;
+    using System.Windows;
     using System.Windows.Input;
 
     using GalaSoft.MvvmLight;
     using GalaSoft.MvvmLight.CommandWpf;
 
+    using HAST.Elite.Dangerous.DataAssistant.Properties;
     using HAST.Elite.Dangerous.DataAssistant.Routing;
 
     /// <summary>Class RoutePlannerViewModel.</summary>
@@ -376,6 +378,11 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
             this.CalculationTime = this.routePlanner.CalculationTime;
             this.NumberOfJumps = this.Route.Count;
             this.Distance = this.Route.Sum(r => r.Distance);
+            if (Settings.Default.AutoCopyNextSystem)
+            {
+                Clipboard.SetText(this.Route.First().System);
+            }
+            this.SelectedRouteNode = this.Route.First();
         }
 
         #endregion
