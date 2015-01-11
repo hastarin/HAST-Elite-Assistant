@@ -15,7 +15,7 @@ Requirements
 ------------
 The app requires you run it on the same machine as [Elite Dangerous](https://www.elitedangerous.com/).
 
-The current Beta version also requires SQL Server Express/LocalDb is installed.  I will try to remove that dependency by version 1.0
+It also requires SQL Server Express (at least LocalDb) is installed.
 
 You can get SQL Server Express 2012 from here:
 http://www.microsoft.com/en-us/download/details.aspx?id=29062
