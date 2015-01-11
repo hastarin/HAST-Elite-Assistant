@@ -156,9 +156,7 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
             }
             set
             {
-                if (this.SetProperty(ref this.latestLogFile, value))
-                {
-                }
+                this.SetProperty(ref this.latestLogFile, value);
             }
         }
 
@@ -317,10 +315,10 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
         {
             var di = new DirectoryInfo(this.Path);
             var files = di.GetFileSystemInfos();
-            var lastFile = files.ToList().Where(fi => fi.Name.StartsWith("netLog")).OrderBy(f => f.Name).Last();
-            if (this.latestLogFile != lastFile.Name)
+            var lastFile = files.ToList().Where(fi => fi.Name.StartsWith("netLog")).OrderBy(f => f.Name).Last().Name;
+            if (this.latestLogFile != lastFile)
             {
-                this.LatestLogFile = lastFile.Name;
+                this.LatestLogFile = lastFile;
                 this.lastOffset = 0;
             }
         }

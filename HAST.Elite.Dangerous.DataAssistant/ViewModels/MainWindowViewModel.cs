@@ -25,6 +25,7 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
     using System.Runtime.Serialization.Json;
     using System.Speech.Synthesis;
     using System.Text;
+    using System.Threading;
     using System.Windows;
     using System.Windows.Input;
     using System.Windows.Threading;
@@ -405,7 +406,18 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
             this.RoutePlanner.SelectedRouteNode = this.RoutePlanner.Route[nextItemIndex];
             if (Settings.Default.AutoCopyNextSystem)
             {
-                Clipboard.SetText(this.RoutePlanner.SelectedRouteNode.System);
+                for (int i = 0; i < 10; i++)
+                {
+                    try
+                    {
+                        Clipboard.SetDataObject(this.RoutePlanner.SelectedRouteNode.System, false);
+                        i = 10;
+                    }
+                    catch
+                    {
+                        Thread.Sleep(10);
+                    }
+                } 
             }
             if (Settings.Default.SpeakNextSystemDuringJump)
             {

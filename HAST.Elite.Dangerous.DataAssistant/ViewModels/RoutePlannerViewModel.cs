@@ -68,8 +68,6 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
         /// <summary>The jump range</summary>
         private float jumpRange;
 
-        private string nextSystem;
-
         private int numberOfJumps;
 
         private IRouteNode selectedRouteNode;
@@ -179,19 +177,6 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
                     this.routePlanner.JumpRange = value;
                     this.CalculateRoute();
                 }
-            }
-        }
-
-        /// <summary>Gets or sets the next system.</summary>
-        public string NextSystem
-        {
-            get
-            {
-                return this.nextSystem;
-            }
-            private set
-            {
-                this.Set(ref this.nextSystem, value);
             }
         }
 
@@ -380,7 +365,18 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
             this.Distance = this.Route.Sum(r => r.Distance);
             if (Settings.Default.AutoCopyNextSystem)
             {
-                Clipboard.SetText(this.Route.First().System);
+                for (int i = 0; i < 10; i++)
+                {
+                    try
+                    {
+                        Clipboard.SetDataObject(this.Route.First().System, false);
+                        i = 10;
+                    }
+                    catch
+                    {
+                        System.Threading.Thread.Sleep(10);
+                    }
+                } 
             }
             this.SelectedRouteNode = this.Route.First();
         }
