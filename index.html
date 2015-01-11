@@ -32,7 +32,7 @@
       <section>
         <div id="title">
           <h1>Hast Elite Assistant</h1>
-          <p>This will hopefully come to be a windows application to assist commanders in Elite Dangerous with managing navigation and trade data.</p>
+          <p>An Elite Dangerous route planner for Windows... and possibly more to come</p>
           <hr>
           <span class="credits left">Project maintained by <a href="https://github.com/hastarin">hastarin</a></span>
           <span class="credits right">Hosted on GitHub Pages &mdash; Theme by <a href="https://twitter.com/michigangraham">mattgraham</a></span>
@@ -55,9 +55,19 @@
 <h2>
 <a id="requirements" class="anchor" href="#requirements" aria-hidden="true"><span class="octicon octicon-link"></span></a>Requirements</h2>
 
-<p>The app requires you run it on the same machine as <a href="https://www.elitedangerous.com/">Elite Dangerous</a>.</p>
+<ul>
+<li>SQL Server Express (LocalDb as a minimum)</li>
+<li>You must run it on the same machine as <a href="https://www.elitedangerous.com/">Elite Dangerous</a>.</li>
+<li>Transparency features require Aero is enabled.</li>
+<li>VerboseLogging=1 enabled in the <a href="https://www.elitedangerous.com/">Elite Dangerous</a> AppConfig.xaml</li>
+</ul>
 
-<p>You'll also need to make sure your AppConfig.xaml found in your <em>Frontier_Developments\Products\FORC-FDEV-D-1003</em> folder has VerboseLogging=1 set for the Network section similar to the following:</p>
+<p>You can get SQL Server Express 2012 from here:
+<a href="http://www.microsoft.com/en-us/download/details.aspx?id=29062">http://www.microsoft.com/en-us/download/details.aspx?id=29062</a></p>
+
+<p><em>ENU\x64\SqlLocalDB.MSI</em> is the version you'll want unless you're on a 32 bit version of Windows in which case you can save a few MB and get <em>ENU\x86\SqlLocaLDB.MSI</em></p>
+
+<p>Finally you'll need to make sure your AppConfig.xaml found in your <em>Frontier_Developments\Products\FORC-FDEV-D-1003</em> folder has VerboseLogging=1 set for the Network section similar to the following:</p>
 
 <pre><code>    &lt;Network
       Port="0"
