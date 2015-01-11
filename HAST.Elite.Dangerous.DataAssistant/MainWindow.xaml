@@ -14,7 +14,7 @@
                       DataContext="{Binding ViewModel, Mode=OneWay, RelativeSource={RelativeSource Self}}" 
                       SaveWindowPosition="True" Topmost="True" Background="{DynamicResource WindowBackgroundBrush}"
                       Title="HAST Elite Assistant" Height="420" Width="220" TextOptions.TextFormattingMode="Display"
-                      MinHeight="220" MinWidth="220">
+                      MinHeight="220" MinWidth="220" Icon="Resources/HastHelpingHand.ico" ShowIconOnTitleBar="False">
     <controls:MetroWindow.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
