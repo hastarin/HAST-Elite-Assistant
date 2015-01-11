@@ -15,7 +15,14 @@ Requirements
 ------------
 The app requires you run it on the same machine as [Elite Dangerous](https://www.elitedangerous.com/).
 
-You'll also need to make sure your AppConfig.xaml found in your *Frontier_Developments\Products\FORC-FDEV-D-1003* folder has VerboseLogging=1 set for the Network section similar to the following:
+The current Beta version also requires SQL Server Express/LocalDb is installed.  I will try to remove that dependency by version 1.0
+
+You can get SQL Server Express 2012 from here:
+http://www.microsoft.com/en-us/download/details.aspx?id=29062
+
+*ENU\x64\SqlLocalDB.MSI* is the version you'll want unless you're on a 32 bit version of Windows in which case you can save a few MB and get *ENU\x86\SqlLocaLDB.MSI*
+
+Finally you'll need to make sure your AppConfig.xaml found in your *Frontier_Developments\Products\FORC-FDEV-D-1003* folder has VerboseLogging=1 set for the Network section similar to the following:
 ```
 	<Network
 	  Port="0"
