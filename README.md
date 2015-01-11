@@ -47,6 +47,7 @@ Current Features
 * A settings flyout so users can edit various settings
 * Speech options (enabled by default)
 * Hotkey support (handy for use with Voice Attack)
+* Click the System name in the status bar to set it as source
 
 The hotkeys I support are based on those of [Elite Copilot](https://github.com/w0nk0/Elite-Copilot):
 * F20 - Will speak the next system
