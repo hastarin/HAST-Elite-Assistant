@@ -13,9 +13,10 @@ The latest release will always be made available [here on Github](https://github
 
 Requirements
 ------------
-The app requires you run it on the same machine as [Elite Dangerous](https://www.elitedangerous.com/).
-
-It also requires SQL Server Express (at least LocalDb) is installed.
+* SQL Server Express (LocalDb as a minimum)
+* You must run it on the same machine as [Elite Dangerous](https://www.elitedangerous.com/).
+* Transparency features require Aero is enabled.
+* VerboseLogging=1 enabled in the [Elite Dangerous](https://www.elitedangerous.com/) AppConfig.xaml
 
 You can get SQL Server Express 2012 from here:
 http://www.microsoft.com/en-us/download/details.aspx?id=29062
