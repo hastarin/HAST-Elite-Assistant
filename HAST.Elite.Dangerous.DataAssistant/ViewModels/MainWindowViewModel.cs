@@ -134,6 +134,7 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
             var repeatNextSystemAfter = Settings.Default.RepeatNextSystemAfter;
             if (repeatNextSystemAfter > 0)
             {
+                Log.Info("Setting up speech delay timer.");
                 this.speechDelayTimer.Interval = TimeSpan.FromSeconds(repeatNextSystemAfter);
                 this.speechDelayTimer.Tick += this.SpeakNextSystem;
             }
@@ -368,6 +369,7 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
         /// <summary>Avoids the next system.</summary>
         private void AvoidNextSystem()
         {
+            Log.Info("AvoidNextSystem called.");
             if (!this.routePlanner.Route.Any(r => r.System == this.CurrentSystem))
             {
                 return;
@@ -398,6 +400,7 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
         /// <summary>Handles the next system.</summary>
         private void HandleNextSystem()
         {
+            Log.Info("HandleNextSystem called.");
             if (!this.routePlanner.Route.Any(r => r.System == this.CurrentSystem))
             {
                 return;
@@ -641,6 +644,7 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
         /// <summary>Toggles the settings flyout.</summary>
         private void ToggleSettingsFlyout()
         {
+            Log.Info("ToggleSettingsFlyout called.");
             var flyout = this.MainWindow.Flyouts.Items[0] as Flyout;
             if (flyout == null)
             {
@@ -658,6 +662,7 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
         /// <summary>Updates the current system.</summary>
         private void UpdateCurrentSystem()
         {
+            Log.Info("UpdateCurrentSystem called.");
             var system = this.GetSystem(this.logWatcher.CurrentSystem);
             if (system == null)
             {

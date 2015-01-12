@@ -348,12 +348,23 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
         /// <summary>Calculates the route.</summary>
         internal void CalculateRoute()
         {
+            Log.Info("CalculateRoute called.");
             this.Route.Clear();
             try
             {
+                Log.InfoFormat(
+                    "Finding route found between {0} and {1} with jump range of {2:F2}.",
+                    this.Source,
+                    this.Destination,
+                    this.JumpRange);
                 this.WasRouteFound = this.RoutePlanner.Calculate();
                 if (!this.WasRouteFound)
                 {
+                    Log.WarnFormat(
+                        "No route found between {0} and {1} with jump range of {2:F2}.",
+                        this.Source,
+                        this.Destination,
+                        this.JumpRange);
                     return;
                 }
             }
@@ -362,6 +373,7 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
                 Log.Warn(e);
                 this.WasRouteFound = false;
             }
+            Log.Info("Route found.");
             foreach (var node in this.RoutePlanner.Route)
             {
                 this.Route.Add(node);

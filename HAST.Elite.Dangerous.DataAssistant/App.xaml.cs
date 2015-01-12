@@ -14,7 +14,9 @@
 
 namespace HAST.Elite.Dangerous.DataAssistant
 {
+    using System;
     using System.Configuration;
+    using System.IO;
     using System.Windows;
     using System.Windows.Controls;
     using System.Windows.Input;
@@ -26,7 +28,7 @@ namespace HAST.Elite.Dangerous.DataAssistant
     /// <summary>Interaction logic for App.xaml</summary>
     public partial class App
     {
-        private static readonly ILog Log = LogManager.GetLogger(typeof(App));
+        private static ILog log;
         #region Methods
 
         /// <summary>Raises the <see cref="System.Windows.Application.Startup" /> event.</summary>
@@ -34,7 +36,13 @@ namespace HAST.Elite.Dangerous.DataAssistant
         protected override void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
+            // ReSharper disable ExceptionNotDocumented
+            var filePath = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.PerUserRoamingAndLocal).FilePath;
+            string logFileName = Path.GetDirectoryName(filePath) + "\\log.txt";
+            // ReSharper restore ExceptionNotDocumented
+            GlobalContext.Properties["LogFileName"] = logFileName;
             log4net.Config.XmlConfigurator.Configure();
+            log = LogManager.GetLogger(typeof(App));
             EventManager.RegisterClassHandler(
                 typeof(TextBox),
                 UIElement.KeyDownEvent,
@@ -48,7 +56,7 @@ namespace HAST.Elite.Dangerous.DataAssistant
                 }
                 catch (ConfigurationErrorsException configurationErrorsException)
                 {
-                    Log.Warn(configurationErrorsException);
+                    log.Warn(configurationErrorsException);
                 }
                 Settings.Default.SettingsUpgraded = true;
                 Settings.Default.Save();
