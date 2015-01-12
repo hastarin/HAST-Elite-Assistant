@@ -16,7 +16,6 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
 {
     using System;
     using System.ComponentModel;
-    using System.Diagnostics;
     using System.IO;
     using System.Linq;
     using System.Runtime.CompilerServices;
@@ -286,6 +285,7 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
         /// </summary>
         private void CheckForSystemChange()
         {
+            Log.Info("Checking for a new system in netLog");
             using (
                 var logFileStream = new FileStream(
                     System.IO.Path.Combine(this.Path, this.latestLogFile),
@@ -304,6 +304,7 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
                         var lastSystemFound = matches[matches.Count - 1].Groups["system"].Value;
                         if (this.currentSystem != lastSystemFound)
                         {
+                            Log.InfoFormat("New system found {0}", lastSystemFound);
                             this.CurrentSystem = lastSystemFound;
                         }
                     }
@@ -317,13 +318,15 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
         /// </summary>
         private void UpdateLatestLogFile()
         {
+            Log.Info("New file created, possible a new log file...");
             var di = new DirectoryInfo(this.Path);
             var files = di.GetFileSystemInfos();
             var lastFile = files.ToList().Where(fi => fi.Name.StartsWith("netLog")).OrderBy(f => f.Name).Last().Name;
             if (this.latestLogFile != lastFile)
             {
-                this.LatestLogFile = lastFile;
+                Log.Info("New netLog found.");
                 this.lastOffset = 0;
+                this.LatestLogFile = lastFile;
             }
         }
 

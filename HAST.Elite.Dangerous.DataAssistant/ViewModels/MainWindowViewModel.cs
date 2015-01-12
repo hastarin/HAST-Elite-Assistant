@@ -507,7 +507,7 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
                                      Title = "Please choose the folder containing your Logs",
                                      InitialDirectory = this.logWatcher.Path
                                  };
-                var result = dialog.ShowDialog();
+                var result = dialog.ShowDialog(this.MainWindow);
                 // ReSharper disable once PossibleInvalidOperationException
                 if (result.Value)
                 {
@@ -532,14 +532,9 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
             this.logRefreshTimer.Interval = TimeSpan.FromSeconds(Settings.Default.LogRefreshIntervalSecs);
             this.logRefreshTimer.Tick += (sender, args) => this.logWatcher.Refresh();
             this.logRefreshTimer.Start();
-            this.logWatcher.PropertyChanged += (o, args) =>
-                {
-                    if (args.PropertyName != "CurrentSystem")
-                    {
-                        return;
-                    }
-                    this.dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(this.UpdateCurrentSystem));
-                };
+            this.logWatcher.PropertyChanged +=
+                (o, args) =>
+                this.dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(this.UpdateCurrentSystem));
             Log.Info("InitializeLogWatcher done");
         }
 
