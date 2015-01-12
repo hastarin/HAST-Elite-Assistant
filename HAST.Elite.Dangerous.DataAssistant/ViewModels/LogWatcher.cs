@@ -24,6 +24,8 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
 
     using HAST.Elite.Dangerous.DataAssistant.Properties;
 
+    using log4net;
+
     /// <summary>
     ///     Class LogWatcher.
     /// </summary>
@@ -36,6 +38,8 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
         ///     The default filter
         /// </summary>
         private const string DefaultFilter = @"netLog.*.log";
+
+        private static readonly ILog Log = LogManager.GetLogger(typeof(LogWatcher));
 
         #endregion
 
@@ -101,7 +105,7 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
                 }
                 catch (ArgumentException ae)
                 {
-                    Debug.WriteLine(ae);
+                    Log.Warn(ae);
                 }
             }
         }

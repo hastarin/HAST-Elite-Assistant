@@ -16,10 +16,11 @@ namespace HAST.Elite.Dangerous.DataAssistant.Routing
 {
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics;
     using System.Linq;
 
     using HAST.Elite.Dangerous.DataAssistant.Properties;
+
+    using log4net;
 
     using SharpDX;
 
@@ -33,6 +34,8 @@ namespace HAST.Elite.Dangerous.DataAssistant.Routing
         /// </summary>
         /// <remarks>Shorter jump ranges may need more systems to find a path.</remarks>
         private static readonly Dictionary<int,double> PaddingFactor = new Dictionary<int, double>(11);
+
+        private static readonly ILog Log = LogManager.GetLogger(typeof(RoutePlanner));
 
         #endregion
 
@@ -96,7 +99,7 @@ namespace HAST.Elite.Dangerous.DataAssistant.Routing
             straightLineVector.Normalize();
             var padding = Settings.Default.RoutePadding * PaddingFactor.First(pf => pf.Key >= this.JumpRange).Value;
             var padDistance = distance / 150 * padding;
-            Debug.WriteLine(
+            Log.InfoFormat(
                 "Jump range = {0:F} gives a padding value of {1:F} for a pad distance of {2:F}",
                 this.JumpRange,
                 padding,
@@ -104,8 +107,8 @@ namespace HAST.Elite.Dangerous.DataAssistant.Routing
             var paddedSource = this.sourcePoint - (straightLineVector * (float)padDistance);
             var paddedDestination = this.destinationPoint + (straightLineVector * (float)padDistance);
             var boundingBox = BoundingBox.FromPoints(new[] { paddedSource, paddedDestination });
-            Debug.WriteLine(
-                "{0} - {1} = {2:F}ly",
+            Log.InfoFormat(
+                "Searching a box from {0} to {1} with a diagonal distance of {2:F}ly",
                 boundingBox.Minimum,
                 boundingBox.Maximum,
                 Vector3.Distance(paddedSource, paddedDestination));
@@ -117,7 +120,7 @@ namespace HAST.Elite.Dangerous.DataAssistant.Routing
                     .Select(s => new { s.Name, s.X, s.Y, s.Z })
                     .ToList();
 
-            Debug.WriteLine("Systems found: {0}", systems.Count);
+            Log.InfoFormat("Systems considered: {0}", systems.Count);
 
             var systemDistances = new List<RouteNodeDistance>(systems.Count);
             systemDistances.AddRange(
@@ -179,7 +182,7 @@ namespace HAST.Elite.Dangerous.DataAssistant.Routing
                         if (route.Any())
                         {
                             var deadEnd = route.Last();
-                            //Debug.WriteLine("Re-routing past dead end " + deadEnd.System);
+                            Log.Info("Re-routing past dead end " + deadEnd.System);
                             workingSet.Remove(deadEnd);
                             route.RemoveAt(route.Count - 1);
                             rangeSphere = !route.Any()
@@ -199,8 +202,8 @@ namespace HAST.Elite.Dangerous.DataAssistant.Routing
                                     .FirstOrDefault(r => r.Point != this.sourcePoint);
                         }
                     }
-                    //Debug.WriteLine("Routing to: {0} out of {1} systems", nextNode.System, inRange.Count);
                     // ReSharper disable once PossibleNullReferenceException
+                    Log.InfoFormat("Routing to: {0} out of {1} systems", nextNode.System, inRange.Count);
                     rangeSphere = new BoundingSphere(nextNode.Point, this.JumpRange);
                     if (route.Any())
                     {
@@ -218,7 +221,7 @@ namespace HAST.Elite.Dangerous.DataAssistant.Routing
             }
             catch (Exception ex)
             {
-                Debug.WriteLine(ex);
+                Log.Warn(ex);
                 return false;
             }
             finally

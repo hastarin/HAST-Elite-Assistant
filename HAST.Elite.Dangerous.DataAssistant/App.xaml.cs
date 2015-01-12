@@ -15,16 +15,18 @@
 namespace HAST.Elite.Dangerous.DataAssistant
 {
     using System.Configuration;
-    using System.Diagnostics;
     using System.Windows;
     using System.Windows.Controls;
     using System.Windows.Input;
 
     using HAST.Elite.Dangerous.DataAssistant.Properties;
 
+    using log4net;
+
     /// <summary>Interaction logic for App.xaml</summary>
-    public partial class App : Application
+    public partial class App
     {
+        private static readonly ILog Log = LogManager.GetLogger(typeof(App));
         #region Methods
 
         /// <summary>Raises the <see cref="System.Windows.Application.Startup" /> event.</summary>
@@ -32,10 +34,11 @@ namespace HAST.Elite.Dangerous.DataAssistant
         protected override void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
+            log4net.Config.XmlConfigurator.Configure();
             EventManager.RegisterClassHandler(
                 typeof(TextBox),
                 UIElement.KeyDownEvent,
-                new KeyEventHandler(this.TextBox_KeyDown));
+                new KeyEventHandler(this.TextBoxKeyDown));
 
             if (!Settings.Default.SettingsUpgraded)
             {
@@ -45,7 +48,7 @@ namespace HAST.Elite.Dangerous.DataAssistant
                 }
                 catch (ConfigurationErrorsException configurationErrorsException)
                 {
-                    Debug.WriteLine(configurationErrorsException);
+                    Log.Warn(configurationErrorsException);
                 }
                 Settings.Default.SettingsUpgraded = true;
                 Settings.Default.Save();
@@ -56,10 +59,8 @@ namespace HAST.Elite.Dangerous.DataAssistant
         {
             // Creating a FocusNavigationDirection object and setting it to a
             // local field that contains the direction selected.
-            var focusDirection = FocusNavigationDirection.Next;
-
             // MoveFocus takes a TraveralReqest as its argument.
-            var request = new TraversalRequest(focusDirection);
+            var request = new TraversalRequest(FocusNavigationDirection.Next);
 
             // Gets the element with keyboard focus.
             var elementWithFocus = Keyboard.FocusedElement as UIElement;
@@ -74,9 +75,9 @@ namespace HAST.Elite.Dangerous.DataAssistant
             }
         }
 
-        private void TextBox_KeyDown(object sender, KeyEventArgs e)
+        private void TextBoxKeyDown(object sender, KeyEventArgs e)
         {
-            if (e.Key == Key.Enter & (sender as TextBox).AcceptsReturn == false)
+            if (e.Key == Key.Enter & ((TextBox)sender).AcceptsReturn == false)
             {
                 this.MoveToNextUIElement(e);
             }

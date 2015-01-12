@@ -16,7 +16,6 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
 {
     using System;
     using System.Collections.ObjectModel;
-    using System.Diagnostics;
     using System.Linq;
     using System.Windows;
     using System.Windows.Input;
@@ -27,9 +26,13 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
     using HAST.Elite.Dangerous.DataAssistant.Properties;
     using HAST.Elite.Dangerous.DataAssistant.Routing;
 
+    using log4net;
+
     /// <summary>Class RoutePlannerViewModel.</summary>
     public class RoutePlannerViewModel : ObservableObject, IDisposable
     {
+        private static readonly ILog Log = LogManager.GetLogger(typeof(RoutePlannerViewModel));
+
         #region Fields
 
         /// <summary>
@@ -40,7 +43,7 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
         /// <summary>
         ///     The <see cref="HAST.Elite.Dangerous.DataAssistant.ViewModels.RoutePlannerViewModel.route" /> planner
         /// </summary>
-        private readonly IRoutePlanner routePlanner = new RoutePlanner();
+        internal readonly IRoutePlanner RoutePlanner = new RoutePlanner();
 
         /// <summary>
         ///     <para>
@@ -56,7 +59,8 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
         /// <summary>
         ///     The <see cref="HAST.Elite.Dangerous.DataAssistant.ViewModels.RoutePlannerViewModel.destination" />
         /// </summary>
-        private string destination;
+        // ReSharper disable once InconsistentNaming
+        internal string destination;
 
         /// <summary>
         ///     The <see cref="HAST.Elite.Dangerous.DataAssistant.ViewModels.RoutePlannerViewModel.disposed" />
@@ -66,7 +70,8 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
         private double distance;
 
         /// <summary>The jump range</summary>
-        private float jumpRange;
+        // ReSharper disable once InconsistentNaming
+        internal float jumpRange;
 
         private int numberOfJumps;
 
@@ -75,7 +80,8 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
         /// <summary>
         ///     The <see cref="HAST.Elite.Dangerous.DataAssistant.ViewModels.RoutePlannerViewModel.source" />
         /// </summary>
-        private string source;
+        // ReSharper disable once InconsistentNaming
+        internal string source;
 
         /// <summary>The swap systems command</summary>
         private RelayCommand swapSystemsCommand;
@@ -144,7 +150,7 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
             {
                 if (this.Set(ref this.destination, value))
                 {
-                    this.routePlanner.Destination = value;
+                    this.RoutePlanner.Destination = value;
                     this.CalculateRoute();
                 }
             }
@@ -174,7 +180,7 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
             {
                 if (this.Set(ref this.jumpRange, value))
                 {
-                    this.routePlanner.JumpRange = value;
+                    this.RoutePlanner.JumpRange = value;
                     this.CalculateRoute();
                 }
             }
@@ -229,7 +235,7 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
             {
                 if (this.Set(ref this.source, value))
                 {
-                    this.routePlanner.Source = value;
+                    this.RoutePlanner.Source = value;
                     this.CalculateRoute();
                 }
             }
@@ -261,7 +267,7 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
             {
                 if (this.Set(ref this.timeout, value))
                 {
-                    this.routePlanner.Timeout = this.Timeout;
+                    this.RoutePlanner.Timeout = this.Timeout;
                 }
             }
         }
@@ -297,7 +303,7 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
         /// <param name="routeNode">The <see cref="route" /> node.</param>
         public void Avoid(IRouteNode routeNode)
         {
-            this.routePlanner.AvoidSystems.Add(routeNode.System);
+            this.RoutePlanner.AvoidSystems.Add(routeNode.System);
             this.CalculateRoute();
         }
 
@@ -330,7 +336,7 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
             {
                 // free other managed objects that implement
                 // IDisposable only
-                this.routePlanner.Dispose();
+                this.RoutePlanner.Dispose();
             }
 
             // release any unmanaged objects
@@ -340,12 +346,12 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
         }
 
         /// <summary>Calculates the route.</summary>
-        private void CalculateRoute()
+        internal void CalculateRoute()
         {
             this.Route.Clear();
             try
             {
-                this.WasRouteFound = this.routePlanner.Calculate();
+                this.WasRouteFound = this.RoutePlanner.Calculate();
                 if (!this.WasRouteFound)
                 {
                     return;
@@ -353,14 +359,14 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
             }
             catch (Exception e)
             {
-                Debug.WriteLine(e);
+                Log.Warn(e);
                 this.WasRouteFound = false;
             }
-            foreach (var node in this.routePlanner.Route)
+            foreach (var node in this.RoutePlanner.Route)
             {
                 this.Route.Add(node);
             }
-            this.CalculationTime = this.routePlanner.CalculationTime;
+            this.CalculationTime = this.RoutePlanner.CalculationTime;
             this.NumberOfJumps = this.Route.Count;
             this.Distance = this.Route.Sum(r => r.Distance);
             if (Settings.Default.AutoCopyNextSystem)
@@ -374,6 +380,7 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
                     }
                     catch
                     {
+                        Log.Warn("Unable to write to the clipboard, sleeping for 10ms!");
                         System.Threading.Thread.Sleep(10);
                     }
                 } 

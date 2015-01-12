@@ -38,6 +38,7 @@
     <ROW Component="GalaSoft.MvvmLight.Platform.dll" ComponentId="{6453C7E1-7AEA-4F96-904A-F3AB36E43B35}" Directory_="APPDIR" Attributes="0" KeyPath="GalaSoft.MvvmLight.Platform.dll"/>
     <ROW Component="GalaSoft.MvvmLight.dll" ComponentId="{17B65F65-DC21-4CE1-849A-FB5F5489CAC3}" Directory_="APPDIR" Attributes="0" KeyPath="GalaSoft.MvvmLight.dll"/>
     <ROW Component="HASTEliteAssistant.exe" ComponentId="{2B92F9E5-C2A9-41BA-9527-5FBFB01D30CC}" Directory_="APPDIR" Attributes="0" KeyPath="HASTEliteAssistant.exe"/>
+    <ROW Component="HASTEliteAssistant.exe.config" ComponentId="{9D11FC7B-FDDE-4ACB-834F-FFDA673D443F}" Directory_="APPDIR" Attributes="0" KeyPath="HASTEliteAssistant.exe.config" Type="0"/>
     <ROW Component="MahApps.Metro.dll" ComponentId="{F45E4151-298C-4F5C-B0AB-CAA8CBB82252}" Directory_="APPDIR" Attributes="0" KeyPath="MahApps.Metro.dll"/>
     <ROW Component="Microsoft.Practices.ServiceLocation.dll" ComponentId="{D045FCD8-521C-40FD-9004-EE204D1C596A}" Directory_="APPDIR" Attributes="0" KeyPath="Microsoft.Practices.ServiceLocation.dll"/>
     <ROW Component="NHotkey.Wpf.dll" ComponentId="{00A35ADE-99DE-4B3A-8AE9-A7FBC675CCB7}" Directory_="APPDIR" Attributes="0" KeyPath="NHotkey.Wpf.dll"/>
@@ -51,7 +52,7 @@
     <ROW Component="Xceed.Wpf.Toolkit.dll" ComponentId="{07153E3D-A640-4590-8D30-A10B65B10730}" Directory_="APPDIR" Attributes="0" KeyPath="Xceed.Wpf.Toolkit.dll"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiFeatsComponent">
-    <ROW Feature="MainFeature" Title="MainFeature" Description="Description" Display="1" Level="1" Directory_="APPDIR" Attributes="0" Components="EntityFramework.SqlServer.dll EntityFramework.dll GalaSoft.MvvmLight.Extras.dll GalaSoft.MvvmLight.Platform.dll GalaSoft.MvvmLight.dll HASTEliteAssistant.exe MahApps.Metro.dll Microsoft.Practices.ServiceLocation.dll NHotkey.Wpf.dll NHotkey.dll NetMQ.dll ProductInformation SHORTCUTDIR SharpDX.dll System.Windows.Interactivity.dll WPFTextBoxAutoComplete.dll Xceed.Wpf.Toolkit.dll"/>
+    <ROW Feature="MainFeature" Title="MainFeature" Description="Description" Display="1" Level="1" Directory_="APPDIR" Attributes="0" Components="EntityFramework.SqlServer.dll EntityFramework.dll GalaSoft.MvvmLight.Extras.dll GalaSoft.MvvmLight.Platform.dll GalaSoft.MvvmLight.dll HASTEliteAssistant.exe HASTEliteAssistant.exe.config MahApps.Metro.dll Microsoft.Practices.ServiceLocation.dll NHotkey.Wpf.dll NHotkey.dll NetMQ.dll ProductInformation SHORTCUTDIR SharpDX.dll System.Windows.Interactivity.dll WPFTextBoxAutoComplete.dll Xceed.Wpf.Toolkit.dll"/>
     <ATTRIBUTE name="CurrentFeature" value="MainFeature"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiFilesComponent">
@@ -61,9 +62,10 @@
     <ROW File="GalaSoft.MvvmLight.Platform.dll" Component_="GalaSoft.MvvmLight.Platform.dll" FileName="GALASO~3.DLL|GalaSoft.MvvmLight.Platform.dll" Attributes="0" SourcePath="packages\MvvmLightLibs.5.0.2.0\lib\net45\GalaSoft.MvvmLight.Platform.dll" SelfReg="false" NextFile="MahApps.Metro.dll"/>
     <ROW File="GalaSoft.MvvmLight.dll" Component_="GalaSoft.MvvmLight.dll" FileName="GALASO~1.DLL|GalaSoft.MvvmLight.dll" Attributes="0" SourcePath="packages\MvvmLightLibs.5.0.2.0\lib\net45\GalaSoft.MvvmLight.dll" SelfReg="false" NextFile="GalaSoft.MvvmLight.Extras.dll"/>
     <ROW File="HASTEliteAssistant.exe" Component_="HASTEliteAssistant.exe" FileName="HASTEL~1.EXE|HAST Elite Assistant.exe" Attributes="0" SourcePath="HAST.Elite.Dangerous.DataAssistant\bin\Release\HAST Elite Assistant.exe" SelfReg="false" NextFile="NHotkey.dll" DigSign="true"/>
+    <ROW File="HASTEliteAssistant.exe.config" Component_="HASTEliteAssistant.exe.config" FileName="HASTEL~1.CON|HAST Elite Assistant.exe.config" Attributes="0" SourcePath="HAST.Elite.Dangerous.DataAssistant\bin\Release\HAST Elite Assistant.exe.config" SelfReg="false"/>
     <ROW File="MahApps.Metro.dll" Component_="MahApps.Metro.dll" FileName="MAHAPP~1.DLL|MahApps.Metro.dll" Attributes="0" SourcePath="packages\MahApps.Metro.1.0.0.0\lib\net45\MahApps.Metro.dll" SelfReg="false" NextFile="NetMQ.dll"/>
     <ROW File="Microsoft.Practices.ServiceLocation.dll" Component_="Microsoft.Practices.ServiceLocation.dll" FileName="MICROS~1.DLL|Microsoft.Practices.ServiceLocation.dll" Attributes="0" SourcePath="packages\CommonServiceLocator.1.3\lib\portable-net4+sl5+netcore45+wpa81+wp8\Microsoft.Practices.ServiceLocation.dll" SelfReg="false" NextFile="GalaSoft.MvvmLight.dll"/>
-    <ROW File="NHotkey.Wpf.dll" Component_="NHotkey.Wpf.dll" FileName="NHOTKE~1.DLL|NHotkey.Wpf.dll" Attributes="0" SourcePath="HAST.Elite.Dangerous.DataAssistant\bin\Release\NHotkey.Wpf.dll" SelfReg="false"/>
+    <ROW File="NHotkey.Wpf.dll" Component_="NHotkey.Wpf.dll" FileName="NHOTKE~1.DLL|NHotkey.Wpf.dll" Attributes="0" SourcePath="HAST.Elite.Dangerous.DataAssistant\bin\Release\NHotkey.Wpf.dll" SelfReg="false" NextFile="HASTEliteAssistant.exe.config"/>
     <ROW File="NHotkey.dll" Component_="NHotkey.dll" FileName="NHotkey.dll" Attributes="0" SourcePath="HAST.Elite.Dangerous.DataAssistant\bin\Release\NHotkey.dll" SelfReg="false" NextFile="NHotkey.Wpf.dll"/>
     <ROW File="NetMQ.dll" Component_="NetMQ.dll" FileName="NetMQ.dll" Attributes="0" SourcePath="packages\NetMQ.3.3.0.11\lib\net40\NetMQ.dll" SelfReg="false" NextFile="SharpDX.dll"/>
     <ROW File="SharpDX.dll" Component_="SharpDX.dll" FileName="SharpDX.dll" Attributes="0" SourcePath="packages\SharpDX.2.6.3\Bin\DirectX11-Signed-net40\SharpDX.dll" SelfReg="false" NextFile="Xceed.Wpf.Toolkit.dll"/>

@@ -16,10 +16,11 @@ namespace HAST.Elite.Dangerous.DataAssistant.UnitTests
 {
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics;
     using System.Linq;
 
     using HAST.Elite.Dangerous.DataAssistant.Routing;
+
+    using log4net;
 
     using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -27,6 +28,7 @@ namespace HAST.Elite.Dangerous.DataAssistant.UnitTests
     [TestClass]
     public class RoutePlanningTests
     {
+        private static readonly ILog Log = LogManager.GetLogger(typeof(RoutePlanningTests));
         #region Fields
 
         /// <summary>The route planner</summary>
@@ -38,7 +40,7 @@ namespace HAST.Elite.Dangerous.DataAssistant.UnitTests
         [TestMethod]
         public void CustomRoute()
         {
-            Debug.WriteLine("Popular route test");
+            Log.Debug("Popular route test");
 
             this.routePlanner.Source = "Ethgreze";
             this.routePlanner.Destination = "Eranin";
@@ -117,7 +119,7 @@ namespace HAST.Elite.Dangerous.DataAssistant.UnitTests
         [TestMethod]
         public void PopularRoute()
         {
-            Debug.WriteLine("Popular route test");
+            Log.Debug("Popular route test");
 
             this.routePlanner.Source = "Ethgreze";
             this.routePlanner.Destination = "Leesti";
@@ -197,8 +199,7 @@ namespace HAST.Elite.Dangerous.DataAssistant.UnitTests
         private void TimeAndOutputRoute()
         {
             var routeFound = routePlanner.Calculate();
-            Debug.WriteLine("");
-            Debug.WriteLine(
+            Log.DebugFormat(
                 "Time taken for route from {0} to {1} with jump range of {2} was {3}ms",
                 routePlanner.Source,
                 routePlanner.Destination,
@@ -206,20 +207,19 @@ namespace HAST.Elite.Dangerous.DataAssistant.UnitTests
                 routePlanner.CalculationTime.TotalMilliseconds);
             if (routeFound)
             {
-                Debug.WriteLine("Route found with {0} jumps", routePlanner.Route.Count());
+                Log.DebugFormat("Route found with {0} jumps", routePlanner.Route.Count());
                 double distance = 0;
                 foreach (var routeNode in routePlanner.Route)
                 {
-                    Debug.WriteLine("{0} : {1:F}ly", routeNode.System, routeNode.Distance);
+                    Log.DebugFormat("{0} : {1:F}ly", routeNode.System, routeNode.Distance);
                     distance += routeNode.Distance;
                 }
-                Debug.WriteLine("TOTAL {0:F}ly distance", distance);
+                Log.DebugFormat("TOTAL {0:F}ly distance", distance);
             }
             else
             {
-                Debug.WriteLine("Sorry you probably need more jump range");
+                Log.Debug("Sorry you probably need more jump range");
             }
-            Debug.WriteLine("");
         }
 
         #endregion

@@ -17,7 +17,6 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
     using System;
     using System.Data.Entity;
     using System.Data.Entity.Validation;
-    using System.Diagnostics;
     using System.IO;
     using System.IO.Compression;
     using System.Linq;
@@ -39,6 +38,8 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
     using HAST.Elite.Dangerous.DataAssistant.Models.Eddn;
     using HAST.Elite.Dangerous.DataAssistant.Properties;
 
+    using log4net;
+
     using MahApps.Metro.Controls;
 
     using Microsoft.Win32;
@@ -59,6 +60,8 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
 
         private static readonly Lazy<MainWindowViewModel> SingletonInstance =
             new Lazy<MainWindowViewModel>(() => new MainWindowViewModel());
+
+        private static readonly ILog Log = LogManager.GetLogger(typeof(MainWindowViewModel));
 
         #endregion
 
@@ -98,7 +101,8 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
 
         private readonly MetroWindow mainWindow;
 
-        private Dispatcher dispatcher;
+        private readonly Dispatcher dispatcher;
+
 
         #endregion
 
@@ -109,6 +113,7 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
         /// </summary>
         private MainWindowViewModel()
         {
+            Log.Info("Contructor called.");
             this.InitializeDatabase();
 
             this.logWatcher = new LogWatcher();
@@ -118,9 +123,13 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
                 DispatcherPriority.Loaded,
                 new Action(this.InitializeLogWatcher));
 
-            this.routePlanner.Source = Settings.Default.Source;
-            this.routePlanner.Destination = Settings.Default.Destination;
-            this.routePlanner.JumpRange = Settings.Default.JumpRange;
+            this.routePlanner.source = Settings.Default.Source;
+            this.routePlanner.RoutePlanner.Source = Settings.Default.Source;
+            this.routePlanner.destination = Settings.Default.Destination;
+            this.routePlanner.RoutePlanner.Destination = Settings.Default.Destination;
+            this.routePlanner.jumpRange = Settings.Default.JumpRange;
+            this.routePlanner.RoutePlanner.JumpRange = Settings.Default.JumpRange;
+            this.routePlanner.CalculateRoute();
 
             var repeatNextSystemAfter = Settings.Default.RepeatNextSystemAfter;
             if (repeatNextSystemAfter > 0)
@@ -135,7 +144,7 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
             }
             catch (Exception e)
             {
-                Debug.WriteLine(e);
+                Log.Warn(e);
             }
             //this.StartListeningToEddn();
 
@@ -415,6 +424,7 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
                     }
                     catch
                     {
+                        Log.Warn("Unable to write to the clipboard, sleeping for 10ms!");
                         Thread.Sleep(10);
                     }
                 } 
@@ -433,20 +443,26 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
         /// <summary>Initializes the database.</summary>
         private void InitializeDatabase()
         {
+            Log.Info("InitializeDatabase called");
             using (var db = new EliteDangerousDbContext())
             {
+                Log.Info("Upgrading db if needed...");
                 Database.SetInitializer(new MigrateDatabaseToLatestVersion<EliteDangerousDbContext, Configuration>());
-                if (!Enumerable.Any(db.Stations))
+                Log.Info("Checking if we already have Systems in the database.");
+                if (!Enumerable.Any(db.Systems))
                 {
+                    Log.Debug("No systems found, attempting to retrieve them from systems.json file.");
                     using (var webClient = new WebClient())
                     {
                         var stream = webClient.OpenRead(Settings.Default.SystemsJsonUri);
                         var serializer = new DataContractJsonSerializer(typeof(System[]));
                         if (stream != null)
                         {
+                            Log.Debug("Trying to deserialize systems.json");
                             var systems = (System[])serializer.ReadObject(stream);
                             try
                             {
+                                Log.Debug("Saving data to the database");
                                 db.Systems.AddRange(systems);
                                 db.SaveChanges();
                             }
@@ -459,7 +475,7 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
                                     foreach (var error in validationResult.ValidationErrors)
                                     {
                                         var message = entityName + "." + error.PropertyName + ": " + error.ErrorMessage;
-                                        Debug.WriteLine(message);
+                                        Log.Warn(message);
                                     }
                                 }
                             }
@@ -467,12 +483,18 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
                     }
                 }
                 db.Systems.Select(s => s.Name).ToList().ForEach(s => this.SystemNames.Add(s));
+                Log.InfoFormat(
+                    "{0} systems and {1} stations in the database.",
+                    this.SystemNames.Count,
+                    db.Stations.Count());
             }
+            Log.Info("InitializeDatabase done");
         }
 
         /// <summary>Initializes the log watcher.</summary>
         private void InitializeLogWatcher()
         {
+            Log.Info("InitializeLogWatcher called");
             while (!this.logWatcher.IsValidPath())
             {
                 var dialog = new OpenFileDialog
@@ -486,11 +508,17 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
                 // ReSharper disable once PossibleInvalidOperationException
                 if (result.Value)
                 {
-                    this.logWatcher.Path = Path.GetDirectoryName(dialog.FileName);
+                    var path = Path.GetDirectoryName(dialog.FileName);
+                    if (this.logWatcher.IsValidPath(path))
+                    {
+                        Log.InfoFormat("Setting path to {0}", path);
+                        this.logWatcher.Path = path;
+                    }
                 }
                 else
                 {
-                    MessageBox.Show("Sorry that's not a valid path, please try again!");
+                    Log.Warn("User chose to abort LogWatcher setup, Current System functionality will not work!");
+                    return;
                 }
             }
             Settings.Default.LogsFullPath = this.logWatcher.Path;
@@ -498,7 +526,7 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
             this.logWatcher.StartWatching();
             this.UpdateCurrentSystem();
 
-            this.logRefreshTimer.Interval = TimeSpan.FromSeconds(1);
+            this.logRefreshTimer.Interval = TimeSpan.FromSeconds(Settings.Default.LogRefreshIntervalSecs);
             this.logRefreshTimer.Tick += (sender, args) => this.logWatcher.Refresh();
             this.logRefreshTimer.Start();
             this.logWatcher.PropertyChanged += (o, args) =>
@@ -509,6 +537,7 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
                     }
                     this.dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(this.UpdateCurrentSystem));
                 };
+            Log.Info("InitializeLogWatcher done");
         }
 
         /// <summary>Receivers the timer on tick.</summary>
@@ -544,14 +573,14 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
                     decompressedFileStream.Position = 0;
                     var sr = new StreamReader(decompressedFileStream);
                     var myStr = sr.ReadToEnd();
-                    Debug.WriteLine(myStr);
+                    Log.Debug(myStr);
 
                     decompressedFileStream.Position = 0;
                     var serializer = new DataContractJsonSerializer(typeof(EddnRequest));
                     var rootObject = (EddnRequest)serializer.ReadObject(decompressedFileStream);
                     var message = rootObject.Message;
-                    Debug.WriteLine(rootObject.SchemaRef);
-                    Debug.WriteLine(
+                    Log.Debug(rootObject.SchemaRef);
+                    Log.DebugFormat(
                         "Station: {0}, Item: {1}, BuyPrice: {2}",
                         message.StationName,
                         message.ItemName,
