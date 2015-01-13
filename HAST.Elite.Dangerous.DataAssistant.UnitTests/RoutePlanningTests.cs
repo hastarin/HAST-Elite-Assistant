@@ -16,11 +16,10 @@ namespace HAST.Elite.Dangerous.DataAssistant.UnitTests
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.Linq;
 
     using HAST.Elite.Dangerous.DataAssistant.Routing;
-
-    using log4net;
 
     using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -28,46 +27,37 @@ namespace HAST.Elite.Dangerous.DataAssistant.UnitTests
     [TestClass]
     public class RoutePlanningTests
     {
-        private static readonly ILog Log = LogManager.GetLogger(typeof(RoutePlanningTests));
         #region Fields
 
         /// <summary>The route planner</summary>
-        private readonly IRoutePlanner routePlanner = new RoutePlanner();
+        private IRoutePlanner routePlanner;
 
         #endregion
 
         #region Public Methods and Operators
-        [TestMethod]
-        public void CustomRoute()
-        {
-            Log.Debug("Popular route test");
-
-            this.routePlanner.Source = "Ethgreze";
-            this.routePlanner.Destination = "Eranin";
-            this.routePlanner.JumpRange = 22.73f;
-            this.routePlanner.AvoidSystems = new List<string>(new[] { "Alioth", "Sol" });
-            this.TimeAndOutputRoute();
-            Assert.IsNotNull(this.routePlanner.Route);
-
-            this.routePlanner.Source = "Eranin";
-            this.routePlanner.Destination = "Leesti";
-            this.routePlanner.JumpRange = 22.12f;
-            this.routePlanner.AvoidSystems = new List<string>(new[] { "Alioth", "Sol" });
-            this.TimeAndOutputRoute();
-            Assert.IsNotNull(this.routePlanner.Route);
-
-            this.routePlanner.Source = "Orrere";
-            this.routePlanner.Destination = "Ethgreze";
-            this.routePlanner.JumpRange = 20.33f;
-            this.routePlanner.AvoidSystems = new List<string>(new[] { "Alioth", "Sol" });
-            this.TimeAndOutputRoute();
-            Assert.IsNotNull(this.routePlanner.Route);
-        }
-
-
-        /// <summary>Longs the route.</summary>
+        /// <summary>
+        ///     Tests a class that supports <see cref="HAST.Elite.Dangerous.DataAssistant.Routing.IRoutePlanner" /> against
+        ///     a popular route.
+        /// </summary>
         [TestMethod]
         public void LongRoute()
+        {
+            this.routePlanner = new RoutePlanner();
+            this.LongRouteTests();
+        }
+
+        /// <summary>
+        ///     Tests a class that supports <see cref="HAST.Elite.Dangerous.DataAssistant.Routing.IRoutePlanner" /> against
+        ///     a popular route.
+        /// </summary>
+        [TestMethod]
+        public void LongRouteShortestPath()
+        {
+            this.routePlanner = new RoutePlannerShortestPath();
+            this.LongRouteTests();
+        }
+
+        private void LongRouteTests()
         {
             this.routePlanner.Source = "Er Tcher";
             this.routePlanner.Destination = "Lave";
@@ -119,8 +109,23 @@ namespace HAST.Elite.Dangerous.DataAssistant.UnitTests
         [TestMethod]
         public void PopularRoute()
         {
-            Log.Debug("Popular route test");
+            this.routePlanner = new RoutePlanner();
+            this.PopularRouteTests();
+        }
 
+        /// <summary>
+        ///     Tests a class that supports <see cref="HAST.Elite.Dangerous.DataAssistant.Routing.IRoutePlanner" /> against
+        ///     a popular route.
+        /// </summary>
+        [TestMethod]
+        public void PopularRouteShortestPath()
+        {
+            this.routePlanner = new RoutePlannerShortestPath();
+            this.PopularRouteTests();
+        }
+
+        private void PopularRouteTests()
+        {
             this.routePlanner.Source = "Ethgreze";
             this.routePlanner.Destination = "Leesti";
             this.routePlanner.JumpRange = 20;
@@ -165,9 +170,29 @@ namespace HAST.Elite.Dangerous.DataAssistant.UnitTests
             Assert.IsNull(this.routePlanner.Route);
         }
 
-        /// <summary>Shorts the route.</summary>
+        /// <summary>
+        ///     Tests a class that supports <see cref="HAST.Elite.Dangerous.DataAssistant.Routing.IRoutePlanner" /> against
+        ///     a short route.
+        /// </summary>
         [TestMethod]
         public void ShortRoute()
+        {
+            this.routePlanner = new RoutePlanner();
+            this.ShortRouteTests();
+        }
+
+        /// <summary>
+        ///     Tests a class that supports <see cref="HAST.Elite.Dangerous.DataAssistant.Routing.IRoutePlanner" /> against
+        ///     a short route.
+        /// </summary>
+        [TestMethod]
+        public void ShortRouteShortestPath()
+        {
+            this.routePlanner = new RoutePlannerShortestPath();
+            this.ShortRouteTests();
+        }
+
+        private void ShortRouteTests()
         {
             this.routePlanner.Source = "Ethgreze";
             this.routePlanner.Destination = "He Bo";
@@ -199,7 +224,7 @@ namespace HAST.Elite.Dangerous.DataAssistant.UnitTests
         private void TimeAndOutputRoute()
         {
             var routeFound = routePlanner.Calculate();
-            Log.DebugFormat(
+            Debug.WriteLine(
                 "Time taken for route from {0} to {1} with jump range of {2} was {3}ms",
                 routePlanner.Source,
                 routePlanner.Destination,
@@ -207,18 +232,18 @@ namespace HAST.Elite.Dangerous.DataAssistant.UnitTests
                 routePlanner.CalculationTime.TotalMilliseconds);
             if (routeFound)
             {
-                Log.DebugFormat("Route found with {0} jumps", routePlanner.Route.Count());
+                Debug.WriteLine("Route found with {0} jumps", routePlanner.Route.Count());
                 double distance = 0;
                 foreach (var routeNode in routePlanner.Route)
                 {
-                    Log.DebugFormat("{0} : {1:F}ly", routeNode.System, routeNode.Distance);
+                    Debug.WriteLine("{0} : {1:F}ly", routeNode.System, routeNode.Distance);
                     distance += routeNode.Distance;
                 }
-                Log.DebugFormat("TOTAL {0:F}ly distance", distance);
+                Debug.WriteLine("TOTAL {0:F}ly distance", distance);
             }
             else
             {
-                Log.Debug("Sorry you probably need more jump range");
+                Debug.WriteLine("Sorry you probably need more jump range");
             }
         }
 

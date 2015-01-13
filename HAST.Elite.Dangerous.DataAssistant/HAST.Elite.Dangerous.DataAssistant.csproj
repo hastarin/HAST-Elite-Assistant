@@ -120,10 +120,15 @@
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Routing\IRouteNode.cs" />
     <Compile Include="Routing\IRoutePlanner.cs" />
+    <Compile Include="Routing\IShortestPath.cs" />
+    <Compile Include="Routing\PriorityQueue.cs" />
     <Compile Include="Routing\RouteNode.cs" />
     <Compile Include="Routing\RouteNodeDistance.cs" />
+    <Compile Include="Routing\RouteNodePoint.cs" />
     <Compile Include="Routing\RoutePlanner.cs" />
     <Compile Include="Routing\RoutePlannerBase.cs" />
+    <Compile Include="Routing\RoutePlannerShortestPath.cs" />
+    <Compile Include="Routing\ShortestPathGraphSearch.cs" />
     <Compile Include="Routing\UnknownSystemException.cs" />
     <Compile Include="ViewModels\LogWatcher.cs">
       <SubType>Component</SubType>
@@ -202,8 +207,11 @@
     <SplashScreen Include="Resources\SplashScreen.png" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Licenses\UnityUtils.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Licenses\WPFTextBoxAutoComplete.txt">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

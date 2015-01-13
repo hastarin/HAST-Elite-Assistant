@@ -117,8 +117,14 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
             try
             {
                 Log.Debug("Contructor called.");
-                this.InitializeDatabase();
-
+                try
+                {
+                    this.InitializeDatabase();
+                }
+                catch (Exception e)
+                {
+                    Log.Error("Error creating database.", e);
+                }
                 Log.Debug("Setting up the LogWatcher.");
                 this.logWatcher = new LogWatcher();
                 this.mainWindow = Application.Current.MainWindow as MetroWindow;

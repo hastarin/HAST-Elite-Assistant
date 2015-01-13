@@ -10,7 +10,7 @@
                       xmlns:prop="clr-namespace:HAST.Elite.Dangerous.DataAssistant.Properties"
                       xmlns:qc="clr-namespace:QuickConverter;assembly=QuickConverter"
                       xmlns:b="clr-namespace:HAST.Elite.Dangerous.DataAssistant.Behaviors"
-                      xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+                      xmlns:Custom="http://metro.mahapps.com/winfx/xaml/shared"
                       x:Class="HAST.Elite.Dangerous.DataAssistant.MainWindow"
                       mc:Ignorable="d" ResizeMode="CanResizeWithGrip"
                       DataContext="{Binding ViewModel, Mode=OneWay, RelativeSource={RelativeSource Self}}" 
@@ -22,6 +22,7 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="/Resources/Icons.xaml" />
             </ResourceDictionary.MergedDictionaries>
+            <Custom:ToUpperConverter x:Key="ToUpperConverter"/>
             <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
             <DataTemplate x:Key="DataTemplateRouteNode" DataType="{x:Type routing:IRouteNode}">
                 <Grid>
@@ -29,7 +30,7 @@
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
-                    <TextBlock Text="{Binding System}" ToolTip="{Binding System}" Grid.Column="0" />
+                    <TextBlock Text="{Binding System, Converter={StaticResource ToUpperConverter}}" ToolTip="{Binding System}" Grid.Column="0" />
                     <TextBlock Text="{Binding Distance, StringFormat=\{0:F2\} LY}" Margin="5,0" Grid.Column="1" />
                 </Grid>
             </DataTemplate>
@@ -39,14 +40,13 @@
                         <Grid Width="12" Height="12">
                             <Ellipse Width="12" Height="12" Fill="Red" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                             <TextBlock Foreground="White" FontWeight="Heavy" 
-            FontSize="8" HorizontalAlignment="Center" 
-            VerticalAlignment="Center" TextAlignment="Center"
-                       ToolTip="{Binding ElementName=ErrorAdorner, 
-                       Path=AdornedElement.(Validation.Errors)[0].ErrorContent}"
-                       >X</TextBlock>
+            					FontSize="8" HorizontalAlignment="Center" 
+            					VerticalAlignment="Center" TextAlignment="Center"
+            					ToolTip="{Binding AdornedElement.(Validation.Errors)[0].ErrorContent, ElementName=ErrorAdorner}"
+                       ><Run Text="X"/></TextBlock>
                         </Grid>
                         <TextBlock Margin="2,0,0,0" Background="{DynamicResource ControlBackgroundBrush}" Foreground="{DynamicResource ValidationTextBrush}"
-                   Text="{Binding ElementName=ErrorAdorner, Path=AdornedElement.(Validation.Errors)[0].ErrorContent}"/>
+            				Text="{Binding AdornedElement.(Validation.Errors)[0].ErrorContent, ElementName=ErrorAdorner}"/>
                     </StackPanel>
                     <Border BorderBrush="Red" BorderThickness="1">
                         <AdornedElementPlaceholder x:Name="ErrorAdorner" />
@@ -93,20 +93,20 @@
         <controls:FlyoutsControl>
             <controls:Flyout x:Name="SettingsFlyout" CloseCommand="{Binding SaveSettingsCommand}"
                              Margin="0 0 0 0"
-                             Width="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=controls:MetroWindow}, Path=ActualWidth}"
+                             Width="{Binding ActualWidth, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type controls:MetroWindow}}}"
                              Header="Settings"
                              Position="Right"
                              AnimateOpacity="True">
                 <StackPanel Orientation="Vertical">
-                    <TextBlock Text="{Binding SystemNames.Count, StringFormat='{}{0} systems known.'}" Margin="3" />
+                    <TextBlock Text="{Binding SystemNames.Count, StringFormat=\{0\} systems known.}" Margin="3" />
                     <xctk:PropertyGrid x:Name="PropertyGrid" SelectedObjectName=""
-                                       SelectedObject="{Binding Source={x:Static prop:Settings.Default}}"
-                                       Foreground="{DynamicResource TextBrush}"
-                                       Background="{DynamicResource ControlBackgroundBrush}"
-                                       ShowAdvancedOptions="False" ShowSummary="True" ShowTitle="False"
-                                       ShowSearchBox="False"
-                                       ShowPreview="False" ShowSortOptions="False" IsCategorized="False"
-                                       AutoGenerateProperties="False">
+            			SelectedObject="{Binding Source={x:Static prop:Settings.Default}}"
+            			Foreground="{DynamicResource TextBrush}"
+            			Background="{DynamicResource ControlBackgroundBrush}"
+            			ShowAdvancedOptions="False" ShowSummary="True" ShowTitle="False"
+            			ShowSearchBox="False"
+            			ShowPreview="False" ShowSortOptions="False" IsCategorized="False"
+            			AutoGenerateProperties="False">
                         <xctk:PropertyGrid.PropertyDefinitions>
                             <xctk:PropertyDefinition DisplayOrder="1" TargetProperties="AutoCopyNextSystem" DisplayName="Auto copy next system" Description="When set as you jump the next system will be copied to the clipboard." />
                             <xctk:PropertyDefinition DisplayOrder="2" TargetProperties="SpeakNextSystemDuringJump" DisplayName="Speak next system" Description="When set as you jump the next system will spoken via Window Text-to-Speech." />
@@ -131,43 +131,42 @@
         </Grid.RowDefinitions>
         <WrapPanel Grid.Row="0">
             <Button Command="{Binding RoutePlanner.SwapSystemsCommand}" ToolTip="Swap Source/Destination" 
-                    VerticalAlignment="Center" Padding="3" Margin="3,3,3,0" Style="{DynamicResource SquareButtonStyle}">
+				VerticalAlignment="Center" Padding="3" Margin="3,3,3,0" Style="{DynamicResource SquareButtonStyle}">
                 <Rectangle Width="20" Height="20"
-            		Fill="{DynamicResource BlackBrush}">
+					Fill="{DynamicResource BlackBrush}">
                     <Rectangle.OpacityMask>
                         <VisualBrush Stretch="UniformToFill"
-            				Visual="{DynamicResource appbar_arrow_up_down}"/>
+							Visual="{DynamicResource appbar_arrow_up_down}"/>
                     </Rectangle.OpacityMask>
                 </Rectangle>
             </Button>
             <Grid Height="25" Width="130">
-                <Label Target="{Binding ElementName=DecimalUpDown}" Content="_Jump Range" VerticalContentAlignment="Center" VerticalAlignment="Center"/>
+                <Label Target="{Binding ElementName=DecimalUpDown}" Content="_JUMP RANGE" VerticalContentAlignment="Center" VerticalAlignment="Center"/>
                 <xctk:DecimalUpDown FormatString="F2" Value="{Binding RoutePlanner.JumpRange}" x:Name="DecimalUpDown" Foreground="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}" VerticalAlignment="Center" HorizontalAlignment="Right" Padding="0" />
             </Grid>
             <Grid Width="210">
                 <Label Target="{Binding ElementName=SourceAutoCompleteBox}" Content="_S" ToolTip="Source" VerticalContentAlignment="Center"/>
                 <xctk:AutoSelectTextBox x:Name="SourceAutoCompleteBox"
 					Text="{Binding RoutePlanner.Source, ValidatesOnExceptions=True}" Validation.ErrorTemplate="{StaticResource ValidationErrorTemplate}"
-                    Margin="18,0,3,0" b:AutoCompleteBehavior.AutoCompleteItemsSource="{Binding SystemNames}"
-					AutoSelectBehavior="OnFocus" AutoMoveFocus="True" VerticalAlignment="Center">
-                </xctk:AutoSelectTextBox>
+					Margin="18,0,3,0" b:AutoCompleteBehavior.AutoCompleteItemsSource="{Binding SystemNames}"
+					AutoSelectBehavior="OnFocus" AutoMoveFocus="True" VerticalAlignment="Center"/>
             </Grid>
             <Grid Width="210">
                 <Label Target="{Binding ElementName=DestinationAutoCompleteBox}" Content="_D" ToolTip="Destination" VerticalContentAlignment="Center"/>
                 <xctk:AutoSelectTextBox x:Name="DestinationAutoCompleteBox" b:AutoCompleteBehavior.AutoCompleteItemsSource="{Binding SystemNames}"
-                                        Margin="18,0,3,0" Validation.ErrorTemplate="{StaticResource ValidationErrorTemplate}"
+					Margin="18,0,3,0" Validation.ErrorTemplate="{StaticResource ValidationErrorTemplate}"
 					Text="{Binding RoutePlanner.Destination, ValidatesOnExceptions=True}" AutoSelectBehavior="OnFocus" AutoMoveFocus="True" VerticalAlignment="Center" />
             </Grid>
         </WrapPanel>
         <StackPanel Orientation="Horizontal" Visibility="{Binding RoutePlanner.WasRouteFound, Converter={StaticResource BooleanToVisibilityConverter}}" Background="{DynamicResource AccentColorBrush4}" Grid.Row="1">
-            <TextBlock Text="{Binding RoutePlanner.NumberOfJumps, StringFormat='Found {0} jumps'}" Margin="3,0,0,0"/>
-            <TextBlock Text="{Binding RoutePlanner.Distance, StringFormat='over {0:F2} LY'}" Margin="3,0">
+            <TextBlock Text="{Binding RoutePlanner.NumberOfJumps, StringFormat=Found \{0\} jumps}" Margin="3,0,0,0"/>
+            <TextBlock Text="{Binding RoutePlanner.Distance, StringFormat=over \{0:F2\} LY}" Margin="3,0">
                 <TextBlock.ToolTip>
-                    <TextBlock Text="{Binding RoutePlanner.CalculationTime.TotalMilliseconds, StringFormat='{}{0:F2}ms taken'}"/>
+                    <TextBlock Text="{Binding RoutePlanner.CalculationTime.TotalMilliseconds, StringFormat=\{0:F2\}ms taken}"/>
                 </TextBlock.ToolTip> 
-            </TextBlock>
+			</TextBlock>
         </StackPanel>
-        <StackPanel Orientation="Horizontal" Visibility="{qc:Binding '$P ? Visibility.Collapsed : Visibility.Visible', P={Binding RoutePlanner.WasRouteFound}}" Background="{DynamicResource AccentColorBrush4}" Grid.Row="1">
+        <StackPanel Orientation="Horizontal" Visibility="{qc:Binding $P ? Visibility.Collapsed : Visibility.Visible, P={Binding RoutePlanner.WasRouteFound}}" Background="{DynamicResource AccentColorBrush4}" Grid.Row="1">
             <TextBlock Text="Try upgrading your jump drive!"/>
         </StackPanel>
         <!--<Button Command="{Binding RoutePlanner.CalculateRouteCommand}" Margin="3" Content="_Route" Width="90" IsDefault="True"/>-->
@@ -175,20 +174,20 @@
         <StatusBar Grid.Row="3" x:Name="StatusBar">
             <StatusBarItem>
                 <Grid>
-                    <TextBlock Text="{Binding LogWatcher.CurrentSystem}" x:Name="CurrentSytstemTextBlock" ToolTip="Click to set as Source System." />
+                    <TextBlock Text="{Binding LogWatcher.CurrentSystem, Converter={StaticResource ToUpperConverter}}" x:Name="CurrentSytstemTextBlock" ToolTip="Click to set as Source System." />
                     <Button Command="{Binding SetSourceToCurrentCommand}" Width="{Binding ActualWidth, ElementName=CurrentSytstemTextBlock, Mode=OneWay}" Height="{Binding ActualHeight, ElementName=CurrentSytstemTextBlock, Mode=OneWay}" Opacity="0" />
                 </Grid>
             </StatusBarItem>
             <StatusBarItem>
                 <StackPanel Orientation="Vertical">
                     <Slider Minimum="0.0" Maximum="1"
-                            Value="{Binding BackgroundOpacity}"
-                            LargeChange="0.1" SmallChange="0.01" Width="120" Style="{DynamicResource FlatSlider}"
-                            ToolTip="Adjusts background transparency." />
+						Value="{Binding BackgroundOpacity}"
+						LargeChange="0.1" SmallChange="0.01" Width="120" Style="{DynamicResource FlatSlider}"
+						ToolTip="Adjusts background transparency." />
                     <Slider Minimum="0.2" Maximum="1"
-                            Value="{Binding Opacity, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:MainWindow}}}"
-                            LargeChange="0.1" SmallChange="0.01" Width="120" Style="{DynamicResource FlatSlider}"
-                            ToolTip="Adjusts overall window transparency." />
+						Value="{Binding Opacity, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:MainWindow}}}"
+						LargeChange="0.1" SmallChange="0.01" Width="120" Style="{DynamicResource FlatSlider}"
+						ToolTip="Adjusts overall window transparency." />
                 </StackPanel>
             </StatusBarItem>
         </StatusBar>

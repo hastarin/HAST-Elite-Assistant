@@ -4,7 +4,7 @@
 // Created          : 10-01-2015
 // 
 // Last Modified By : Jon Benson
-// Last Modified On : 10-01-2015
+// Last Modified On : 14-01-2015
 // ***********************************************************************
 // <copyright file="RoutePlannerBase.cs" company="Jon Benson">
 //     Copyright (c) Jon Benson. All rights reserved.
@@ -36,8 +36,11 @@ namespace HAST.Elite.Dangerous.DataAssistant.Routing
 
         #region Fields
 
-        /// <summary>The <see cref="Stopwatch" /></summary>
+        /// <summary>The <see cref="HAST.Elite.Dangerous.DataAssistant.Routing.RoutePlannerBase.Stopwatch" /></summary>
         protected readonly Stopwatch Stopwatch = new Stopwatch();
+
+        /// <summary>The jump range squared</summary>
+        protected float JumpRangeSquared;
 
         /// <summary>
         ///     The <see cref="HAST.Elite.Dangerous.DataAssistant.Routing.RoutePlannerBase.destination" />
@@ -62,7 +65,27 @@ namespace HAST.Elite.Dangerous.DataAssistant.Routing
 
         private List<string> avoidSystems = new List<string>();
 
+        private float jumpRange;
+
         private TimeSpan timeout = TimeSpan.FromSeconds(3);
+
+        #endregion
+
+        #region Constructors and Destructors
+
+        /// <summary>Initializes a new instance of the <see cref="System.Object" /> class.</summary>
+        public RoutePlannerBase()
+        {
+            if (string.IsNullOrWhiteSpace(Settings.Default.AvoidSystems))
+            {
+                return;
+            }
+            var avoid = Settings.Default.AvoidSystems.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+            foreach (var s in avoid)
+            {
+                this.AvoidSystems.Add(s);
+            }
+        }
 
         #endregion
 
@@ -85,10 +108,12 @@ namespace HAST.Elite.Dangerous.DataAssistant.Routing
         public TimeSpan CalculationTime { get; protected set; }
 
         /// <summary>
-        ///     Gets or sets the <see cref="HAST.Elite.Dangerous.DataAssistant.Routing.RoutePlannerBase.destination" />
-        ///     system name.
+        ///     <para>
+        ///         Gets or sets the <see cref="HAST.Elite.Dangerous.DataAssistant.Routing.RoutePlannerBase.destination" />
+        ///     </para>
+        ///     <para>system name.</para>
         /// </summary>
-        /// <exception cref="UnknownSystemException">Thrown if the systems is not found in the database. </exception>
+        /// <exception cref="UnknownSystemException">Thrown if the systems is not found in the database.</exception>
         public string Destination
         {
             get
@@ -111,7 +136,18 @@ namespace HAST.Elite.Dangerous.DataAssistant.Routing
         }
 
         /// <summary>Gets or sets the jump range the ship is capable of.</summary>
-        public float JumpRange { get; set; }
+        public float JumpRange
+        {
+            get
+            {
+                return this.jumpRange;
+            }
+            set
+            {
+                this.jumpRange = value;
+                this.JumpRangeSquared = value * value;
+            }
+        }
 
         /// <summary>Gets the route.</summary>
         public IEnumerable<IRouteNode> Route { get; protected set; }
@@ -120,7 +156,7 @@ namespace HAST.Elite.Dangerous.DataAssistant.Routing
         ///     Gets or sets the <see cref="HAST.Elite.Dangerous.DataAssistant.Routing.RoutePlannerBase.source" /> system
         ///     name.
         /// </summary>
-        /// <exception cref="UnknownSystemException">Thrown if the system is not found in the database. </exception>
+        /// <exception cref="UnknownSystemException">Thrown if the system is not found in the database.</exception>
         public string Source
         {
             get
@@ -142,7 +178,10 @@ namespace HAST.Elite.Dangerous.DataAssistant.Routing
             }
         }
 
-        /// <summary>Gets or sets the <see cref="timeout" /> for calculating a route.</summary>
+        /// <summary>
+        ///     Gets or sets the <see cref="HAST.Elite.Dangerous.DataAssistant.Routing.RoutePlannerBase.timeout" /> for
+        ///     calculating a route.
+        /// </summary>
         public TimeSpan Timeout
         {
             get
@@ -156,22 +195,6 @@ namespace HAST.Elite.Dangerous.DataAssistant.Routing
         }
 
         #endregion
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="T:System.Object"/> class.
-        /// </summary>
-        public RoutePlannerBase()
-        {
-            if (string.IsNullOrWhiteSpace(Settings.Default.AvoidSystems))
-            {
-                return;
-            }
-            var avoid = Settings.Default.AvoidSystems.Split(new[]{','}, StringSplitOptions.RemoveEmptyEntries);
-            foreach (var s in avoid)
-            {
-                this.AvoidSystems.Add(s);
-            }
-        }
 
         #region Public Methods and Operators
 
