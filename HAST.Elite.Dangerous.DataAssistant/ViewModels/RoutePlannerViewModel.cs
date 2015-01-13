@@ -148,9 +148,9 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
             }
             set
             {
+                this.RoutePlanner.Destination = value;
                 if (this.Set(ref this.destination, value))
                 {
-                    this.RoutePlanner.Destination = value;
                     this.CalculateRoute();
                 }
             }
@@ -233,9 +233,9 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
             }
             set
             {
+                this.RoutePlanner.Source = value;
                 if (this.Set(ref this.source, value))
                 {
-                    this.RoutePlanner.Source = value;
                     this.CalculateRoute();
                 }
             }

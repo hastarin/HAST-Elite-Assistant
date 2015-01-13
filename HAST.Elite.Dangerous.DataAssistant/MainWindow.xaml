@@ -4,12 +4,13 @@
                       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                       xmlns:controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
-                      xmlns:behaviors="clr-namespace:WPFTextBoxAutoComplete;assembly=WPFTextBoxAutoComplete"
                       xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
                       xmlns:routing="clr-namespace:HAST.Elite.Dangerous.DataAssistant.Routing"
                       xmlns:local="clr-namespace:HAST.Elite.Dangerous.DataAssistant"
                       xmlns:prop="clr-namespace:HAST.Elite.Dangerous.DataAssistant.Properties"
                       xmlns:qc="clr-namespace:QuickConverter;assembly=QuickConverter"
+                      xmlns:b="clr-namespace:HAST.Elite.Dangerous.DataAssistant.Behaviors"
+                      xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
                       x:Class="HAST.Elite.Dangerous.DataAssistant.MainWindow"
                       mc:Ignorable="d" ResizeMode="CanResizeWithGrip"
                       DataContext="{Binding ViewModel, Mode=OneWay, RelativeSource={RelativeSource Self}}" 
@@ -32,6 +33,26 @@
                     <TextBlock Text="{Binding Distance, StringFormat=\{0:F2\} LY}" Margin="5,0" Grid.Column="1" />
                 </Grid>
             </DataTemplate>
+            <ControlTemplate x:Key="ValidationErrorTemplate">
+                <DockPanel>
+                    <StackPanel Orientation="Horizontal" DockPanel.Dock="Top">
+                        <Grid Width="12" Height="12">
+                            <Ellipse Width="12" Height="12" Fill="Red" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            <TextBlock Foreground="White" FontWeight="Heavy" 
+            FontSize="8" HorizontalAlignment="Center" 
+            VerticalAlignment="Center" TextAlignment="Center"
+                       ToolTip="{Binding ElementName=ErrorAdorner, 
+                       Path=AdornedElement.(Validation.Errors)[0].ErrorContent}"
+                       >X</TextBlock>
+                        </Grid>
+                        <TextBlock Margin="2,0,0,0" Background="{DynamicResource ControlBackgroundBrush}" Foreground="{DynamicResource ValidationTextBrush}"
+                   Text="{Binding ElementName=ErrorAdorner, Path=AdornedElement.(Validation.Errors)[0].ErrorContent}"/>
+                    </StackPanel>
+                    <Border BorderBrush="Red" BorderThickness="1">
+                        <AdornedElementPlaceholder x:Name="ErrorAdorner" />
+                    </Border>
+                </DockPanel>
+            </ControlTemplate>
         </ResourceDictionary>
     </controls:MetroWindow.Resources>
     <controls:MetroWindow.InputBindings>
@@ -97,11 +118,11 @@
                             <!--<xctk:PropertyDefinition TargetProperties="EDDNUri" />-->
                         </xctk:PropertyGrid.PropertyDefinitions>
                     </xctk:PropertyGrid>
-                    </StackPanel>
+                </StackPanel>
             </controls:Flyout>
         </controls:FlyoutsControl>
     </controls:MetroWindow.Flyouts>
-        <Grid>
+    <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
@@ -125,15 +146,17 @@
             </Grid>
             <Grid Width="210">
                 <Label Target="{Binding ElementName=SourceAutoCompleteBox}" Content="_S" ToolTip="Source" VerticalContentAlignment="Center"/>
-                <xctk:AutoSelectTextBox x:Name="SourceAutoCompleteBox" behaviors:AutoCompleteBehavior.AutoCompleteItemsSource="{Binding SystemNames}" 
-					Text="{Binding RoutePlanner.Source}" Margin="18,0,3,0"
-					AutoSelectBehavior="OnFocus" AutoMoveFocus="True" VerticalAlignment="Center" />
+                <xctk:AutoSelectTextBox x:Name="SourceAutoCompleteBox"
+					Text="{Binding RoutePlanner.Source, ValidatesOnExceptions=True}" Validation.ErrorTemplate="{StaticResource ValidationErrorTemplate}"
+                    Margin="18,0,3,0" b:AutoCompleteBehavior.AutoCompleteItemsSource="{Binding SystemNames}"
+					AutoSelectBehavior="OnFocus" AutoMoveFocus="True" VerticalAlignment="Center">
+                </xctk:AutoSelectTextBox>
             </Grid>
             <Grid Width="210">
                 <Label Target="{Binding ElementName=DestinationAutoCompleteBox}" Content="_D" ToolTip="Destination" VerticalContentAlignment="Center"/>
-                <xctk:AutoSelectTextBox x:Name="DestinationAutoCompleteBox" behaviors:AutoCompleteBehavior.AutoCompleteItemsSource="{Binding SystemNames}"
-                                        Margin="18,0,3,0" 
-					Text="{Binding RoutePlanner.Destination}" AutoSelectBehavior="OnFocus" AutoMoveFocus="True" VerticalAlignment="Center" />
+                <xctk:AutoSelectTextBox x:Name="DestinationAutoCompleteBox" b:AutoCompleteBehavior.AutoCompleteItemsSource="{Binding SystemNames}"
+                                        Margin="18,0,3,0" Validation.ErrorTemplate="{StaticResource ValidationErrorTemplate}"
+					Text="{Binding RoutePlanner.Destination, ValidatesOnExceptions=True}" AutoSelectBehavior="OnFocus" AutoMoveFocus="True" VerticalAlignment="Center" />
             </Grid>
         </WrapPanel>
         <StackPanel Orientation="Horizontal" Visibility="{Binding RoutePlanner.WasRouteFound, Converter={StaticResource BooleanToVisibilityConverter}}" Background="{DynamicResource AccentColorBrush4}" Grid.Row="1">
@@ -142,7 +165,7 @@
                 <TextBlock.ToolTip>
                     <TextBlock Text="{Binding RoutePlanner.CalculationTime.TotalMilliseconds, StringFormat='{}{0:F2}ms taken'}"/>
                 </TextBlock.ToolTip> 
-            </TextBlock> 
+            </TextBlock>
         </StackPanel>
         <StackPanel Orientation="Horizontal" Visibility="{qc:Binding '$P ? Visibility.Collapsed : Visibility.Visible', P={Binding RoutePlanner.WasRouteFound}}" Background="{DynamicResource AccentColorBrush4}" Grid.Row="1">
             <TextBlock Text="Try upgrading your jump drive!"/>

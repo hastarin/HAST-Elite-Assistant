@@ -48,7 +48,7 @@ namespace HAST.Elite.Dangerous.DataAssistant.Routing
         #region Public Methods and Operators
 
         /// <summary>Calculates the configured route.</summary>
-        /// <exception cref="RoutePlannerTimeoutException" />
+        /// <exception cref="UnknownSystemException" />
         /// <returns><c>true</c> if a route was found, <c>false</c> otherwise.</returns>
         bool Calculate();
 

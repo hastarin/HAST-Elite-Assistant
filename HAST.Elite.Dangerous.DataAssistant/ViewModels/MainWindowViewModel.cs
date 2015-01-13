@@ -37,6 +37,7 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
     using HAST.Elite.Dangerous.DataAssistant.Models;
     using HAST.Elite.Dangerous.DataAssistant.Models.Eddn;
     using HAST.Elite.Dangerous.DataAssistant.Properties;
+    using HAST.Elite.Dangerous.DataAssistant.Routing;
 
     using log4net;
 
@@ -113,34 +114,56 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
         /// </summary>
         private MainWindowViewModel()
         {
-            Log.Debug("Contructor called.");
-            this.InitializeDatabase();
-
-            Log.Debug("Setting up the LogWatcher.");
-            this.logWatcher = new LogWatcher();
-            this.mainWindow = Application.Current.MainWindow as MetroWindow;
-            this.dispatcher = this.MainWindow.Dispatcher;
-            this.dispatcher.BeginInvoke(
-                DispatcherPriority.Loaded,
-                new Action(this.InitializeLogWatcher));
-
-            Log.Debug("Configuring route planner with last used values.");
-            this.routePlanner.source = Settings.Default.Source;
-            this.routePlanner.RoutePlanner.Source = Settings.Default.Source;
-            this.routePlanner.destination = Settings.Default.Destination;
-            this.routePlanner.RoutePlanner.Destination = Settings.Default.Destination;
-            this.routePlanner.jumpRange = Settings.Default.JumpRange;
-            this.routePlanner.RoutePlanner.JumpRange = Settings.Default.JumpRange;
-            this.routePlanner.CalculateRoute();
-
-            var repeatNextSystemAfter = Settings.Default.RepeatNextSystemAfter;
-            if (repeatNextSystemAfter > 0)
+            try
             {
-                Log.Debug("Setting up speech delay timer.");
-                this.speechDelayTimer.Interval = TimeSpan.FromSeconds(repeatNextSystemAfter);
-                this.speechDelayTimer.Tick += this.SpeakNextSystem;
-            }
+                Log.Debug("Contructor called.");
+                this.InitializeDatabase();
 
+                Log.Debug("Setting up the LogWatcher.");
+                this.logWatcher = new LogWatcher();
+                this.mainWindow = Application.Current.MainWindow as MetroWindow;
+                this.dispatcher = this.MainWindow.Dispatcher;
+                this.dispatcher.BeginInvoke(
+                    DispatcherPriority.Loaded,
+                    new Action(this.InitializeLogWatcher));
+
+                Log.Debug("Configuring route planner with last used values.");
+                try
+                {
+                    this.routePlanner.RoutePlanner.Source = Settings.Default.Source;
+                    this.routePlanner.source = Settings.Default.Source;
+                }
+                catch (UnknownSystemException)
+                {
+                    this.routePlanner.RoutePlanner.Source = "Ethgreze";
+                    this.routePlanner.source = "Ethgreze";
+                }
+                try
+                {
+                    this.routePlanner.RoutePlanner.Destination = Settings.Default.Destination;
+                    this.routePlanner.destination = Settings.Default.Destination;
+                }
+                catch (UnknownSystemException)
+                {
+                    this.routePlanner.RoutePlanner.Destination = "Leesti";
+                    this.routePlanner.destination = "Leesti";
+                }
+                this.routePlanner.jumpRange = Settings.Default.JumpRange;
+                this.routePlanner.RoutePlanner.JumpRange = Settings.Default.JumpRange;
+                this.routePlanner.CalculateRoute();
+
+                var repeatNextSystemAfter = Settings.Default.RepeatNextSystemAfter;
+                if (repeatNextSystemAfter > 0)
+                {
+                    Log.Debug("Setting up speech delay timer.");
+                    this.speechDelayTimer.Interval = TimeSpan.FromSeconds(repeatNextSystemAfter);
+                    this.speechDelayTimer.Tick += this.SpeakNextSystem;
+                }
+            }
+            catch (Exception e)
+            {
+                Log.Error(e);
+            }
             try
             {
                 this.eddnSubscriberSocket = NetMqContext.CreateSubscriberSocket();

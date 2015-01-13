@@ -88,6 +88,7 @@ namespace HAST.Elite.Dangerous.DataAssistant.Routing
         ///     Gets or sets the <see cref="HAST.Elite.Dangerous.DataAssistant.Routing.RoutePlannerBase.destination" />
         ///     system name.
         /// </summary>
+        /// <exception cref="UnknownSystemException">Thrown if the systems is not found in the database. </exception>
         public string Destination
         {
             get
@@ -96,8 +97,15 @@ namespace HAST.Elite.Dangerous.DataAssistant.Routing
             }
             set
             {
-                var d = Db.Systems.First(s => s.Name == value);
-                this.destinationPoint = new Vector3(d.X, d.Y, d.Z);
+                var d = Db.Systems.FirstOrDefault(s => s.Name == value);
+                if (d != null)
+                {
+                    this.destinationPoint = new Vector3(d.X, d.Y, d.Z);
+                }
+                else
+                {
+                    throw new UnknownSystemException(value + " is not in the database.");
+                }
                 this.destination = value;
             }
         }
@@ -112,6 +120,7 @@ namespace HAST.Elite.Dangerous.DataAssistant.Routing
         ///     Gets or sets the <see cref="HAST.Elite.Dangerous.DataAssistant.Routing.RoutePlannerBase.source" /> system
         ///     name.
         /// </summary>
+        /// <exception cref="UnknownSystemException">Thrown if the system is not found in the database. </exception>
         public string Source
         {
             get
@@ -124,6 +133,10 @@ namespace HAST.Elite.Dangerous.DataAssistant.Routing
                 if (d != null)
                 {
                     this.sourcePoint = new Vector3(d.X, d.Y, d.Z);
+                }
+                else
+                {
+                    throw new UnknownSystemException(value + " is not in the database.");
                 }
                 this.source = value;
             }
@@ -163,7 +176,7 @@ namespace HAST.Elite.Dangerous.DataAssistant.Routing
         #region Public Methods and Operators
 
         /// <summary>Calculates the configured route.</summary>
-        /// <exception cref="RoutePlannerTimeoutException" />
+        /// <exception cref="UnknownSystemException" />
         /// <returns><c>true</c> if a route was found, <c>false</c> otherwise.</returns>
         public virtual bool Calculate()
         {

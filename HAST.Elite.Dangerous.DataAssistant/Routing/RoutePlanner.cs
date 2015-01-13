@@ -84,7 +84,7 @@ namespace HAST.Elite.Dangerous.DataAssistant.Routing
         #region Public Methods and Operators
 
         /// <summary>Calculates the configured route.</summary>
-        /// <exception cref="RoutePlannerTimeoutException" />
+        /// <exception cref="UnknownSystemException" />
         /// <returns><c>true</c> if a route was found, <c>false</c> otherwise.</returns>
         public override bool Calculate()
         {
@@ -180,8 +180,9 @@ namespace HAST.Elite.Dangerous.DataAssistant.Routing
                     }
                     if (this.Stopwatch.Elapsed > this.Timeout)
                     {
-                        Log.WarnFormat("Route planning exceeded timeout of {0}ms", this.Timeout.TotalMilliseconds);
-                        throw new RoutePlannerTimeoutException();
+                        var message = string.Format("Route planning exceeded timeout of {0}ms", this.Timeout.TotalMilliseconds);
+                        Log.Warn(message);
+                        throw new TimeoutException(message);
                     }
                     if (nextNode == null || nextNode.Point == rangeSphere.Center || nextNode.Point == this.sourcePoint)
                     {
@@ -221,7 +222,7 @@ namespace HAST.Elite.Dangerous.DataAssistant.Routing
                 route.AsParallel().ForAll(r => r.Distance = Math.Sqrt(r.SourceDistanceSquared));
                 this.Route = route;
             }
-            catch (RoutePlannerTimeoutException)
+            catch (UnknownSystemException)
             {
                 throw;
             }
