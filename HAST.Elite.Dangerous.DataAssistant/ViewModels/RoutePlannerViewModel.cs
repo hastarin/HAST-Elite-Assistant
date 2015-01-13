@@ -288,9 +288,14 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
                 this.Set(ref this.wasRouteFound, value);
                 if (!value)
                 {
+                    Log.Debug("Route was NOT found.");
                     this.CalculationTime = TimeSpan.MinValue;
                     this.NumberOfJumps = 0;
                     this.Distance = 0;
+                }
+                else
+                {
+                    Log.Debug("Route was found.");
                 }
             }
         }
@@ -348,15 +353,10 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
         /// <summary>Calculates the route.</summary>
         internal void CalculateRoute()
         {
-            Log.Info("CalculateRoute called.");
+            Log.Debug("CalculateRoute called.");
             this.Route.Clear();
             try
             {
-                Log.InfoFormat(
-                    "Finding route found between {0} and {1} with jump range of {2:F2}.",
-                    this.Source,
-                    this.Destination,
-                    this.JumpRange);
                 this.WasRouteFound = this.RoutePlanner.Calculate();
                 if (!this.WasRouteFound)
                 {
@@ -373,7 +373,6 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
                 Log.Warn(e);
                 this.WasRouteFound = false;
             }
-            Log.Info("Route found.");
             foreach (var node in this.RoutePlanner.Route)
             {
                 this.Route.Add(node);
@@ -387,8 +386,10 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
                 {
                     try
                     {
-                        Clipboard.SetDataObject(this.Route.First().System, false);
+                        var system = this.Route.First().System;
+                        Clipboard.SetDataObject(system, false);
                         i = 10;
+                        Log.DebugFormat("{0} copied to the clipboard!", system);
                     }
                     catch
                     {

@@ -14,7 +14,6 @@
 
 namespace HAST.Elite.Dangerous.DataAssistant
 {
-    using System;
     using System.Configuration;
     using System.IO;
     using System.Windows;
@@ -36,6 +35,13 @@ namespace HAST.Elite.Dangerous.DataAssistant
         protected override void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
+
+            // Setup Quick Converter.
+            // Add the System namespace so we can use primitive types (i.e. int, etc.).
+            QuickConverter.EquationTokenizer.AddNamespace(typeof(object));
+            // Add the System.Windows namespace so we can use Visibility.Collapsed, etc.
+            QuickConverter.EquationTokenizer.AddNamespace(typeof(Visibility));
+
             // ReSharper disable ExceptionNotDocumented
             var filePath = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.PerUserRoamingAndLocal).FilePath;
             string logFileName = Path.GetDirectoryName(filePath) + "\\log.txt";
@@ -48,19 +54,22 @@ namespace HAST.Elite.Dangerous.DataAssistant
                 UIElement.KeyDownEvent,
                 new KeyEventHandler(this.TextBoxKeyDown));
 
-            if (!Settings.Default.SettingsUpgraded)
+            if (Settings.Default.SettingsUpgraded)
             {
-                try
-                {
-                    Settings.Default.Upgrade();
-                }
-                catch (ConfigurationErrorsException configurationErrorsException)
-                {
-                    log.Warn(configurationErrorsException);
-                }
-                Settings.Default.SettingsUpgraded = true;
-                Settings.Default.Save();
+                return;
             }
+            log.Debug("Upgrading settings from previous version.");
+            try
+            {
+                Settings.Default.Upgrade();
+            }
+            catch (ConfigurationErrorsException configurationErrorsException)
+            {
+                log.Warn(configurationErrorsException);
+            }
+            Settings.Default.SettingsUpgraded = true;
+            Settings.Default.Save();
+            log.Debug("Upgrade done.");
         }
 
         private void MoveToNextUIElement(KeyEventArgs e)

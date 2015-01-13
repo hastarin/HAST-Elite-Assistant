@@ -4,7 +4,7 @@
 // Created          : 04-01-2015
 // 
 // Last Modified By : Jon Benson
-// Last Modified On : 10-01-2015
+// Last Modified On : 13-01-2015
 // ***********************************************************************
 // <copyright file="LogWatcher.cs" company="Jon Benson">
 //     Copyright (c) Jon Benson. All rights reserved.
@@ -37,6 +37,10 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
         ///     The default filter
         /// </summary>
         private const string DefaultFilter = @"netLog.*.log";
+
+        #endregion
+
+        #region Static Fields
 
         private static readonly ILog Log = LogManager.GetLogger(typeof(LogWatcher));
 
@@ -86,6 +90,7 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
         /// </summary>
         public LogWatcher()
         {
+            Log.Debug("LogWatcher constructor called.");
             this.Filter = DefaultFilter;
             this.NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.CreationTime | NotifyFilters.Size;
             if (Settings.Default.LogsFullPath != null && Directory.Exists(Settings.Default.LogsFullPath))
@@ -224,21 +229,27 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
         ///     Throws an exception if the <see cref="Path" /> does not contain netLogs
         ///     files.
         /// </exception>
+        /// <exception cref="FileNotFoundException">
+        ///     The directory specified in <see cref="P:System.IO.FileSystemWatcher.Path" />
+        ///     could not be found.
+        /// </exception>
         public void StartWatching()
         {
+            Log.Info("StartWatching called.");
             if (this.EnableRaisingEvents)
             {
                 return;
             }
             if (!this.IsValidPath())
             {
+                Log.Warn("Invalid Path, throwing an InvalidOperationException.");
                 throw new InvalidOperationException(
                     string.Format("Directory {0} does not contain netLog files?!", this.Path));
             }
             this.UpdateLatestLogFile();
             this.Created += (sender, args) => this.UpdateLatestLogFile();
             this.CheckForSystemChange();
-            this.Changed += (sender, args) => this.CheckForSystemChange();
+            this.Changed += this.OnChanged;
             this.EnableRaisingEvents = true;
         }
 
@@ -285,7 +296,6 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
         /// </summary>
         private void CheckForSystemChange()
         {
-            Log.Info("Checking for a new system in netLog");
             using (
                 var logFileStream = new FileStream(
                     System.IO.Path.Combine(this.Path, this.latestLogFile),
@@ -304,7 +314,7 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
                         var lastSystemFound = matches[matches.Count - 1].Groups["system"].Value;
                         if (this.currentSystem != lastSystemFound)
                         {
-                            Log.InfoFormat("New system found {0}", lastSystemFound);
+                            Log.DebugFormat("New system found {0}", lastSystemFound);
                             this.CurrentSystem = lastSystemFound;
                         }
                     }
@@ -313,18 +323,28 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
             }
         }
 
+        private void OnChanged(object sender, FileSystemEventArgs args)
+        {
+            if (args.Name != this.LatestLogFile)
+            {
+                return;
+            }
+            Log.DebugFormat("Change detected in {0}, checking for a new system.", this.LatestLogFile);
+            this.CheckForSystemChange();
+        }
+
         /// <summary>
         ///     Updates the <see cref="LatestLogFile" /> property.
         /// </summary>
         private void UpdateLatestLogFile()
         {
-            Log.Info("New file created, possible a new log file...");
+            Log.Debug("New file created, checking for a new netLog file.");
             var di = new DirectoryInfo(this.Path);
             var files = di.GetFileSystemInfos();
             var lastFile = files.ToList().Where(fi => fi.Name.StartsWith("netLog")).OrderBy(f => f.Name).Last().Name;
             if (this.latestLogFile != lastFile)
             {
-                Log.Info("New netLog found.");
+                Log.DebugFormat("New netLog file found: {0}", lastFile);
                 this.lastOffset = 0;
                 this.LatestLogFile = lastFile;
             }

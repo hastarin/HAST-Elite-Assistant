@@ -113,9 +113,10 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
         /// </summary>
         private MainWindowViewModel()
         {
-            Log.Info("Contructor called.");
+            Log.Debug("Contructor called.");
             this.InitializeDatabase();
 
+            Log.Debug("Setting up the LogWatcher.");
             this.logWatcher = new LogWatcher();
             this.mainWindow = Application.Current.MainWindow as MetroWindow;
             this.dispatcher = this.MainWindow.Dispatcher;
@@ -123,6 +124,7 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
                 DispatcherPriority.Loaded,
                 new Action(this.InitializeLogWatcher));
 
+            Log.Debug("Configuring route planner with last used values.");
             this.routePlanner.source = Settings.Default.Source;
             this.routePlanner.RoutePlanner.Source = Settings.Default.Source;
             this.routePlanner.destination = Settings.Default.Destination;
@@ -134,7 +136,7 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
             var repeatNextSystemAfter = Settings.Default.RepeatNextSystemAfter;
             if (repeatNextSystemAfter > 0)
             {
-                Log.Info("Setting up speech delay timer.");
+                Log.Debug("Setting up speech delay timer.");
                 this.speechDelayTimer.Interval = TimeSpan.FromSeconds(repeatNextSystemAfter);
                 this.speechDelayTimer.Tick += this.SpeakNextSystem;
             }
@@ -369,8 +371,8 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
         /// <summary>Avoids the next system.</summary>
         private void AvoidNextSystem()
         {
-            Log.Info("AvoidNextSystem called.");
-            if (!this.routePlanner.Route.Any(r => r.System == this.CurrentSystem))
+            Log.Debug("AvoidNextSystem called.");
+            if (!this.RoutePlanner.Route.Any(r => r.System == this.CurrentSystem))
             {
                 return;
             }
@@ -400,7 +402,7 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
         /// <summary>Handles the next system.</summary>
         private void HandleNextSystem()
         {
-            Log.Info("HandleNextSystem called.");
+            Log.Debug("HandleNextSystem called.");
             if (!this.routePlanner.Route.Any(r => r.System == this.CurrentSystem))
             {
                 return;
@@ -422,8 +424,10 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
                 {
                     try
                     {
-                        Clipboard.SetDataObject(this.RoutePlanner.SelectedRouteNode.System, false);
+                        var system = this.RoutePlanner.SelectedRouteNode.System;
+                        Clipboard.SetDataObject(system, false);
                         i = 10;
+                        Log.DebugFormat("{0} copied to the clipboard!", system);
                     }
                     catch
                     {
@@ -446,12 +450,12 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
         /// <summary>Initializes the database.</summary>
         private void InitializeDatabase()
         {
-            Log.Info("InitializeDatabase called");
+            Log.Debug("InitializeDatabase called");
             using (var db = new EliteDangerousDbContext())
             {
-                Log.Info("Upgrading db if needed...");
+                Log.Debug("Upgrading db if needed...");
                 Database.SetInitializer(new MigrateDatabaseToLatestVersion<EliteDangerousDbContext, Configuration>());
-                Log.Info("Checking if we already have Systems in the database.");
+                Log.Debug("Checking if we already have Systems in the database.");
                 if (!Enumerable.Any(db.Systems))
                 {
                     Log.Debug("No systems found, attempting to retrieve them from systems.json file.");
@@ -485,26 +489,27 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
                         }
                     }
                 }
+                Log.Debug("Getting list of system names from the database.");
                 db.Systems.Select(s => s.Name).ToList().ForEach(s => this.SystemNames.Add(s));
-                Log.InfoFormat(
+                Log.DebugFormat(
                     "{0} systems and {1} stations in the database.",
                     this.SystemNames.Count,
                     db.Stations.Count());
             }
-            Log.Info("InitializeDatabase done");
+            Log.Debug("InitializeDatabase done");
         }
 
         /// <summary>Initializes the log watcher.</summary>
         private void InitializeLogWatcher()
         {
-            Log.Info("InitializeLogWatcher called");
+            Log.Debug("InitializeLogWatcher called");
             while (!this.logWatcher.IsValidPath())
             {
                 var dialog = new OpenFileDialog
                                  {
                                      CheckPathExists = true,
                                      Filter = "netLog files|netLog*.log",
-                                     Title = "Please choose the folder containing your Logs",
+                                     Title = "Please choose one of your netLog files.",
                                      InitialDirectory = this.logWatcher.Path
                                  };
                 var result = dialog.ShowDialog(this.MainWindow);
@@ -514,7 +519,7 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
                     var path = Path.GetDirectoryName(dialog.FileName);
                     if (this.logWatcher.IsValidPath(path))
                     {
-                        Log.InfoFormat("Setting path to {0}", path);
+                        Log.DebugFormat("Setting path to {0}", path);
                         this.logWatcher.Path = path;
                     }
                 }
@@ -535,7 +540,7 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
             this.logWatcher.PropertyChanged +=
                 (o, args) =>
                 this.dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(this.UpdateCurrentSystem));
-            Log.Info("InitializeLogWatcher done");
+            Log.Debug("InitializeLogWatcher done");
         }
 
         /// <summary>Receivers the timer on tick.</summary>
@@ -639,7 +644,7 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
         /// <summary>Toggles the settings flyout.</summary>
         private void ToggleSettingsFlyout()
         {
-            Log.Info("ToggleSettingsFlyout called.");
+            Log.Debug("ToggleSettingsFlyout called.");
             var flyout = this.MainWindow.Flyouts.Items[0] as Flyout;
             if (flyout == null)
             {
@@ -657,7 +662,7 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
         /// <summary>Updates the current system.</summary>
         private void UpdateCurrentSystem()
         {
-            Log.Info("UpdateCurrentSystem called.");
+            Log.Debug("UpdateCurrentSystem called.");
             var system = this.GetSystem(this.logWatcher.CurrentSystem);
             if (system == null)
             {

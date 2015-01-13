@@ -88,6 +88,11 @@ namespace HAST.Elite.Dangerous.DataAssistant.Routing
         /// <returns><c>true</c> if a route was found, <c>false</c> otherwise.</returns>
         public override bool Calculate()
         {
+            Log.InfoFormat(
+                "Calcuating a route between {0} and {1} with a jump range of {2:F2}LY",
+                this.Source,
+                this.Destination,
+                this.JumpRange);
             this.Stopwatch.Reset();
             this.Stopwatch.Start();
             this.Route = null;
@@ -99,7 +104,7 @@ namespace HAST.Elite.Dangerous.DataAssistant.Routing
             straightLineVector.Normalize();
             var padding = Settings.Default.RoutePadding * PaddingFactor.First(pf => pf.Key >= this.JumpRange).Value;
             var padDistance = distance / 150 * padding;
-            Log.InfoFormat(
+            Log.DebugFormat(
                 "Jump range = {0:F} gives a padding value of {1:F} for a pad distance of {2:F}",
                 this.JumpRange,
                 padding,
@@ -107,7 +112,7 @@ namespace HAST.Elite.Dangerous.DataAssistant.Routing
             var paddedSource = this.sourcePoint - (straightLineVector * (float)padDistance);
             var paddedDestination = this.destinationPoint + (straightLineVector * (float)padDistance);
             var boundingBox = BoundingBox.FromPoints(new[] { paddedSource, paddedDestination });
-            Log.InfoFormat(
+            Log.DebugFormat(
                 "Searching a box from {0} to {1} with a diagonal distance of {2:F}ly",
                 boundingBox.Minimum,
                 boundingBox.Maximum,
@@ -120,7 +125,7 @@ namespace HAST.Elite.Dangerous.DataAssistant.Routing
                     .Select(s => new { s.Name, s.X, s.Y, s.Z })
                     .ToList();
 
-            Log.InfoFormat("Systems considered: {0}", systems.Count);
+            Log.DebugFormat("Systems considered: {0}", systems.Count);
 
             var systemDistances = new List<RouteNodeDistance>(systems.Count);
             systemDistances.AddRange(
@@ -175,6 +180,7 @@ namespace HAST.Elite.Dangerous.DataAssistant.Routing
                     }
                     if (this.Stopwatch.Elapsed > this.Timeout)
                     {
+                        Log.WarnFormat("Route planning exceeded timeout of {0}ms", this.Timeout.TotalMilliseconds);
                         throw new RoutePlannerTimeoutException();
                     }
                     if (nextNode == null || nextNode.Point == rangeSphere.Center || nextNode.Point == this.sourcePoint)
@@ -182,7 +188,7 @@ namespace HAST.Elite.Dangerous.DataAssistant.Routing
                         if (route.Any())
                         {
                             var deadEnd = route.Last();
-                            Log.Info("Re-routing past dead end " + deadEnd.System);
+                            Log.Debug("Re-routing past dead end " + deadEnd.System);
                             workingSet.Remove(deadEnd);
                             route.RemoveAt(route.Count - 1);
                             rangeSphere = !route.Any()
@@ -203,7 +209,7 @@ namespace HAST.Elite.Dangerous.DataAssistant.Routing
                         }
                     }
                     // ReSharper disable once PossibleNullReferenceException
-                    Log.InfoFormat("Routing to: {0} out of {1} systems", nextNode.System, inRange.Count);
+                    Log.DebugFormat("Routing to: {0} out of {1} systems", nextNode.System, inRange.Count);
                     rangeSphere = new BoundingSphere(nextNode.Point, this.JumpRange);
                     if (route.Any())
                     {

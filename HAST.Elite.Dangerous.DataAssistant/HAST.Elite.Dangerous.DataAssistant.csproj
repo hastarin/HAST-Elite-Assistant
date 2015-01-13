@@ -79,6 +79,9 @@
     <Reference Include="NHotkey.Wpf">
       <HintPath>..\packages\NHotkey.Wpf.1.2.1\lib\net35\NHotkey.Wpf.dll</HintPath>
     </Reference>
+    <Reference Include="QuickConverter">
+      <HintPath>..\packages\QuickConverter.1.1.1.0\lib\net40\QuickConverter.dll</HintPath>
+    </Reference>
     <Reference Include="SharpDX">
       <HintPath>$(SharpDXPackageBinDir)\SharpDX.dll</HintPath>
     </Reference>
