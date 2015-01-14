@@ -13,10 +13,10 @@
     <ROW Property="ARPURLUPDATEINFO" Value="https://github.com/hastarin/HAST-Elite-Assistant/releases"/>
     <ROW Property="CTRLS" Value="2"/>
     <ROW Property="Manufacturer" Value="Jon Benson"/>
-    <ROW Property="ProductCode" Value="1033:{2462CC0A-92BA-4EF6-8D8A-E68D5F0F3511} " Type="16"/>
+    <ROW Property="ProductCode" Value="1033:{C4C7FF21-715A-4248-B278-AFC2F52C7549} " Type="16"/>
     <ROW Property="ProductLanguage" Value="1033"/>
     <ROW Property="ProductName" Value="HAST Elite Assistant"/>
-    <ROW Property="ProductVersion" Value="0.9.4.1" Type="32" TargetFile="HASTEliteAssistant.exe"/>
+    <ROW Property="ProductVersion" Value="0.9.5.0" Type="32" TargetFile="HASTEliteAssistant.exe"/>
     <ROW Property="RUNAPPLICATION" Value="1" Type="4"/>
     <ROW Property="SecureCustomProperties" Value="OLDPRODUCTS;AI_NEWERPRODUCTFOUND"/>
     <ROW Property="UpgradeCode" Value="{DCDE54E8-C0D1-47B3-BD96-421C6C76451B}"/>
@@ -74,7 +74,8 @@
     <ROW File="QuickConverter.dll" Component_="QuickConverter.dll" FileName="QUICKC~1.DLL|QuickConverter.dll" Attributes="0" SourcePath="HAST.Elite.Dangerous.DataAssistant\bin\Release\QuickConverter.dll" SelfReg="false" NextFile="WPFTextBoxAutoComplete.txt"/>
     <ROW File="SharpDX.dll" Component_="SharpDX.dll" FileName="SharpDX.dll" Attributes="0" SourcePath="packages\SharpDX.2.6.3\Bin\DirectX11-Signed-net40\SharpDX.dll" SelfReg="false" NextFile="Xceed.Wpf.Toolkit.dll"/>
     <ROW File="System.Windows.Interactivity.dll" Component_="System.Windows.Interactivity.dll" FileName="SYSTEM~1.DLL|System.Windows.Interactivity.dll" Attributes="0" SourcePath="packages\MahApps.Metro.1.0.0.0\lib\net45\System.Windows.Interactivity.dll" SelfReg="false" NextFile="HASTEliteAssistant.exe"/>
-    <ROW File="WPFTextBoxAutoComplete.txt" Component_="WPFTextBoxAutoComplete.txt" FileName="WPFTEX~1.TXT|WPFTextBoxAutoComplete.txt" Attributes="0" SourcePath="HAST.Elite.Dangerous.DataAssistant\bin\Release\Licenses\WPFTextBoxAutoComplete.txt" SelfReg="false"/>
+    <ROW File="UnityUtils.txt" Component_="WPFTextBoxAutoComplete.txt" FileName="UNITYU~1.TXT|UnityUtils.txt" Attributes="0" SourcePath="HAST.Elite.Dangerous.DataAssistant\bin\Release\Licenses\UnityUtils.txt" SelfReg="false"/>
+    <ROW File="WPFTextBoxAutoComplete.txt" Component_="WPFTextBoxAutoComplete.txt" FileName="WPFTEX~1.TXT|WPFTextBoxAutoComplete.txt" Attributes="0" SourcePath="HAST.Elite.Dangerous.DataAssistant\bin\Release\Licenses\WPFTextBoxAutoComplete.txt" SelfReg="false" NextFile="UnityUtils.txt"/>
     <ROW File="Xceed.Wpf.Toolkit.dll" Component_="Xceed.Wpf.Toolkit.dll" FileName="XCEEDW~2.DLL|Xceed.Wpf.Toolkit.dll" Attributes="0" SourcePath="packages\Extended.Wpf.Toolkit.2.3\lib\net40\Xceed.Wpf.Toolkit.dll" SelfReg="false" NextFile="System.Windows.Interactivity.dll"/>
     <ROW File="log4net.dll" Component_="log4net.dll" FileName="log4net.dll" Attributes="0" SourcePath="HAST.Elite.Dangerous.DataAssistant\bin\Release\log4net.dll" SelfReg="false" NextFile="QuickConverter.dll"/>
   </COMPONENT>

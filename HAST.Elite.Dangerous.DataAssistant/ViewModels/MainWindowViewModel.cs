@@ -117,6 +117,7 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
             try
             {
                 Log.Debug("Contructor called.");
+                this.mainWindow = (MetroWindow)Application.Current.MainWindow;
                 try
                 {
                     this.InitializeDatabase();
@@ -124,10 +125,19 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
                 catch (Exception e)
                 {
                     Log.Error("Error creating database.", e);
+                    var message = string.Format(
+                        "Sorry there was an error setting up the database!{0}Make sure you have installed SQL Sever Express LocalDb.{0}If you've already done that, please send a copy of your log to the developer.{0}The log can be found in:{0}{1}",
+                        Environment.NewLine,
+                        GlobalContext.Properties["LogFileName"]);
+                    MessageBox.Show(
+                        this.mainWindow,
+                        message,
+                        "Error setting up database",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Error);
                 }
                 Log.Debug("Setting up the LogWatcher.");
                 this.logWatcher = new LogWatcher();
-                this.mainWindow = Application.Current.MainWindow as MetroWindow;
                 this.dispatcher = this.MainWindow.Dispatcher;
                 this.dispatcher.BeginInvoke(
                     DispatcherPriority.Loaded,

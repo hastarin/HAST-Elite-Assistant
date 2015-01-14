@@ -16,7 +16,6 @@ namespace HAST.Elite.Dangerous.DataAssistant.Routing
 {
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics;
 
     /// <summary>
     /// Based on uniform-cost-search/A* from the book Artificial Intelligence: A Modern Approach 3rd Ed by Russell/Norvig
@@ -80,29 +79,25 @@ namespace HAST.Elite.Dangerous.DataAssistant.Routing
                 foreach (var action in this.info.Expand(node.state))
                 {
                     var child = this.info.ApplyAction(node.state, action);
+                    if (exploredSet.Contains(child))
+                    {
+                        continue;
+                    }
+                    var searchNode = this.CreateSearchNode(node, action, child, toState);
 
                     SearchNode<State, Action> frontierNode;
                     var isNodeInFrontier = frontierMap.TryGetValue(child, out frontierNode);
-                    if (!exploredSet.Contains(child) && !isNodeInFrontier)
+                    if (!isNodeInFrontier)
                     {
-                        var searchNode = this.CreateSearchNode(node, action, child, toState);
                         frontier.Enqueue(searchNode, searchNode.f);
                         frontierMap.Add(child, searchNode);
                     }
-                    else if (isNodeInFrontier)
+                    else
                     {
-                        var searchNode = this.CreateSearchNode(node, action, child, toState);
                         if (searchNode.f < frontierNode.f)
                         {
-                            try
-                            {
-                                frontier.Replace(frontierNode, frontierNode.f, searchNode.f);
-                                frontierNode.f = searchNode.f;
-                            }
-                            catch (KeyNotFoundException ex)
-                            {
-                                Debug.WriteLine(ex);
-                            }
+                            frontier.Replace(frontierNode, frontierNode.f, searchNode.f);
+                            frontierNode.f = searchNode.f;
                         }
                     }
                 }
@@ -118,18 +113,18 @@ namespace HAST.Elite.Dangerous.DataAssistant.Routing
         /// <summary>
         /// Builds the solution.
         /// </summary>
-        /// <param name="seachNode">The seach node.</param>
+        /// <param name="searchNode">The seach node.</param>
         /// <returns>List&lt;Action&gt;.</returns>
-        private List<Action> BuildSolution(SearchNode<State, Action> seachNode)
+        private List<Action> BuildSolution(SearchNode<State, Action> searchNode)
         {
             var list = new List<Action>();
-            while (seachNode != null)
+            while (searchNode != null)
             {
-                if ((seachNode.action != null) && (!seachNode.action.Equals(default(Action))))
+                if ((searchNode.action != null) && (!searchNode.action.Equals(default(Action))))
                 {
-                    list.Insert(0, seachNode.action);
+                    list.Insert(0, searchNode.action);
                 }
-                seachNode = seachNode.parent;
+                searchNode = searchNode.parent;
             }
             return list;
         }
