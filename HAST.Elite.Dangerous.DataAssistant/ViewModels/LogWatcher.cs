@@ -219,7 +219,21 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
         /// </summary>
         public void Refresh()
         {
-            this.CheckForSystemChange();
+            //this.CheckForSystemChange();
+            try
+            {
+                var di = new DirectoryInfo(this.Path);
+                var fis = di.GetFileSystemInfos(this.Filter, SearchOption.TopDirectoryOnly);
+                foreach (var fi in fis)
+                {
+                    using (var fs = new FileStream(fi.FullName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+                        fs.ReadByte();
+                }
+            }
+            catch (Exception e)
+            {
+                Log.Debug("Exception refreshing folder/file information", e);
+            }
         }
 
         /// <summary>

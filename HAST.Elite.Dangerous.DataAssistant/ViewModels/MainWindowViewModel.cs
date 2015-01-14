@@ -4,7 +4,7 @@
 // Created          : 08-01-2015
 // 
 // Last Modified By : Jon Benson
-// Last Modified On : 10-01-2015
+// Last Modified On : 15-01-2015
 // ***********************************************************************
 // <copyright file="MainWindowViewModel.cs" company="Jon Benson">
 //     Copyright (c) Jon Benson. All rights reserved.
@@ -55,6 +55,8 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
     {
         #region Static Fields
 
+        private static readonly ILog Log = LogManager.GetLogger(typeof(MainWindowViewModel));
+
         private static readonly NetMQContext NetMqContext = NetMQContext.Create();
 
         private static readonly DispatcherTimer ReceiverTimer = new DispatcherTimer(DispatcherPriority.ApplicationIdle);
@@ -62,23 +64,25 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
         private static readonly Lazy<MainWindowViewModel> SingletonInstance =
             new Lazy<MainWindowViewModel>(() => new MainWindowViewModel());
 
-        private static readonly ILog Log = LogManager.GetLogger(typeof(MainWindowViewModel));
-
         #endregion
 
         #region Fields
 
+        private readonly Dispatcher dispatcher;
+
         private readonly SubscriberSocket eddnSubscriberSocket;
 
+        private readonly DispatcherTimer logRefreshTimer = new DispatcherTimer(DispatcherPriority.ApplicationIdle);
+
         private readonly LogWatcher logWatcher;
+
+        private readonly MetroWindow mainWindow;
 
         private readonly RoutePlannerViewModel routePlanner = new RoutePlannerViewModel();
 
         private readonly SpeechSynthesizer speech = new SpeechSynthesizer();
 
         private readonly DispatcherTimer speechDelayTimer = new DispatcherTimer(DispatcherPriority.ApplicationIdle);
-
-        private readonly DispatcherTimer logRefreshTimer = new DispatcherTimer(DispatcherPriority.ApplicationIdle);
 
         private readonly ObservableCollection<string> systemNames = new ObservableCollection<string>();
 
@@ -100,11 +104,6 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
 
         private RelayCommand toggleTopmostCommand;
 
-        private readonly MetroWindow mainWindow;
-
-        private readonly Dispatcher dispatcher;
-
-
         #endregion
 
         #region Constructors and Destructors
@@ -125,10 +124,11 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
                 catch (Exception e)
                 {
                     Log.Error("Error creating database.", e);
-                    var message = string.Format(
-                        "Sorry there was an error setting up the database!{0}Make sure you have installed SQL Sever Express LocalDb.{0}If you've already done that, please send a copy of your log to the developer.{0}The log can be found in:{0}{1}",
-                        Environment.NewLine,
-                        GlobalContext.Properties["LogFileName"]);
+                    var message =
+                        string.Format(
+                            "Sorry there was an error setting up the database!{0}Make sure you have installed SQL Sever Express LocalDb.{0}If you've already done that, please send a copy of your log to the developer.{0}The log can be found in:{0}{1}",
+                            Environment.NewLine,
+                            GlobalContext.Properties["LogFileName"]);
                     MessageBox.Show(
                         this.mainWindow,
                         message,
@@ -139,9 +139,7 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
                 Log.Debug("Setting up the LogWatcher.");
                 this.logWatcher = new LogWatcher();
                 this.dispatcher = this.MainWindow.Dispatcher;
-                this.dispatcher.BeginInvoke(
-                    DispatcherPriority.Loaded,
-                    new Action(this.InitializeLogWatcher));
+                this.dispatcher.BeginInvoke(DispatcherPriority.Loaded, new Action(this.InitializeLogWatcher));
 
                 Log.Debug("Configuring route planner with last used values.");
                 try
@@ -190,12 +188,7 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
             }
             //this.StartListeningToEddn();
 
-            this.MainWindow.Closed += MainWindowOnClosed;
-        }
-
-        private void MainWindowOnClosed(object sender, EventArgs eventArgs)
-        {
-            this.Dispose();
+            this.MainWindow.Closed += this.MainWindowOnClosed;
         }
 
         /// <summary>Finalizes an instance of the <see cref="MainWindowViewModel" /> class.</summary>
@@ -209,16 +202,16 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
         #region Public Properties
 
         /// <summary>Gets the Singleton Instance.</summary>
-        /// <exception cref="MissingMemberException">
-        ///     The <see cref="Lazy{T}" /> instance is initialized to use the default constructor of the type that is
+        /// <exception cref="System.MissingMemberException">
+        ///     The <see cref="System.Lazy`1" /> instance is initialized to use the default constructor of the type that is
         ///     being lazily initialized, and that type does not have a public, parameterless constructor.
         /// </exception>
-        /// <exception cref="MemberAccessException">
-        ///     The <see cref="Lazy{T}" /> instance is initialized to use the default constructor of the type that is
+        /// <exception cref="System.MemberAccessException">
+        ///     The <see cref="System.Lazy`1" /> instance is initialized to use the default constructor of the type that is
         ///     being lazily initialized, and permissions to access the constructor are missing.
         /// </exception>
-        /// <exception cref="InvalidOperationException">
-        ///     The initialization function tries to access <see cref="Lazy{T}.Value" /> on this instance.
+        /// <exception cref="System.InvalidOperationException">
+        ///     The initialization function tries to access <see cref="System.Lazy`1.Value" /> on this instance.
         /// </exception>
         public static MainWindowViewModel Instance
         {
@@ -283,7 +276,7 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
         {
             get
             {
-                return mainWindow;
+                return this.mainWindow;
             }
         }
 
@@ -312,8 +305,7 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
             get
             {
                 return this.setSourceToCurrentCommand
-                       ?? (this.setSourceToCurrentCommand =
-                           new RelayCommand(() => { this.routePlanner.Source = this.CurrentSystem; }));
+                       ?? (this.setSourceToCurrentCommand = new RelayCommand(this.SetSourceToCurrent));
             }
         }
 
@@ -459,12 +451,12 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
             this.RoutePlanner.SelectedRouteNode = this.RoutePlanner.Route[nextItemIndex];
             if (Settings.Default.AutoCopyNextSystem)
             {
-                for (int i = 0; i < 10; i++)
+                for (var i = 0; i < 10; i++)
                 {
                     try
                     {
                         var system = this.RoutePlanner.SelectedRouteNode.System;
-                        Clipboard.SetDataObject(system, false);
+                        Clipboard.SetDataObject(system.ToLowerInvariant(), false);
                         i = 10;
                         Log.DebugFormat("{0} copied to the clipboard!", system);
                     }
@@ -473,7 +465,7 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
                         Log.Warn("Unable to write to the clipboard, sleeping for 10ms!");
                         Thread.Sleep(10);
                     }
-                } 
+                }
             }
             if (Settings.Default.SpeakNextSystemDuringJump)
             {
@@ -582,9 +574,14 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
             Log.Debug("InitializeLogWatcher done");
         }
 
+        private void MainWindowOnClosed(object sender, EventArgs eventArgs)
+        {
+            this.Dispose();
+        }
+
         /// <summary>Receivers the timer on tick.</summary>
         /// <param name="sender">The sender.</param>
-        /// <param name="eventArgs">The <see cref="EventArgs" /> instance containing the event data.</param>
+        /// <param name="eventArgs">The <see cref="System.EventArgs" /> instance containing the event data.</param>
         private void ReceiverTimerOnTick(object sender, EventArgs eventArgs)
         {
             while (this.eddnSubscriberSocket.HasIn)
@@ -633,9 +630,20 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
             }
         }
 
+        private void SetSourceToCurrent()
+        {
+            try
+            {
+                this.routePlanner.Source = this.CurrentSystem;
+            }
+            catch (UnknownSystemException)
+            {
+            }
+        }
+
         /// <summary>Speaks the next system.</summary>
         /// <param name="sender">The sender.</param>
-        /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
+        /// <param name="e">The <see cref="System.EventArgs" /> instance containing the event data.</param>
         private void SpeakNextSystem(object sender, EventArgs e)
         {
             this.SpeakNextSystem();

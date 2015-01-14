@@ -387,7 +387,7 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
                     try
                     {
                         var system = this.Route.First().System;
-                        Clipboard.SetDataObject(system, false);
+                        Clipboard.SetDataObject(system.ToLowerInvariant(), false);
                         i = 10;
                         Log.DebugFormat("{0} copied to the clipboard!", system);
                     }

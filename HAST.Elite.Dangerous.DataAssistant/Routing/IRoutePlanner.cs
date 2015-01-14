@@ -38,6 +38,7 @@ namespace HAST.Elite.Dangerous.DataAssistant.Routing
         IEnumerable<IRouteNode> Route { get; }
 
         /// <summary>Gets or sets the source system name.</summary>
+        /// <exception cref="UnknownSystemException">Thrown if the system is not found in the database.</exception>
         string Source { get; set; }
 
         /// <summary>Gets or sets the timeout for calculating a route.</summary>
