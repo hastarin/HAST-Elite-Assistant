@@ -4,7 +4,7 @@
 // Created          : 07-01-2015
 // 
 // Last Modified By : Jon Benson
-// Last Modified On : 10-01-2015
+// Last Modified On : 15-01-2015
 // ***********************************************************************
 // <copyright file="RoutePlannerViewModel.cs" company="Jon Benson">
 //     Copyright (c) Jon Benson. All rights reserved.
@@ -17,6 +17,7 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
     using System;
     using System.Collections.ObjectModel;
     using System.Linq;
+    using System.Threading;
     using System.Windows;
     using System.Windows.Input;
 
@@ -31,19 +32,36 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
     /// <summary>Class RoutePlannerViewModel.</summary>
     public class RoutePlannerViewModel : ObservableObject, IDisposable
     {
+        #region Static Fields
+
         private static readonly ILog Log = LogManager.GetLogger(typeof(RoutePlannerViewModel));
 
+        #endregion
+
         #region Fields
+
+        /// <summary>
+        ///     The <see cref="HAST.Elite.Dangerous.DataAssistant.ViewModels.RoutePlannerViewModel.route" /> planner
+        /// </summary>
+        internal readonly RoutePlannerAStar RoutePlanner = new RoutePlannerAStar();
+
+        /// <summary>
+        ///     The <see cref="HAST.Elite.Dangerous.DataAssistant.ViewModels.RoutePlannerViewModel.destination" />
+        /// </summary>
+        internal string destination;
+
+        /// <summary>The jump range</summary>
+        internal float jumpRange;
+
+        /// <summary>
+        ///     The <see cref="HAST.Elite.Dangerous.DataAssistant.ViewModels.RoutePlannerViewModel.source" />
+        /// </summary>
+        internal string source;
 
         /// <summary>
         ///     The <see cref="HAST.Elite.Dangerous.DataAssistant.ViewModels.RoutePlannerViewModel.route" />
         /// </summary>
         private readonly ObservableCollection<IRouteNode> route = new ObservableCollection<IRouteNode>();
-
-        /// <summary>
-        ///     The <see cref="HAST.Elite.Dangerous.DataAssistant.ViewModels.RoutePlannerViewModel.route" /> planner
-        /// </summary>
-        internal readonly IRoutePlanner RoutePlanner = new RoutePlanner();
 
         /// <summary>
         ///     <para>
@@ -57,31 +75,17 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
         private TimeSpan calculationTime;
 
         /// <summary>
-        ///     The <see cref="HAST.Elite.Dangerous.DataAssistant.ViewModels.RoutePlannerViewModel.destination" />
-        /// </summary>
-        // ReSharper disable once InconsistentNaming
-        internal string destination;
-
-        /// <summary>
         ///     The <see cref="HAST.Elite.Dangerous.DataAssistant.ViewModels.RoutePlannerViewModel.disposed" />
         /// </summary>
         private bool disposed;
 
         private double distance;
 
-        /// <summary>The jump range</summary>
-        // ReSharper disable once InconsistentNaming
-        internal float jumpRange;
+        private bool isEconomySelected;
 
         private int numberOfJumps;
 
         private IRouteNode selectedRouteNode;
-
-        /// <summary>
-        ///     The <see cref="HAST.Elite.Dangerous.DataAssistant.ViewModels.RoutePlannerViewModel.source" />
-        /// </summary>
-        // ReSharper disable once InconsistentNaming
-        internal string source;
 
         /// <summary>The swap systems command</summary>
         private RelayCommand swapSystemsCommand;
@@ -140,6 +144,7 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
         }
 
         /// <summary>Gets or sets the destination.</summary>
+        /// <exception cref="UnknownSystemException">Thrown if the systems is not found in the database.</exception>
         public string Destination
         {
             get
@@ -166,6 +171,27 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
             set
             {
                 this.Set(ref this.distance, value);
+            }
+        }
+
+        /// <summary>
+        ///     Gets or sets a value indicating whether this instance is using economical <see cref="route" /> planning.
+        /// </summary>
+        public bool IsEconomySelected
+        {
+            get
+            {
+                return this.isEconomySelected;
+            }
+            set
+            {
+                if (this.Set(ref this.isEconomySelected, value))
+                {
+                    this.RoutePlanner.CurrentAlgorithm = value
+                                                             ? RoutePlannerAStar.Algorithm.Economy
+                                                             : RoutePlannerAStar.Algorithm.LeastJumps;
+                    this.CalculateRoute();
+                }
             }
         }
 
@@ -225,6 +251,7 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
         }
 
         /// <summary>Gets or sets the source.</summary>
+        /// <exception cref="UnknownSystemException">Thrown if the system is not found in the database.</exception>
         public string Source
         {
             get
@@ -304,8 +331,13 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
 
         #region Public Methods and Operators
 
-        /// <summary>Avoids the specified <see cref="route" /> node.</summary>
-        /// <param name="routeNode">The <see cref="route" /> node.</param>
+        /// <summary>
+        ///     Avoids the specified
+        ///     <see cref="HAST.Elite.Dangerous.DataAssistant.ViewModels.RoutePlannerViewModel.route" /> node.
+        /// </summary>
+        /// <param name="routeNode">
+        ///     The <see cref="HAST.Elite.Dangerous.DataAssistant.ViewModels.RoutePlannerViewModel.route" /> node.
+        /// </param>
         public void Avoid(IRouteNode routeNode)
         {
             this.RoutePlanner.AvoidSystems.Add(routeNode.System);
@@ -324,31 +356,6 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
         #endregion
 
         #region Methods
-
-        /// <summary>Releases unmanaged and - optionally - managed resources.</summary>
-        /// <param name="disposing">
-        ///     <c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged
-        ///     resources.
-        /// </param>
-        protected virtual void Dispose(bool disposing)
-        {
-            if (this.disposed)
-            {
-                return;
-            }
-
-            if (disposing)
-            {
-                // free other managed objects that implement
-                // IDisposable only
-                this.RoutePlanner.Dispose();
-            }
-
-            // release any unmanaged objects
-            // set the object references to null
-
-            this.disposed = true;
-        }
 
         /// <summary>Calculates the route.</summary>
         internal void CalculateRoute()
@@ -382,7 +389,7 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
             this.Distance = this.Route.Sum(r => r.Distance);
             if (Settings.Default.AutoCopyNextSystem)
             {
-                for (int i = 0; i < 10; i++)
+                for (var i = 0; i < 10; i++)
                 {
                     try
                     {
@@ -394,11 +401,36 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
                     catch
                     {
                         Log.Warn("Unable to write to the clipboard, sleeping for 10ms!");
-                        System.Threading.Thread.Sleep(10);
+                        Thread.Sleep(10);
                     }
-                } 
+                }
             }
             this.SelectedRouteNode = this.Route.First();
+        }
+
+        /// <summary>Releases unmanaged and - optionally - managed resources.</summary>
+        /// <param name="disposing">
+        ///     <c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged
+        ///     resources.
+        /// </param>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (this.disposed)
+            {
+                return;
+            }
+
+            if (disposing)
+            {
+                // free other managed objects that implement
+                // IDisposable only
+                this.RoutePlanner.Dispose();
+            }
+
+            // release any unmanaged objects
+            // set the object references to null
+
+            this.disposed = true;
         }
 
         #endregion
