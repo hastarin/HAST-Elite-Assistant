@@ -343,7 +343,7 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
             {
                 return;
             }
-            Log.DebugFormat("Change detected in {0}, checking for a new system.", this.LatestLogFile);
+            //Log.DebugFormat("Change detected in {0}, checking for a new system.", this.LatestLogFile);
             this.CheckForSystemChange();
         }
 

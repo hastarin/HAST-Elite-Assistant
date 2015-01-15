@@ -127,7 +127,7 @@
     <Compile Include="Routing\RouteNodePoint.cs" />
     <Compile Include="Routing\RoutePlanner.cs" />
     <Compile Include="Routing\RoutePlannerBase.cs" />
-    <Compile Include="Routing\RoutePlannerShortestPath.cs" />
+    <Compile Include="Routing\RoutePlannerAStar.cs" />
     <Compile Include="Routing\ShortestPathGraphSearch.cs" />
     <Compile Include="Routing\UnknownSystemException.cs" />
     <Compile Include="ViewModels\LogWatcher.cs">

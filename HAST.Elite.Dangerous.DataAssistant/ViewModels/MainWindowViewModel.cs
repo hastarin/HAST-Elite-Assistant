@@ -714,6 +714,24 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
             if (system == null)
             {
                 this.speech.SpeakAsync("Warning!  The system you are entering is not found in the database!");
+                if (Settings.Default.AutoCopyNextSystem)
+                {
+                    string systemName = this.logWatcher.CurrentSystem;
+                    for (var i = 0; i < 10; i++)
+                    {
+                        try
+                        {
+                            Clipboard.SetDataObject(systemName, false);
+                            i = 10;
+                            Log.DebugFormat("{0} copied to the clipboard!", systemName);
+                        }
+                        catch
+                        {
+                            Log.Warn("Unable to write to the clipboard, sleeping for 10ms!");
+                            Thread.Sleep(10);
+                        }
+                    }
+                }
             }
             this.CurrentSystem = this.logWatcher.CurrentSystem;
             this.HandleNextSystem();

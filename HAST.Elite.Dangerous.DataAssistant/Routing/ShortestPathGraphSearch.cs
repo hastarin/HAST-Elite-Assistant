@@ -20,26 +20,26 @@ namespace HAST.Elite.Dangerous.DataAssistant.Routing
     /// <summary>
     /// Based on uniform-cost-search/A* from the book Artificial Intelligence: A Modern Approach 3rd Ed by Russell/Norvig
     /// </summary>
-    /// <typeparam name="State">The type of the state.</typeparam>
-    /// <typeparam name="Action">The type of the action.</typeparam>
-    public class ShortestPathGraphSearch<State, Action>
+    /// <typeparam name="TState">The type of the state.</typeparam>
+    /// <typeparam name="TAction">The type of the action.</typeparam>
+    public class ShortestPathGraphSearch<TState, TAction>
     {
         #region Fields
 
         /// <summary>
         /// The information
         /// </summary>
-        private readonly IShortestPath<State, Action> info;
+        private readonly IShortestPath<TState, TAction> info;
 
         #endregion
 
         #region Constructors and Destructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ShortestPathGraphSearch{State, Action}"/> class.
+        /// Initializes a new instance of the <see cref="ShortestPathGraphSearch{TState, TAction}"/> class.
         /// </summary>
         /// <param name="info">The information.</param>
-        public ShortestPathGraphSearch(IShortestPath<State, Action> info)
+        public ShortestPathGraphSearch(IShortestPath<TState, TAction> info)
         {
             this.info = info;
         }
@@ -54,13 +54,13 @@ namespace HAST.Elite.Dangerous.DataAssistant.Routing
         /// <param name="fromState">From state.</param>
         /// <param name="toState">To state.</param>
         /// <returns>List&lt;Action&gt;.</returns>
-        public List<Action> GetShortestPath(State fromState, State toState)
+        public List<TAction> GetShortestPath(TState fromState, TState toState)
         {
-            var exploredSet = new HashSet<State>();  // The set of nodes already evaluated.
-            var frontier = new PriorityQueue<float, SearchNode<State, Action>>(); // The set of tentative nodes to be evaluated, initially containing the start node.
-            var frontierMap = new Dictionary<State, SearchNode<State, Action>>(); // The map of navigates nodes.
+            var exploredSet = new HashSet<TState>();  // The set of nodes already evaluated.
+            var frontier = new PriorityQueue<float, SearchNode<TState, TAction>>(); // The set of tentative nodes to be evaluated, initially containing the start node.
+            var frontierMap = new Dictionary<TState, SearchNode<TState, TAction>>(); // The map of navigates nodes.
 
-            var startNode = new SearchNode<State, Action>(null, 0, 0, fromState, default(Action));
+            var startNode = new SearchNode<TState, TAction>(null, 0, 0, fromState, default(TAction));
             frontier.Enqueue(startNode, 0);
 
             frontierMap.Add(fromState, startNode);
@@ -68,36 +68,36 @@ namespace HAST.Elite.Dangerous.DataAssistant.Routing
             while (!frontier.IsEmpty)
             {
                 var node = frontier.Dequeue();
-                frontierMap.Remove(node.state);
+                frontierMap.Remove(node.State);
 
-                if (node.state.Equals(toState))
+                if (node.State.Equals(toState))
                 {
                     return this.BuildSolution(node);
                 }
-                exploredSet.Add(node.state);
+                exploredSet.Add(node.State);
                 // expand node and add to frontier
-                foreach (var action in this.info.Expand(node.state))
+                foreach (var action in this.info.Expand(node.State))
                 {
-                    var child = this.info.ApplyAction(node.state, action);
+                    var child = this.info.ApplyAction(node.State, action);
                     if (exploredSet.Contains(child))
                     {
                         continue;
                     }
                     var searchNode = this.CreateSearchNode(node, action, child, toState);
 
-                    SearchNode<State, Action> frontierNode;
+                    SearchNode<TState, TAction> frontierNode;
                     var isNodeInFrontier = frontierMap.TryGetValue(child, out frontierNode);
                     if (!isNodeInFrontier)
                     {
-                        frontier.Enqueue(searchNode, searchNode.f);
+                        frontier.Enqueue(searchNode, searchNode.F);
                         frontierMap.Add(child, searchNode);
                     }
                     else
                     {
-                        if (searchNode.f < frontierNode.f)
+                        if (searchNode.F < frontierNode.F)
                         {
-                            frontier.Replace(frontierNode, frontierNode.f, searchNode.f);
-                            frontierNode.f = searchNode.f;
+                            frontier.Replace(frontierNode, frontierNode.F, searchNode.F);
+                            frontierNode.F = searchNode.F;
                         }
                     }
                 }
@@ -115,16 +115,17 @@ namespace HAST.Elite.Dangerous.DataAssistant.Routing
         /// </summary>
         /// <param name="searchNode">The seach node.</param>
         /// <returns>List&lt;Action&gt;.</returns>
-        private List<Action> BuildSolution(SearchNode<State, Action> searchNode)
+        private List<TAction> BuildSolution(SearchNode<TState, TAction> searchNode)
         {
-            var list = new List<Action>();
+            var list = new List<TAction>();
             while (searchNode != null)
             {
-                if ((searchNode.action != null) && (!searchNode.action.Equals(default(Action))))
+                // ReSharper disable once CompareNonConstrainedGenericWithNull
+                if ((searchNode.Action != null) && (!searchNode.Action.Equals(default(TAction))))
                 {
-                    list.Insert(0, searchNode.action);
+                    list.Insert(0, searchNode.Action);
                 }
-                searchNode = searchNode.parent;
+                searchNode = searchNode.Parent;
             }
             return list;
         }
@@ -137,15 +138,15 @@ namespace HAST.Elite.Dangerous.DataAssistant.Routing
         /// <param name="child">The child.</param>
         /// <param name="toState">To state.</param>
         /// <returns>SearchNode&lt;State, Action&gt;.</returns>
-        private SearchNode<State, Action> CreateSearchNode(
-            SearchNode<State, Action> node,
-            Action action,
-            State child,
-            State toState)
+        private SearchNode<TState, TAction> CreateSearchNode(
+            SearchNode<TState, TAction> node,
+            TAction action,
+            TState child,
+            TState toState)
         {
-            var cost = this.info.ActualCost(node.state, action);
+            var cost = this.info.ActualCost(node.State, action);
             var heuristic = this.info.Heuristic(child, toState);
-            return new SearchNode<State, Action>(node, node.g + cost, node.g + cost + heuristic, child, action);
+            return new SearchNode<TState, TAction>(node, node.G + cost, node.G + cost + heuristic, child, action);
         }
 
         #endregion
@@ -154,36 +155,36 @@ namespace HAST.Elite.Dangerous.DataAssistant.Routing
     /// <summary>
     /// Class SearchNode.
     /// </summary>
-    /// <typeparam name="State">The type of the state.</typeparam>
-    /// <typeparam name="Action">The type of the action.</typeparam>
-    internal class SearchNode<State, Action> : IComparable<SearchNode<State, Action>>
+    /// <typeparam name="TState">The type of the state.</typeparam>
+    /// <typeparam name="TAction">The type of the action.</typeparam>
+    internal class SearchNode<TState, TAction> : IComparable<SearchNode<TState, TAction>>
     {
         #region Fields
 
         /// <summary>
         /// The action
         /// </summary>
-        public Action action;
+        public TAction Action;
 
         /// <summary>
         /// The f
         /// </summary>
-        public float f; // estimate
+        public float F; // estimate
 
         /// <summary>
         /// The g
         /// </summary>
-        public float g; // cost
+        public float G; // cost
 
         /// <summary>
         /// The parent
         /// </summary>
-        public SearchNode<State, Action> parent;
+        public SearchNode<TState, TAction> Parent;
 
         /// <summary>
         /// The state
         /// </summary>
-        public State state;
+        public TState State;
 
         #endregion
 
@@ -197,13 +198,13 @@ namespace HAST.Elite.Dangerous.DataAssistant.Routing
         /// <param name="f">The f.</param>
         /// <param name="state">The state.</param>
         /// <param name="action">The action.</param>
-        public SearchNode(SearchNode<State, Action> parent, float g, float f, State state, Action action)
+        public SearchNode(SearchNode<TState, TAction> parent, float g, float f, TState state, TAction action)
         {
-            this.parent = parent;
-            this.g = g;
-            this.f = f;
-            this.state = state;
-            this.action = action;
+            this.Parent = parent;
+            this.G = g;
+            this.F = f;
+            this.State = state;
+            this.Action = action;
         }
 
         #endregion
@@ -215,9 +216,9 @@ namespace HAST.Elite.Dangerous.DataAssistant.Routing
         /// </summary>
         /// <param name="other">An object to compare with this object.</param>
         /// <returns>A value that indicates the relative order of the objects being compared. The return value has the following meanings: Value Meaning Less than zero This object is less than the <paramref name="other" /> parameter.Zero This object is equal to <paramref name="other" />. Greater than zero This object is greater than <paramref name="other" />.</returns>
-        public int CompareTo(SearchNode<State, Action> other)
+        public int CompareTo(SearchNode<TState, TAction> other)
         {
-            return other.f.CompareTo(this.f);
+            return other.F.CompareTo(this.F);
         }
 
         /// <summary>
@@ -226,7 +227,7 @@ namespace HAST.Elite.Dangerous.DataAssistant.Routing
         /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
         public override string ToString()
         {
-            return "SN {f:" + this.f + ", state: " + this.state + " action: " + this.action + "}";
+            return "SN {f:" + this.F + ", state: " + this.State + " action: " + this.Action + "}";
         }
 
         #endregion

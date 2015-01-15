@@ -82,10 +82,6 @@ namespace HAST.Elite.Dangerous.DataAssistant.Routing
         /// <param name="value">The value.</param>
         /// <param name="oldPriority">The old priority.</param>
         /// <param name="newPriority">The new priority.</param>
-        /// <exception cref="System.ArgumentNullException"><paramref name="key" /> is null.</exception>
-        /// <exception cref="KeyNotFoundException">
-        ///     The property is retrieved and <paramref name="key" /> does not exist in the collection.
-        /// </exception>
         public void Replace(TValue value, TPriority oldPriority, TPriority newPriority)
         {
             var v = this.list[oldPriority];

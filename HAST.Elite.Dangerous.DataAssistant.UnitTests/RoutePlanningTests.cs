@@ -40,7 +40,7 @@ namespace HAST.Elite.Dangerous.DataAssistant.UnitTests
         ///     a popular route.
         /// </summary>
         [TestMethod]
-        public void LongRoute()
+        public void LongRouteGreedyDfs()
         {
             this.routePlanner = new RoutePlanner();
             this.LongRouteTests();
@@ -51,14 +51,36 @@ namespace HAST.Elite.Dangerous.DataAssistant.UnitTests
         ///     a popular route.
         /// </summary>
         [TestMethod]
-        public void LongRouteShortestPath()
+        public void LongRouteEconomy()
         {
-            this.routePlanner = new RoutePlannerShortestPath();
+            var planner = new RoutePlannerAStar();
+            planner.CurrentAlgorithm = RoutePlannerAStar.Algorithm.Economy;
+            this.routePlanner = planner;
+            this.LongRouteTests();
+        }
+
+        /// <summary>
+        ///     Tests a class that supports <see cref="HAST.Elite.Dangerous.DataAssistant.Routing.IRoutePlanner" /> against
+        ///     a popular route.
+        /// </summary>
+        [TestMethod]
+        public void LongRouteLeastJumps()
+        {
+            var planner = new RoutePlannerAStar();
+            planner.CurrentAlgorithm = RoutePlannerAStar.Algorithm.LeastJumps;
+            this.routePlanner = planner;
             this.LongRouteTests();
         }
 
         private void LongRouteTests()
         {
+            this.routePlanner.Source = "Di Jian";
+            this.routePlanner.Destination = "38 Virginis";
+            this.routePlanner.JumpRange = 20;
+            this.routePlanner.AvoidSystems = new List<string>(new[] { "Alioth", "Sol" });
+            this.TimeAndOutputRoute();
+            Assert.IsNotNull(this.routePlanner.Route);
+
             this.routePlanner.Source = "Er Tcher";
             this.routePlanner.Destination = "Lave";
             this.routePlanner.JumpRange = 20;
@@ -107,7 +129,7 @@ namespace HAST.Elite.Dangerous.DataAssistant.UnitTests
         ///     a popular route.
         /// </summary>
         [TestMethod]
-        public void PopularRoute()
+        public void PopularRouteGreedyDfs()
         {
             this.routePlanner = new RoutePlanner();
             this.PopularRouteTests();
@@ -118,9 +140,24 @@ namespace HAST.Elite.Dangerous.DataAssistant.UnitTests
         ///     a popular route.
         /// </summary>
         [TestMethod]
-        public void PopularRouteShortestPath()
+        public void PopularRouteEconomy()
         {
-            this.routePlanner = new RoutePlannerShortestPath();
+            var planner = new RoutePlannerAStar();
+            planner.CurrentAlgorithm = RoutePlannerAStar.Algorithm.Economy;
+            this.routePlanner = planner;
+            this.PopularRouteTests();
+        }
+
+        /// <summary>
+        ///     Tests a class that supports <see cref="HAST.Elite.Dangerous.DataAssistant.Routing.IRoutePlanner" /> against
+        ///     a popular route.
+        /// </summary>
+        [TestMethod]
+        public void PopularRouteLeastJumps()
+        {
+            var planner = new RoutePlannerAStar();
+            planner.CurrentAlgorithm = RoutePlannerAStar.Algorithm.LeastJumps;
+            this.routePlanner = planner;
             this.PopularRouteTests();
         }
 
@@ -175,7 +212,7 @@ namespace HAST.Elite.Dangerous.DataAssistant.UnitTests
         ///     a short route.
         /// </summary>
         [TestMethod]
-        public void ShortRoute()
+        public void ShortRouteGreedyDfs()
         {
             this.routePlanner = new RoutePlanner();
             this.ShortRouteTests();
@@ -186,9 +223,24 @@ namespace HAST.Elite.Dangerous.DataAssistant.UnitTests
         ///     a short route.
         /// </summary>
         [TestMethod]
-        public void ShortRouteShortestPath()
+        public void ShortRouteEconomy()
         {
-            this.routePlanner = new RoutePlannerShortestPath();
+            var planner = new RoutePlannerAStar();
+            planner.CurrentAlgorithm = RoutePlannerAStar.Algorithm.Economy;
+            this.routePlanner = planner;
+            this.ShortRouteTests();
+        }
+
+        /// <summary>
+        ///     Tests a class that supports <see cref="HAST.Elite.Dangerous.DataAssistant.Routing.IRoutePlanner" /> against
+        ///     a short route.
+        /// </summary>
+        [TestMethod]
+        public void ShortRouteLeastJumps()
+        {
+            var planner = new RoutePlannerAStar();
+            planner.CurrentAlgorithm = RoutePlannerAStar.Algorithm.LeastJumps;
+            this.routePlanner = planner;
             this.ShortRouteTests();
         }
 
@@ -225,21 +277,20 @@ namespace HAST.Elite.Dangerous.DataAssistant.UnitTests
         {
             var routeFound = routePlanner.Calculate();
             Debug.WriteLine(
-                "Time taken for route from {0} to {1} with jump range of {2} was {3}ms",
+                "{0} to {1} ({2}) = {3}ms",
                 routePlanner.Source,
                 routePlanner.Destination,
                 routePlanner.JumpRange,
                 routePlanner.CalculationTime.TotalMilliseconds);
             if (routeFound)
             {
-                Debug.WriteLine("Route found with {0} jumps", routePlanner.Route.Count());
                 double distance = 0;
                 foreach (var routeNode in routePlanner.Route)
                 {
-                    Debug.WriteLine("{0} : {1:F}ly", routeNode.System, routeNode.Distance);
+                    //Debug.WriteLine("{0} : {1:F}ly", routeNode.System, routeNode.Distance);
                     distance += routeNode.Distance;
                 }
-                Debug.WriteLine("TOTAL {0:F}ly distance", distance);
+                Debug.WriteLine("TOTAL {1} jumps {0:F}ly distance", distance, routePlanner.Route.Count());
             }
             else
             {
