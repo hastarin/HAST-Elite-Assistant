@@ -1,0 +1,1 @@
+<Playlist Version="1.0"><Add Test="HAST.Elite.Dangerous.DataAssistant.UnitTests.RoutePlanningTests.ShortRouteLeastJumps" /><Add Test="HAST.Elite.Dangerous.DataAssistant.UnitTests.RoutePlanningTests.ShortRouteGreedyDfs" /><Add Test="HAST.Elite.Dangerous.DataAssistant.UnitTests.RoutePlanningTests.ShortRouteEconomy" /></Playlist>
