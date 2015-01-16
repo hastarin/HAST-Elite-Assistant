@@ -81,6 +81,8 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
         [NonSerialized]
         private PropertyChangedEventHandler propertyChanged;
 
+        private bool checkForNewLogFile;
+
         #endregion
 
         #region Constructors and Destructors
@@ -164,7 +166,10 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
             }
             set
             {
-                this.SetProperty(ref this.latestLogFile, value);
+                if (this.SetProperty(ref this.latestLogFile, value))
+                {
+                    this.checkForNewLogFile = false;
+                }
             }
         }
 
@@ -215,11 +220,14 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
         }
 
         /// <summary>
-        ///     Forces a read of the log file to check for a system change.
+        ///     Reads one byte from every log file to force <see cref="FileSystemWatcher"/> the filesystem to flush write buffers.  If flagged will also check for a new log file.
         /// </summary>
         public void Refresh()
         {
-            //this.CheckForSystemChange();
+            if (this.checkForNewLogFile)
+            {
+                this.UpdateLatestLogFile();
+            }
             try
             {
                 var di = new DirectoryInfo(this.Path);
@@ -234,6 +242,15 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
             {
                 Log.Debug("Exception refreshing folder/file information", e);
             }
+        }
+
+        /// <summary>
+        /// Forces a refresh of the <see cref="LatestLogFile"/> and calls <see cref="CheckForSystemChange"/>
+        /// </summary>
+        public void ForceRefresh()
+        {
+            this.UpdateLatestLogFile();
+            this.CheckForSystemChange();
         }
 
         /// <summary>
@@ -261,7 +278,7 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
                     string.Format("Directory {0} does not contain netLog files?!", this.Path));
             }
             this.UpdateLatestLogFile();
-            this.Created += (sender, args) => this.UpdateLatestLogFile();
+            this.Created += (sender, args) => this.checkForNewLogFile = true;
             this.CheckForSystemChange();
             this.Changed += this.OnChanged;
             this.EnableRaisingEvents = true;

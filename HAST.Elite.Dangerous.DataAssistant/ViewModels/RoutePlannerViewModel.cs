@@ -360,7 +360,15 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
         /// <summary>Calculates the route.</summary>
         internal void CalculateRoute()
         {
-            Log.Debug("CalculateRoute called.");
+            if (this.Source == this.Destination)
+            {
+                return;
+            }
+            Log.DebugFormat(
+                "CalculateRoute {0} to {1} ({2:F2}ly range).",
+                this.Source,
+                this.Destination,
+                this.JumpRange);
             this.Route.Clear();
             try
             {
@@ -387,6 +395,10 @@ namespace HAST.Elite.Dangerous.DataAssistant.ViewModels
             this.CalculationTime = this.RoutePlanner.CalculationTime;
             this.NumberOfJumps = this.Route.Count;
             this.Distance = this.Route.Sum(r => r.Distance);
+            if (this.NumberOfJumps <= 0)
+            {
+                return;
+            }
             if (Settings.Default.AutoCopyNextSystem)
             {
                 for (var i = 0; i < 10; i++)

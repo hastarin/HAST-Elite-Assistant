@@ -142,7 +142,10 @@
             </Button>
             <Grid Height="25" Width="130">
                 <Label Target="{Binding ElementName=DecimalUpDown}" Content="_JUMP RANGE" VerticalContentAlignment="Center" VerticalAlignment="Center"/>
-                <xctk:DecimalUpDown FormatString="F2" Value="{Binding RoutePlanner.JumpRange}" x:Name="DecimalUpDown" Foreground="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}" VerticalAlignment="Center" HorizontalAlignment="Right" Padding="0" />
+                <xctk:DecimalUpDown FormatString="F2" Value="{Binding RoutePlanner.JumpRange}" x:Name="DecimalUpDown"
+                                    Foreground="{DynamicResource TextBrush}" 
+                                    Background="{DynamicResource ControlBackgroundBrush}" 
+                                    VerticalAlignment="Center" HorizontalAlignment="Right" Padding="0" />
             </Grid>
             <Grid Height="25" Width="50">
                 <Label Target="{Binding ElementName=CheckBoxEconomy}" Content="_E" VerticalContentAlignment="Center" VerticalAlignment="Center"/>
